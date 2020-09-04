@@ -15,8 +15,18 @@ public:
     explicit StringDialog(QWidget *parent = nullptr);
     ~StringDialog();
 
+    bool areStringsValid();
+    QString &getFirstWord();
+    QString &getSecondString();
+
+private slots:
+    void on_buttonBox_accepted();
+
 private:
     Ui::StringDialog *ui;
+
+    QString firstWord;
+    QString secondWord;
 };
 
 #endif // STRINGDIALOG_HPP

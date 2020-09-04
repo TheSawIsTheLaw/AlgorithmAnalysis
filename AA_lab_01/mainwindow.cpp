@@ -3,23 +3,25 @@
 
 #include "QtDebug"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     ui->label->setPixmap(QPixmap("../AA_lab_01/imgs/cyber.jpg"));
 }
 
-MainWindow::~MainWindow()
-{
-    delete ui;
-}
-
+MainWindow::~MainWindow() { delete ui; }
 
 void MainWindow::on_DamerauRecursive_clicked()
 {
     StringDialog stringWindow(nullptr);
     stringWindow.setModal(true);
     stringWindow.exec();
+
+    if (!stringWindow.areStringsValid())
+        return;
+
+    QString fString = stringWindow.getFirstWord();
+    QString sString = stringWindow.getSecondString();
+
+    qDebug() << "GOT IN MAIN:" << fString << sString;
 }
