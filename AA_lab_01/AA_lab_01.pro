@@ -17,13 +17,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    stringdialog.cpp
 
 HEADERS += \
-    mainwindow.hpp
+    mainwindow.hpp \
+    stringdialog.hpp
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    stringdialog.ui
 
 RC_ICONS += imgs\icon.ico
 

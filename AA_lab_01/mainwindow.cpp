@@ -16,3 +16,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+void MainWindow::on_DamerauRecursive_clicked()
+{
+    StringDialog stringWindow(nullptr);
+    stringWindow.setModal(true);
+    stringWindow.exec();
+}
