@@ -12,6 +12,7 @@ StringDialog::StringDialog(QWidget *parent) : QDialog(parent), ui(new Ui::String
 
 StringDialog::~StringDialog() { delete ui; }
 
+// Создай отдельный метод получения информации и потом уже у каждой кнопки решай части задачи
 void StringDialog::on_buttonBox_accepted()
 {
     QString firstWord_ = ui->lineEdit->text();
