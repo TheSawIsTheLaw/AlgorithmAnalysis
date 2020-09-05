@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow() { delete ui; }
 
-void MainWindow::on_DamerauRecursive_clicked()
+void MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
 {
     StringDialog stringWindow(nullptr);
     stringWindow.setModal(true);
@@ -20,8 +20,20 @@ void MainWindow::on_DamerauRecursive_clicked()
     if (!stringWindow.areStringsValid())
         return;
 
-    QString fString = stringWindow.getFirstWord();
-    QString sString = stringWindow.getSecondString();
+    fWord_ = stringWindow.getFirstWord();
+    sWord_ = stringWindow.getSecondString();
 
-    qDebug() << "GOT IN MAIN:" << fString << sString;
+    qDebug() << "GOT IN MAIN:" << fWord_ << sWord_;
+}
+
+void MainWindow::on_DamerauRecursive_clicked()
+{
+    QString fWord, sWord;
+    getTwoWords(fWord, sWord);
+    if (fWord.size() == 0 || sWord.size() == 0)
+        return;
+    qDebug() << "GOT IN DAMERAU RECURSIVE" << fWord << sWord;
+
+    std::vector<std::vector<size_t>> matrix(fWord.size(), std::vector<size_t>(sWord.size()));
+    qDebug() << "START MATRIX" << matrix;
 }
