@@ -20,6 +20,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    size_t damerauRecursive(QString fWord, QString sWord);
+
     void getTwoWords(QString &fWord_, QString &sWord_);
 
 private slots:
