@@ -45,6 +45,15 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
     return matrix[sWord.size()][fWord.size()];
 }
 
+size_t MainWindow::damerauNonRecursiveMatrix(QString fWord, QString sWord, std::vector<std::vector<int> > &matrix)
+{
+    for (int i = 1; i <= sWord.size(); i++)
+        for (int j = 1; j <= fWord.size(); j++)
+            matrix[i][j] = std::min({matrix[i - 1][j] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j - 1] + (((fWord.mid(0, j)).back() == sWord.mid(0, i).back()) ? 0 : 1)});
+
+    return matrix[sWord.size()][fWord.size()];
+}
+
 void MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
 {
     StringDialog stringWindow(nullptr);
@@ -97,6 +106,39 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
     qDebug() << "READY IN DAMERAU RECURSIVE MAT" << answer;
     std::cout << "Matrix: \n";
     for (size_t i = 0; i < matrix.size(); i++)
+    {
+        for (size_t j = 0; j < matrix[0].size(); j++) std::cout << matrix[i][j];
+        std::cout << "\n";
+    }
+}
+
+void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
+{
+    QString fWord, sWord;
+    getTwoWords(fWord, sWord);
+    qDebug() << "GOT IN DAMERAU NON-RECURSIVE MAT" << fWord << sWord;
+    std::vector<std::vector<int>> matrix;
+    for (int i = 0; i <= sWord.size(); i++)
+        matrix.push_back(std::vector<int>(fWord.size() + 1));
+
+    for (size_t i = 0; i < matrix.size(); i++)
+        for (size_t j = 0; j < matrix[0].size(); j++)
+            matrix[i][j] = std::numeric_limits<int>().max();
+
+    for (size_t i = 0; i < matrix.size(); i++) matrix[i][0] = i;
+
+    for (size_t i = 0; i < matrix[0].size(); i++) matrix[0][i] = i;
+
+    for (size_t i = 0; i < matrix.size(); i++)
+    {
+        for (size_t j = 0; j < matrix[0].size(); j++) std::cout << matrix[i][j];
+        std::cout << "\n";
+    }
+
+    size_t answer = damerauNonRecursiveMatrix(fWord, sWord, matrix);
+    qDebug() << "READY IN DAMERAU NON-RECURSIVE MAT" << answer;
+    std::cout << "Matrix: \n";
+    for (size_t i = 0; i < matrix.size(); i ++)
     {
         for (size_t j = 0; j < matrix[0].size(); j++) std::cout << matrix[i][j];
         std::cout << "\n";
