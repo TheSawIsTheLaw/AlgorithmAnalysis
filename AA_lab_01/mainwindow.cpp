@@ -121,10 +121,6 @@ void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
     for (int i = 0; i <= sWord.size(); i++)
         matrix.push_back(std::vector<int>(fWord.size() + 1));
 
-    for (size_t i = 0; i < matrix.size(); i++)
-        for (size_t j = 0; j < matrix[0].size(); j++)
-            matrix[i][j] = std::numeric_limits<int>().max();
-
     for (size_t i = 0; i < matrix.size(); i++) matrix[i][0] = i;
 
     for (size_t i = 0; i < matrix[0].size(); i++) matrix[0][i] = i;
