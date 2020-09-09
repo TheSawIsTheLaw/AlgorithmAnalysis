@@ -21,8 +21,7 @@ public:
     ~MainWindow();
 
     size_t damerauRecursive(QString fWord, QString sWord);
-    size_t damerauRecursiveMatrix(
-    QString fWord, QString sWord, std::vector<std::vector<int>> matrix);
+    size_t damerauRecursiveMatrix(QString fWord, QString sWord, std::vector<std::vector<int> > &matrix);
 
     void getTwoWords(QString &fWord_, QString &sWord_);
 

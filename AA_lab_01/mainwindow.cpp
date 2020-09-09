@@ -29,23 +29,20 @@ size_t MainWindow::damerauRecursive(QString fWord, QString sWord)
 }
 
 size_t MainWindow::damerauRecursiveMatrix(
-QString fWord, QString sWord, std::vector<std::vector<int>> matrix)
+QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
 {
     qDebug() << "Current Words are: " << fWord << sWord;
 
     if (matrix[sWord.size()][fWord.size()] != std::numeric_limits<int>().max())
         return matrix[sWord.size()][fWord.size()];
 
-    int answ =
-    std::min({damerauRecursiveMatrix(fWord.mid(0, fWord.size() - 1), sWord, matrix) + 1,
+    matrix[sWord.size()][fWord.size()] = std::min({damerauRecursiveMatrix(fWord.mid(0, fWord.size() - 1), sWord, matrix) + 1,
     damerauRecursiveMatrix(fWord, sWord.mid(0, sWord.size() - 1), matrix) + 1,
     damerauRecursiveMatrix(
     fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1), matrix) +
     ((fWord.back() == sWord.back()) ? 0 : 1)});
 
-    matrix[sWord.size()][fWord.size()] = answ;
-
-    return answ;
+    return matrix[sWord.size()][fWord.size()];
 }
 
 void MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
@@ -98,4 +95,10 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
 
     size_t answer = damerauRecursiveMatrix(fWord, sWord, matrix);
     qDebug() << "READY IN DAMERAU RECURSIVE MAT" << answer;
+    std::cout << "Matrix: \n";
+    for (size_t i = 0; i < matrix.size(); i++)
+    {
+        for (size_t j = 0; j < matrix[0].size(); j++) std::cout << matrix[i][j];
+        std::cout << "\n";
+    }
 }
