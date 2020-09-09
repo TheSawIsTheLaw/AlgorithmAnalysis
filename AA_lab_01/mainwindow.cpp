@@ -28,6 +28,11 @@ size_t MainWindow::damerauRecursive(QString fWord, QString sWord)
     ((fWord.back() == sWord.back()) ? 0 : 1)});
 }
 
+size_t MainWindow::damerauRecursiveMatrix(QString fWord, QString sWord, std::vector<std::vector<int>> matrix)
+{
+    qDebug() << "Current Words are: " << fWord << sWord;
+}
+
 void MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
 {
     StringDialog stringWindow(nullptr);
@@ -51,4 +56,30 @@ void MainWindow::on_DamerauRecursive_clicked()
 
     size_t answer = damerauRecursive(fWord, sWord);
     qDebug() << "READY IN RECURSIVE: " << answer;
+}
+
+void MainWindow::on_DamerauRecursiveMatrix_clicked()
+{
+    QString fWord, sWord;
+    getTwoWords(fWord, sWord);
+    qDebug() << "GOT IN DAMERAU RECURSIVE MAT" << fWord << sWord;
+    std::vector<std::vector<int>> matrix;
+    for (int i = 0; i <= sWord.size(); i++)
+        matrix.push_back(std::vector<int>(fWord.size() + 1));
+
+    for (size_t i = 0; i < matrix.size(); i++)
+        matrix[i][0] = i;
+
+    for (size_t i = 0; i < matrix[0].size(); i++)
+        matrix[0][i] = i;
+
+    for (size_t i = 0; i < matrix.size(); i++)
+    {
+        for (size_t j = 0; j < matrix[0].size(); j++)
+            std::cout << matrix[i][j];
+        std::cout << "\n";
+    }
+
+    size_t answer = damerauRecursiveMatrix(fWord, sWord, matrix);
+    qDebug() << "READY IN DAMERAU RECURSIVE MAT" << answer;
 }
