@@ -16,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 MainWindow::~MainWindow() { delete ui; }
 
-void createCSVfileForMatrix(
-    const char *fileName, QString fWord, QString sWord, std::vector<std::vector<int>> &matrix, size_t timeResult, size_t answer)
+void createCSVfileForMatrix(const char *fileName, QString fWord, QString sWord,
+std::vector<std::vector<int>> &matrix, size_t timeResult, size_t answer)
 {
     std::ofstream outFile;
     outFile.open(fileName);
@@ -38,68 +38,39 @@ void createCSVfileForMatrix(
     outFile.close();
 }
 
-size_t MainWindow::damerauRecursive(QString fWord, QString sWord)
+void createCSVfileForRecursiveMatrix(const char *fileName, QString fWord, QString sWord,
+std::vector<std::vector<int>> &matrix, size_t timeResult, size_t answer, size_t maxDepth)
 {
-    qDebug() << "Current Words are: " << fWord << sWord;
+    std::ofstream outFile;
+    outFile.open(fileName);
+    outFile << "Result of operation;" << answer << std::endl;
+    outFile << "Time result(ticks);" << timeResult << std::endl;
+    outFile << "Maximum Depth;" << maxDepth << std::endl;
+    outFile << "Result Matrix:\n";
+    outFile << ";";
+    for (int i = 0; i < fWord.size(); i++) outFile << ";" << fWord.toUtf8().at(i);
+    outFile << std::endl;
+    for (size_t i = 0; i < matrix.size(); i++)
+    {
+        if (i)
+            outFile << sWord.toUtf8().at(i - 1);
+        for (size_t j = 0; j < matrix[0].size(); j++) outFile << ";" << matrix[i][j];
+        outFile << std::endl;
+    }
 
-    if (!fWord.size() || !sWord.size())
-        return fWord.size() + sWord.size();
-
-    return std::min({damerauRecursive(fWord, sWord.mid(0, sWord.size() - 1)) + 1,
-    damerauRecursive(fWord.mid(0, fWord.size() - 1), sWord) + 1,
-    damerauRecursive(fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1)) +
-    ((fWord.back() == sWord.back()) ? 0 : 1)});
+    outFile.close();
 }
 
-size_t MainWindow::damerauRecursiveMatrix(
-QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
+void createCSVfileForRecursive(
+const char *fileName, size_t timeResult, size_t answer, size_t maxDepth)
 {
-    qDebug() << "Current Words are: " << fWord << sWord;
+    std::ofstream outFile;
+    outFile.open(fileName);
+    outFile << "Result of operation;" << answer << std::endl;
+    outFile << "Time result(ticks);" << timeResult << std::endl;
+    outFile << "Maximum Depth;" << maxDepth << std::endl;
 
-    if (matrix[sWord.size()][fWord.size()] != std::numeric_limits<int>().max())
-        return matrix[sWord.size()][fWord.size()];
-
-    matrix[sWord.size()][fWord.size()] =
-    std::min({damerauRecursiveMatrix(fWord.mid(0, fWord.size() - 1), sWord, matrix) + 1,
-    damerauRecursiveMatrix(fWord, sWord.mid(0, sWord.size() - 1), matrix) + 1,
-    damerauRecursiveMatrix(
-    fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1), matrix) +
-    ((fWord.back() == sWord.back()) ? 0 : 1)});
-
-    return matrix[sWord.size()][fWord.size()];
-}
-
-size_t MainWindow::damerauNonRecursiveMatrix(
-QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
-{
-    for (int i = 1; i <= sWord.size(); i++)
-        for (int j = 1; j <= fWord.size(); j++)
-            matrix[i][j] = std::min({matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
-            matrix[i - 1][j - 1] +
-            (((fWord.mid(0, j)).back() == sWord.mid(0, i).back()) ? 0 : 1)});
-
-    return matrix[sWord.size()][fWord.size()];
-}
-
-bool canBeTranspose(QString fStr, QString sStr, size_t i, size_t j)
-{
-    return fStr.at(j - 1) == sStr.at(i - 2) && fStr.at(j - 2) == sStr.at(i - 1);
-}
-
-size_t MainWindow::damerauLev(
-QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
-{
-    for (int i = 1; i <= sWord.size(); i++)
-        for (int j = 1; j <= fWord.size(); j++)
-        {
-            int temp = std::min({matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
-            matrix[i - 1][j - 1] +
-            (((fWord.mid(0, j)).back() == sWord.mid(0, i).back()) ? 0 : 1)});
-            if (i > 1 && j > 1 && canBeTranspose(fWord, sWord, i, j))
-                temp = std::min(temp, matrix[i - 2][j - 2] + 1);
-            matrix[i][j] = temp;
-        }
-    return matrix[sWord.size()][fWord.size()];
+    outFile.close();
 }
 
 bool MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
@@ -108,14 +79,33 @@ bool MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
     stringWindow.setModal(true);
     stringWindow.exec();
 
-        if (!stringWindow.areStringsValid())
-            return true;
+    if (!stringWindow.areStringsValid())
+        return true;
 
     fWord_ = stringWindow.getFirstWord();
     sWord_ = stringWindow.getSecondString();
 
     qDebug() << "GOT IN MAIN:" << fWord_ << sWord_;
     return false;
+}
+
+size_t MainWindow::damerauRecursive(
+QString fWord, QString sWord, size_t curDepth, size_t &maxDepth)
+{
+    qDebug() << "Current Words are: " << fWord << sWord;
+
+    curDepth += 1;
+    maxDepth = std::max(curDepth, maxDepth);
+
+    if (!fWord.size() || !sWord.size())
+        return fWord.size() + sWord.size();
+
+    return std::min(
+    {damerauRecursive(fWord, sWord.mid(0, sWord.size() - 1), curDepth, maxDepth) + 1,
+    damerauRecursive(fWord.mid(0, fWord.size() - 1), sWord, curDepth, maxDepth) + 1,
+    damerauRecursive(
+    fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1), curDepth, maxDepth) +
+    ((fWord.back() == sWord.back()) ? 0 : 1)});
 }
 
 void MainWindow::on_DamerauRecursive_clicked()
@@ -125,8 +115,45 @@ void MainWindow::on_DamerauRecursive_clicked()
         return;
     qDebug() << "GOT IN DAMERAU RECURSIVE" << fWord << sWord;
 
-    size_t answer = damerauRecursive(fWord, sWord);
-    qDebug() << "READY IN RECURSIVE: " << answer;
+    size_t maxDepth = 0;
+
+    LARGE_INTEGER li;
+    LARGE_INTEGER notli;
+    QueryPerformanceCounter(&li);
+    __int64 counterStart = li.QuadPart;
+    size_t answer = damerauRecursive(fWord, sWord, 0, maxDepth);
+    QueryPerformanceCounter(&notli);
+    __int64 result = notli.QuadPart - counterStart;
+    qDebug() << result;
+
+    createCSVfileForRecursive("result.csv", result, answer, maxDepth);
+
+    qDebug() << "READY IN RECURSIVE: " << answer << maxDepth;
+}
+
+size_t MainWindow::damerauRecursiveMatrix(QString fWord, QString sWord,
+std::vector<std::vector<int>> &matrix, size_t curDepth, size_t &maxDepth)
+{
+    qDebug() << "Current Words are: " << fWord << sWord;
+
+    curDepth += 1;
+    maxDepth = std::max(curDepth, maxDepth);
+
+    if (matrix[sWord.size()][fWord.size()] != std::numeric_limits<int>().max())
+        return matrix[sWord.size()][fWord.size()];
+
+    matrix[sWord.size()][fWord.size()] =
+    std::min({damerauRecursiveMatrix(
+              fWord.mid(0, fWord.size() - 1), sWord, matrix, curDepth, maxDepth) +
+              1,
+    damerauRecursiveMatrix(
+    fWord, sWord.mid(0, sWord.size() - 1), matrix, curDepth, maxDepth) +
+    1,
+    damerauRecursiveMatrix(fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1),
+    matrix, curDepth, maxDepth) +
+    ((fWord.back() == sWord.back()) ? 0 : 1)});
+
+    return matrix[sWord.size()][fWord.size()];
 }
 
 void MainWindow::on_DamerauRecursiveMatrix_clicked()
@@ -153,18 +180,32 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
         std::cout << "\n";
     }
 
+    size_t maxDepth = 0;
+
     LARGE_INTEGER li;
     LARGE_INTEGER notli;
     QueryPerformanceCounter(&li);
     __int64 counterStart = li.QuadPart;
-    size_t answer = damerauRecursiveMatrix(fWord, sWord, matrix);
+    size_t answer = damerauRecursiveMatrix(fWord, sWord, matrix, 0, maxDepth);
     QueryPerformanceCounter(&notli);
     __int64 result = notli.QuadPart - counterStart;
     qDebug() << result;
 
-    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
+    createCSVfileForRecursiveMatrix("result.csv", fWord, sWord, matrix, result, answer, maxDepth);
 
     qDebug() << "READY IN DAMERAU RECURSIVE MAT" << answer;
+}
+
+size_t MainWindow::damerauNonRecursiveMatrix(
+QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
+{
+    for (int i = 1; i <= sWord.size(); i++)
+        for (int j = 1; j <= fWord.size(); j++)
+            matrix[i][j] = std::min({matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] +
+            (((fWord.mid(0, j)).back() == sWord.mid(0, i).back()) ? 0 : 1)});
+
+    return matrix[sWord.size()][fWord.size()];
 }
 
 void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
@@ -199,6 +240,27 @@ void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
     createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
     qDebug() << "READY IN DAMERAU NON-RECURSIVE MAT" << answer;
+}
+
+bool canBeTranspose(QString fStr, QString sStr, size_t i, size_t j)
+{
+    return fStr.at(j - 1) == sStr.at(i - 2) && fStr.at(j - 2) == sStr.at(i - 1);
+}
+
+size_t MainWindow::damerauLev(
+QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
+{
+    for (int i = 1; i <= sWord.size(); i++)
+        for (int j = 1; j <= fWord.size(); j++)
+        {
+            int temp = std::min({matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] +
+            (((fWord.mid(0, j)).back() == sWord.mid(0, i).back()) ? 0 : 1)});
+            if (i > 1 && j > 1 && canBeTranspose(fWord, sWord, i, j))
+                temp = std::min(temp, matrix[i - 2][j - 2] + 1);
+            matrix[i][j] = temp;
+        }
+    return matrix[sWord.size()][fWord.size()];
 }
 
 void MainWindow::on_DamerauLevenshtein_clicked()

@@ -20,8 +20,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    size_t damerauRecursive(QString fWord, QString sWord);
-    size_t damerauRecursiveMatrix(QString fWord, QString sWord, std::vector<std::vector<int> > &matrix);
+    size_t damerauRecursive(QString fWord, QString sWord, size_t curDepth, size_t &maxDepth);
+    size_t damerauRecursiveMatrix(QString fWord, QString sWord, std::vector<std::vector<int> > &matrix, size_t curDepth, size_t &maxDepth);
     size_t damerauNonRecursiveMatrix(QString fWord, QString sWord, std::vector<std::vector<int> > &matrix);
     size_t damerauLev(QString fWord, QString sWord, std::vector<std::vector<int>> &matrix);
 
