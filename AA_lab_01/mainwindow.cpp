@@ -92,7 +92,7 @@ bool MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
 size_t MainWindow::damerauRecursive(
 QString fWord, QString sWord, size_t curDepth, size_t &maxDepth)
 {
-    qDebug() << "Current Words are: " << fWord << sWord;
+//    qDebug() << "Current Words are: " << fWord << sWord;
 
     curDepth += 1;
     maxDepth = std::max(curDepth, maxDepth);
@@ -134,7 +134,7 @@ void MainWindow::on_DamerauRecursive_clicked()
 size_t MainWindow::damerauRecursiveMatrix(QString fWord, QString sWord,
 std::vector<std::vector<int>> &matrix, size_t curDepth, size_t &maxDepth)
 {
-    qDebug() << "Current Words are: " << fWord << sWord;
+//    qDebug() << "Current Words are: " << fWord << sWord;
 
     curDepth += 1;
     maxDepth = std::max(curDepth, maxDepth);
