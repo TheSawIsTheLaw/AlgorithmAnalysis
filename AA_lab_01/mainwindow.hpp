@@ -25,7 +25,7 @@ public:
     size_t damerauNonRecursiveMatrix(QString fWord, QString sWord, std::vector<std::vector<int> > &matrix);
     size_t damerauLev(QString fWord, QString sWord, std::vector<std::vector<int>> &matrix);
 
-    void getTwoWords(QString &fWord_, QString &sWord_);
+    bool getTwoWords(QString &fWord_, QString &sWord_);
 
 private slots:
     void on_DamerauRecursive_clicked();

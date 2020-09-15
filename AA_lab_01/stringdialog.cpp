@@ -24,9 +24,11 @@ void StringDialog::on_buttonBox_accepted()
     firstWord = ui->lineEdit->text();
 
     secondWord = ui->lineEdit_2->text();
+
+    validity = true;
 }
 
-bool StringDialog::areStringsValid() { return firstWord.size() && secondWord.size(); }
+bool StringDialog::areStringsValid() { return validity; }
 
 QString &StringDialog::getFirstWord() { return firstWord; }
 

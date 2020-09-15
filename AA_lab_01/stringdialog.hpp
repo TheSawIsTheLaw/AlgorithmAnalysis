@@ -25,6 +25,8 @@ private slots:
 private:
     Ui::StringDialog *ui;
 
+    bool validity = false;
+
     QString firstWord;
     QString secondWord;
 };

@@ -6,6 +6,8 @@
 #include "QtDebug"
 #include <windows.h>
 
+#include <fstream>
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -13,6 +15,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 }
 
 MainWindow::~MainWindow() { delete ui; }
+
+void createCSVfileForMatrix(
+    const char *fileName, QString fWord, QString sWord, std::vector<std::vector<int>> &matrix, size_t timeResult, size_t answer)
+{
+    std::ofstream outFile;
+    outFile.open(fileName);
+    outFile << "Result of operation;" << answer << std::endl;
+    outFile << "Time result(ticks);" << timeResult << std::endl;
+    outFile << "Result Matrix:\n";
+    outFile << ";";
+    for (int i = 0; i < fWord.size(); i++) outFile << ";" << fWord.toUtf8().at(i);
+    outFile << std::endl;
+    for (size_t i = 0; i < matrix.size(); i++)
+    {
+        if (i)
+            outFile << sWord.toUtf8().at(i - 1);
+        for (size_t j = 0; j < matrix[0].size(); j++) outFile << ";" << matrix[i][j];
+        outFile << std::endl;
+    }
+
+    outFile.close();
+}
 
 size_t MainWindow::damerauRecursive(QString fWord, QString sWord)
 {
@@ -78,25 +102,27 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
     return matrix[sWord.size()][fWord.size()];
 }
 
-void MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
+bool MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
 {
     StringDialog stringWindow(nullptr);
     stringWindow.setModal(true);
     stringWindow.exec();
 
-    //    if (!stringWindow.areStringsValid())
-    //        return;
+        if (!stringWindow.areStringsValid())
+            return true;
 
     fWord_ = stringWindow.getFirstWord();
     sWord_ = stringWindow.getSecondString();
 
     qDebug() << "GOT IN MAIN:" << fWord_ << sWord_;
+    return false;
 }
 
 void MainWindow::on_DamerauRecursive_clicked()
 {
     QString fWord, sWord;
-    getTwoWords(fWord, sWord);
+    if (getTwoWords(fWord, sWord))
+        return;
     qDebug() << "GOT IN DAMERAU RECURSIVE" << fWord << sWord;
 
     size_t answer = damerauRecursive(fWord, sWord);
@@ -106,7 +132,8 @@ void MainWindow::on_DamerauRecursive_clicked()
 void MainWindow::on_DamerauRecursiveMatrix_clicked()
 {
     QString fWord, sWord;
-    getTwoWords(fWord, sWord);
+    if (getTwoWords(fWord, sWord))
+        return;
     qDebug() << "GOT IN DAMERAU RECURSIVE MAT" << fWord << sWord;
     std::vector<std::vector<int>> matrix;
     for (int i = 0; i <= sWord.size(); i++)
@@ -126,20 +153,25 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
         std::cout << "\n";
     }
 
+    LARGE_INTEGER li;
+    LARGE_INTEGER notli;
+    QueryPerformanceCounter(&li);
+    __int64 counterStart = li.QuadPart;
     size_t answer = damerauRecursiveMatrix(fWord, sWord, matrix);
+    QueryPerformanceCounter(&notli);
+    __int64 result = notli.QuadPart - counterStart;
+    qDebug() << result;
+
+    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
+
     qDebug() << "READY IN DAMERAU RECURSIVE MAT" << answer;
-    std::cout << "Matrix: \n";
-    for (size_t i = 0; i < matrix.size(); i++)
-    {
-        for (size_t j = 0; j < matrix[0].size(); j++) std::cout << matrix[i][j];
-        std::cout << "\n";
-    }
 }
 
 void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
 {
     QString fWord, sWord;
-    getTwoWords(fWord, sWord);
+    if (getTwoWords(fWord, sWord))
+        return;
     qDebug() << "GOT IN DAMERAU NON-RECURSIVE MAT" << fWord << sWord;
     std::vector<std::vector<int>> matrix;
     for (int i = 0; i <= sWord.size(); i++)
@@ -155,20 +187,25 @@ void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
         std::cout << "\n";
     }
 
+    LARGE_INTEGER li;
+    LARGE_INTEGER notli;
+    QueryPerformanceCounter(&li);
+    __int64 counterStart = li.QuadPart;
     size_t answer = damerauNonRecursiveMatrix(fWord, sWord, matrix);
+    QueryPerformanceCounter(&notli);
+    __int64 result = notli.QuadPart - counterStart;
+    qDebug() << result;
+
+    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
+
     qDebug() << "READY IN DAMERAU NON-RECURSIVE MAT" << answer;
-    std::cout << "Matrix: \n";
-    for (size_t i = 0; i < matrix.size(); i++)
-    {
-        for (size_t j = 0; j < matrix[0].size(); j++) std::cout << matrix[i][j];
-        std::cout << "\n";
-    }
 }
 
 void MainWindow::on_DamerauLevenshtein_clicked()
 {
     QString fWord, sWord;
-    getTwoWords(fWord, sWord);
+    if (getTwoWords(fWord, sWord))
+        return;
     std::vector<std::vector<int>> matrix;
     for (int i = 0; i <= sWord.size(); i++)
         matrix.push_back(std::vector<int>(fWord.size() + 1));
@@ -188,6 +225,7 @@ void MainWindow::on_DamerauLevenshtein_clicked()
     __int64 result = notli.QuadPart - counterStart;
     qDebug() << result;
 
-    qDebug() << "READY IN DAMERAU-LEV" << answer;
+    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
+    qDebug() << "READY IN DAMERAU-LEV" << answer;
 }
