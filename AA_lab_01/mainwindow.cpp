@@ -38,8 +38,7 @@ std::vector<std::vector<int>> &matrix, size_t timeResult, size_t answer)
     outFile.close();
 }
 
-void createCSVfileForRecursive(
-const char *fileName, size_t timeResult, size_t answer)
+void createCSVfileForRecursive(const char *fileName, size_t timeResult, size_t answer)
 {
     std::ofstream outFile;
     outFile.open(fileName);
@@ -92,16 +91,13 @@ void MainWindow::on_DamerauRecursive_clicked()
     __int64 result = 0;
 
     size_t answer = damerauRecursive(fWord, sWord);
-    for (int i = 0; i < Z_TEST; i++)
-    {
-        counterStart = li.QuadPart;
-        damerauRecursive(fWord, sWord);
-        QueryPerformanceCounter(&notli);
-        result += notli.QuadPart - counterStart;
-    }
-    qDebug() << result / Z_TEST;
+    counterStart = li.QuadPart;
+    damerauRecursive(fWord, sWord);
+    QueryPerformanceCounter(&notli);
+    result = notli.QuadPart - counterStart;
+    qDebug() << result;
 
-    createCSVfileForRecursive("result.csv", result / Z_TEST, answer);
+    createCSVfileForRecursive("result.csv", result, answer);
 
     qDebug() << "READY IN RECURSIVE: " << answer;
 }
@@ -150,27 +146,25 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
     for (size_t i = 0; i < matrix[0].size(); i++) matrix[0][i] = i;
 
     size_t answer = damerauRecursiveMatrix(fWord, sWord, matrix);
-    for (int i = 0; i < Z_TEST; i++)
-    {
-        std::vector<std::vector<int>> newMatrix;
-        for (int i = 0; i <= sWord.size(); i++)
-            newMatrix.push_back(std::vector<int>(fWord.size() + 1));
-        for (size_t i = 0; i < newMatrix.size(); i++)
-            for (size_t j = 0; j < newMatrix[0].size(); j++)
-                newMatrix[i][j] = std::numeric_limits<int>().max();
 
-        for (size_t i = 0; i < matrix.size(); i++) newMatrix[i][0] = i;
+    std::vector<std::vector<int>> newMatrix;
+    for (int i = 0; i <= sWord.size(); i++)
+        newMatrix.push_back(std::vector<int>(fWord.size() + 1));
+    for (size_t i = 0; i < newMatrix.size(); i++)
+        for (size_t j = 0; j < newMatrix[0].size(); j++)
+            newMatrix[i][j] = std::numeric_limits<int>().max();
 
-        for (size_t i = 0; i < matrix[0].size(); i++) newMatrix[0][i] = i;
-        counterStart = li.QuadPart;
-        damerauRecursiveMatrix(fWord, sWord, newMatrix);
-        QueryPerformanceCounter(&notli);
-        result += notli.QuadPart - counterStart;
-        newMatrix.erase(newMatrix.begin(), newMatrix.end());
-    }
-    qDebug() << result / Z_TEST;
+    for (size_t i = 0; i < matrix.size(); i++) newMatrix[i][0] = i;
 
-    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result / Z_TEST, answer);
+    for (size_t i = 0; i < matrix[0].size(); i++) newMatrix[0][i] = i;
+    counterStart = li.QuadPart;
+    damerauRecursiveMatrix(fWord, sWord, newMatrix);
+    QueryPerformanceCounter(&notli);
+    result = notli.QuadPart - counterStart;
+    newMatrix.erase(newMatrix.begin(), newMatrix.end());
+    qDebug() << result;
+
+    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
     qDebug() << "READY IN DAMERAU RECURSIVE MAT" << answer;
 }
@@ -210,24 +204,22 @@ void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
     for (size_t i = 0; i < matrix[0].size(); i++) matrix[0][i] = i;
 
     size_t answer = damerauNonRecursiveMatrix(fWord, sWord, matrix);
-    for (int i = 0; i < Z_TEST; i++)
-    {
-        std::vector<std::vector<int>> newMatrix;
-        for (int i = 0; i <= sWord.size(); i++)
-            newMatrix.push_back(std::vector<int>(fWord.size() + 1));
 
-        for (size_t i = 0; i < newMatrix.size(); i++) newMatrix[i][0] = i;
+    std::vector<std::vector<int>> newMatrix;
+    for (int i = 0; i <= sWord.size(); i++)
+        newMatrix.push_back(std::vector<int>(fWord.size() + 1));
 
-        for (size_t i = 0; i < newMatrix[0].size(); i++) newMatrix[0][i] = i;
-        counterStart = li.QuadPart;
-        damerauNonRecursiveMatrix(fWord, sWord, newMatrix);
-        QueryPerformanceCounter(&notli);
-        result += notli.QuadPart - counterStart;
-        newMatrix.erase(newMatrix.begin(), newMatrix.end());
-    }
-    qDebug() << result / Z_TEST;
+    for (size_t i = 0; i < newMatrix.size(); i++) newMatrix[i][0] = i;
 
-    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result / Z_TEST, answer);
+    for (size_t i = 0; i < newMatrix[0].size(); i++) newMatrix[0][i] = i;
+    counterStart = li.QuadPart;
+    damerauNonRecursiveMatrix(fWord, sWord, newMatrix);
+    QueryPerformanceCounter(&notli);
+    result = notli.QuadPart - counterStart;
+    newMatrix.erase(newMatrix.begin(), newMatrix.end());
+    qDebug() << result;
+
+    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
     qDebug() << "READY IN DAMERAU NON-RECURSIVE MAT" << answer;
 }
@@ -273,24 +265,22 @@ void MainWindow::on_DamerauLevenshtein_clicked()
 
     for (size_t i = 0; i < matrix[0].size(); i++) matrix[0][i] = i;
     size_t answer = damerauLev(fWord, sWord, matrix);
-    for (int i = 0; i < Z_TEST; i++)
-    {
-        std::vector<std::vector<int>> newMatrix;
-        for (int i = 0; i <= sWord.size(); i++)
-            newMatrix.push_back(std::vector<int>(fWord.size() + 1));
 
-        for (size_t i = 0; i < newMatrix.size(); i++) newMatrix[i][0] = i;
+    std::vector<std::vector<int>> newMatrix;
+    for (int i = 0; i <= sWord.size(); i++)
+        newMatrix.push_back(std::vector<int>(fWord.size() + 1));
 
-        for (size_t i = 0; i < newMatrix[0].size(); i++) newMatrix[0][i] = i;
-        counterStart = li.QuadPart;
-        damerauLev(fWord, sWord, newMatrix);
-        QueryPerformanceCounter(&notli);
-        result += notli.QuadPart - counterStart;
-        newMatrix.erase(newMatrix.begin(), newMatrix.end());
-    }
-    qDebug() << result / Z_TEST;
+    for (size_t i = 0; i < newMatrix.size(); i++) newMatrix[i][0] = i;
 
-    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result / Z_TEST, answer);
+    for (size_t i = 0; i < newMatrix[0].size(); i++) newMatrix[0][i] = i;
+    counterStart = li.QuadPart;
+    damerauLev(fWord, sWord, newMatrix);
+    QueryPerformanceCounter(&notli);
+    result += notli.QuadPart - counterStart;
+    newMatrix.erase(newMatrix.begin(), newMatrix.end());
+    qDebug() << result;
+
+    createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
     qDebug() << "READY IN DAMERAU-LEV" << answer;
 }
