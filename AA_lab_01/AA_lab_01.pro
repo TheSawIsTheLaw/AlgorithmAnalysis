@@ -30,6 +30,9 @@ FORMS += \
 
 RC_ICONS += imgs\icon.ico
 
+QMAKE_CXXFLAGS -= -O1 -O2 -O3 -Os
+QMAKE_CXXFLAGS += -O0
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
