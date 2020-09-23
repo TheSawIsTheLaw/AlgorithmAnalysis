@@ -6,7 +6,7 @@
 
 % Для листинга кода:
 \lstset{ %
-language=python,                 % выбор языка для подсветки (здесь это С)
+language=c++,                 % выбор языка для подсветки (здесь это С)
 basicstyle=\small\sffamily, % размер и начертание шрифта для подсветки кода
 numbers=left,               % где поставить нумерацию строк (слева\справа)
 numberstyle=\tiny,           % размер шрифта для номеров строк
@@ -21,6 +21,12 @@ captionpos=t,              % позиция заголовка вверху [t] 
 breaklines=true,           % автоматически переносить строки (да\нет)
 breakatwhitespace=false, % переносить строки только если есть пробел
 escapeinside={\#*}{*)}   % если нужно добавить комментарии в коде
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
 }
 
 % Для измененных титулов глав:
@@ -115,7 +121,6 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 	\end{center}
 \end{titlepage}
 
-
 \tableofcontents
 
 \newpage
@@ -161,6 +166,14 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 	\item M - бездействие (совпадение символов);
 \end{enumerate}
 
+При этом для каждой операции задаётся своя цена (или штраф). Для решения задачи необходимо найти последовательность операций, минимизирующую суммарную цену всех проведённых операций. При этом следует отметить, что:
+\begin{enumerate}
+	\item $price(x, x) = 0$ - цена замены символа $x$ самого на себя;
+	\item $price(x, y) = 0$   $(x \neq y)$ - цена замены символа $x$ на символ $y$;
+	\item $price(\alpha, x)$ - цена вставки символа $x$;
+	\item $price(x, \alpha)$ - цена удаления символа $x$.
+\end{enumerate}
+
 \section{Рекурсивный алгоритм нахождения расстояния Левенштейна}
 Пусть $s_{1}$ и $s_{2}$ — две некоторые строки. Тогда расстояние Левенштейна может быть вычислено по формуле \ref{recAlg}
 
@@ -187,41 +200,78 @@ D(i-1, j-1) + m(s_{1}[i], s_{2}[j])\\
 	\item $D(s_{1}, s_{2})$ \leq $ max(|s_{1}|, |s_{2}|)$
 	\item $D(s_{1}, s_{2}) = 0$ \Leftrightarrow $ s_{1} = s_{2}$
 \end{enumerate}
-%
-%Расстояние Дамерау-Левенштейна вычисляется по следующей рекуррентной формуле:
-%\begin{displaymath}
-%D(i,j) = \left\{ \begin{array}{ll}
-% 0, & \textrm{$i = 0, j = 0$}\\
-% i, & \textrm{$j = 0, i > 0$}\\
-% j, & \textrm{$i = 0, j > 0$}\\
-%min(\\
-%D(i,j-1)+1,\\
-%D(i-1, j) +1, &\textrm{$j>0, i>0$}\\
-%D(i-1, j-1) + m(S_{1}[i], S_{2}[j])\\
-%D(i-2, j-2) + 1, &\textrm{if $i,j>1$ and $a_{i} = b_{j-1},a_{i-1}=b_{j} $}\\
-%)
-%  \end{array} \right.
-%\end{displaymath}
-%
 
+Суть рекурсивного алгоритма заключается в реализации формулы \ref{recAlg}.
+
+\section{Рекурсивный алгоритм нахождения расстояния Левенштейна с использованием матрицы}
+Для оптимизации рекурсивного алгоритма нахождения расстояния Левенштейна допустимо добавить матрицу для хранения значений $D(i, j)$ для того, чтобы не вычислять их заново раз за разом. Таким образом, при обработке ещё не затронутых данных, результат нахождения расстояния будет занесён в матрицу расстояний. В ином случае, если для рассматриваемого случая информация о расстоянии уже присутствует в матрице, алгоритм будет переходить к следующему шагу.
+
+\section{Итеративный алгоритм нахождения расстояния Левенштейна с использованием матрицы}
+Данный алгоритм также заключается в решении задачи с использованием матрицы расстояний. От уже рассмотренного рекурсивного алгоритма нахождения расстояния Левенштейна с использованием матрицы итеративный алгоритм заключается в построчном заполнении матрицы последовательно вычисляемыми $D(i, j)$.
+
+\section{Алгоритм нахождения расстояния Дамерау-Левенштейна с использованием матрицы}
+
+Расстояние Дамерау-Левенштейна вычисляется по следующей рекуррентной формуле:
+
+\begin{displaymath}\\
+\begin{equation}
+\label{DLalg}
+D(i,j) = \left\{ \begin{array}{ll}
+ 0, & \textrm{$i = 0, j = 0$}\\
+ i, & \textrm{$j = 0, i > 0$}\\
+ j, & \textrm{$i = 0, j > 0$}\\
+min(\\
+D(i,j-1)+1,\\
+D(i-1, j) +1, &\textrm{$j>0, i>0$}\\
+D(i-1, j-1) + m(s_{1}[i], s_{2}[j])\\
+D(i-2, j-2) + 1, &\textrm{$i,j>1$, $s_{1}[i] = s_{2}[j-1],s_{1}[i-1]=s_{2}[j] $}\\
+)
+  \end{array} \right.
+  \end{equation}
+\end{displaymath}
+
+Применение данной формулы для реализации рекурсивного алгоритма при больших значениях $i, j$ будет работать достаточно долго по тем же причинам, что и реализация рекурсивного алгоритма поиска расстояния Левенштейна. По этой причине целесообразно ввести матрицу, в которой будут храниться вычисленные по формуле значения.
+
+\section{Вывод}
+Для каждого рассмотренного алгоритма имеется некоторая рекуррентная формула, что даёт возможность изучить как рекурсивные, так и итеративные реализации алгоритмов. Для оптимизации рекурсивных алгоритмов в рассмотрение вводится матрица, в которую записываются все промежуточные вычисленные значения. Эта же матрица применяется и при реализации итеративных алгоритмов.
+
+\newpage
 
 \chapter{Конструкторская часть}
-\textbf{Требования к вводу:}
-\begin{enumerate}
-  	\item На вход подаются две строки
-	\item uppercase и lowercase буквы считаются разными
-\end{enumerate}
-\textbf{Требования к программе:}
-\begin{enumerate}
-  	\item Две пустые строки - корректный ввод, программа не должна аварийно завершаться
-\end{enumerate}
-
+\section{Блок-схема рекурсивного алгоритма Левенштейна}
+\includegraphics[width=\linewidth]{inc/img/LevRec.jpg}{\newline \textbf{Лох}}
+\section{Блок-схема рекурсивного алгоритма Левенштейна с использованием матрицы}
+\includegraphics[width=\linewidth]{inc/img/LevMatrRec.jpg}{...}
+\section{Блок-схема итеративного алгоритма Левенштейна}
+\includegraphics[width=\linewidth]{inc/img/LevIter.jpg}{...}
+\section{Блок-схема алгоритма Дамерау-Левенштейна}
+\includegraphics[width=\linewidth]{inc/img/DamLev.jpg}{...}
 
 \chapter{Технологическая часть}
-\section{Выбор ЯП}
-В качестве языка программирования был выбран python т.к. я знакома с данным языком, имею представление о способах тестирования программы в рамках данного языка.
+\section{Требования к программному обеспечению}
+\begin{itemize}
+\item Входные данные - две строки в любой раскладке;
+\item Выходные данные - искомое расстояние для выбранного метода и матрица расстояний для методов с её использованием.
+\end{itemize}
+\section{Средства реализации программного обеспечения}
+При написании программного продукта был использован язык программирования C++.
 
-Время работы алгоритмов было замерено с помощью функции time() из библиотеки time.
+Данный выбор обусловлен следующими факторами:
+\begin{itemize}
+\item Данный язык программирования преподавался в рамках курса объектно-ориентированного программирования;
+\item Высокая вычислительная производительность;
+\item Большое количество справочной литературы.
+\end{itemize}
+
+Для тестирования производительности реализаций алгоритмов использовалась утилита QueryPerfomanceCounter, объявленная в заголовочном файле "windows.h".
+
+При написаннии программного продукта использовалась среда разработки QT Creator.
+
+Данный выбор обусловлен следующими факторами:
+\begin{itemize}
+\item Основы работы с данной средой разработки преподавался в рамках курса программирования на Си;
+\item QT Creator позволяет работать с расширением QtDesign, которое позволяет создать удобный интерфейс для программного продукта в сжатые сроки.
+\end{itemize}
 
 \section{Сведения о модулях программы}
 Программа состоит из:
@@ -230,85 +280,127 @@ D(i-1, j-1) + m(s_{1}[i], s_{2}[j])\\
 	\item test.py - файл с тестами 
 \end{itemize}
 
-\begin{lstlisting}[label=some-code,caption=Функция нахождения расстояния Левенштейна рекурсивно]
-def LevRecursion(str1, str2, output = False):
-    if str1 ==  '' or str2 == '':
-        return abs(len(str1) - len(str2))
-    forfeit = 0 if (str1[-1] == str2[-1]) else 1
-    return min(LevRecursion(str1, str2[:-1]) + 1,
-               LevRecursion(str1[:-1], str2) + 1,
-               LevRecursion(str1[:-1], str2[:-1]) + forfeit)
+\begin{lstlisting}[label=some-code,caption=Функция реализации рекурсивного алгоритма Левенштейна]
+size_t MainWindow::levenshteinRecursive(QString fWord, QString sWord)
+{
+    if (!fWord.size() || !sWord.size())
+        return fWord.size() + sWord.size();
+
+    return std::min({levenshteinRecursive(fWord, sWord.mid(0, sWord.size() - 1)) + 1,
+    levenshteinRecursive(fWord.mid(0, fWord.size() - 1), sWord) + 1,
+    levenshteinRecursive(fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1)) +
+    ((fWord.back() == sWord.back()) ? 0 : 1)});
+}
 \end{lstlisting}
 
-\begin{lstlisting}[label=some-code,caption=Функция нахождения расстояния Левенштейна матрично]
-def LevTable(str1, str2, output = False):
-    len_i = len(str1) + 1
-    len_j = len(str2) + 1
-    table = [[i + j for j in range(len_j)] for i in range(len_i)]
-    
-    for i in range(1, len_i):
-        for j in range(1, len_j):
-            forfeit = 0 if (str1[i - 1] == str2[j - 1]) else 1
-            table[i][j] = min(table[i - 1][j] + 1,
-                              table[i][j - 1] + 1,
-                              table[i - 1][j - 1] + forfeit)
-    if output:        
-        OutputTable(table, str1, str2)
-    return(table[-1][-1])
+\begin{lstlisting}[label=some-code,caption=Функция реализации рекурсивного алгоритма Левенштейна с использованием матрицы расстояний]
+size_t MainWindow::levenshteinRecursiveMatrix(
+QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
+{
+    //    qDebug() << "Current Words are: " << fWord << sWord;
+    if (matrix[sWord.size()][fWord.size()] != std::numeric_limits<int>().max())
+        return matrix[sWord.size()][fWord.size()];
+
+    matrix[sWord.size()][fWord.size()] =
+    std::min({levenshteinRecursiveMatrix(fWord.mid(0, fWord.size() - 1), sWord, matrix) + 1,
+    levenshteinRecursiveMatrix(fWord, sWord.mid(0, sWord.size() - 1), matrix) + 1,
+    levenshteinRecursiveMatrix(
+    fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1), matrix) +
+    ((fWord.back() == sWord.back()) ? 0 : 1)});
+
+    return matrix[sWord.size()][fWord.size()];
+}
 \end{lstlisting}
 
-\begin{lstlisting}[label=some-code,caption=Функция нахождения расстояния Дамерау-Левенштейна рекурсивно]
-def DamLevRecursion(str1, str2, output = False):
-    if str1 ==  '' or str2 == '':
-        return abs(len(str1) - len(str2))
-    forfeit = 0 if (str1[-1] == str2[-1]) else 1
-    res = min(DamLevRecursion(str1, str2[:-1]) + 1,
-              DamLevRecursion(str1[:-1], str2) + 1,
-              DamLevRecursion(str1[:-1], str2[:-1]) + forfeit)
-    if (len(str1) >= 2 and len(str2) >= 2 and str1[-1] == str2[-2] and str1[-2] == str2[-1]):
-        res = min(res, DamLevRecursion(str1[:-2], str2[:-2]) + 1)
-    return res 
+\begin{lstlisting}[label=some-code,caption=Функция реализации итеративного алгоритма Левенштейна]
+size_t MainWindow::levenshteinNonRecursiveMatrix(
+QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
+{
+    for (int i = 1; i <= sWord.size(); i++)
+        for (int j = 1; j <= fWord.size(); j++)
+            matrix[i][j] = std::min({matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] +
+            (((fWord.mid(0, j)).back() == sWord.mid(0, i).back()) ? 0 : 1)});
+
+    return matrix[sWord.size()][fWord.size()];
+}
 \end{lstlisting}
 
-\begin{lstlisting}[label=some-code,caption=Функция нахождения расстояния Дамерау-Левенштейна матрично]
-def DamLevTable(str1, str2, output = False):
-    len_i = len(str1) + 1
-    len_j = len(str2) + 1
-    table = [[i + j for j in range(len_j)] for i in range(len_i)]
-    
-    for i in range(1, len_i):
-        for j in range(1, len_j):
-            forfeit = 0 if (str1[i - 1] == str2[j - 1]) else 1
-            table[i][j] = min(table[i - 1][j] + 1,
-                              table[i][j - 1] + 1,
-                              table[i - 1][j - 1] + forfeit)
-            if (i > 1 and j > 1) and str1[i-1] == str2[j-2] and str1[i-2] == str2[j-1]:
-                table[i][j] = min(table[i][j], table[i-2][j-2] + 1)
-    if output:        
-        OutputTable(table, str1, str2)
-    return(table[-1][-1])
+\begin{lstlisting}[label=some-code,caption=Функция реализации алгоритма Дамерау-Левенштейна]
+bool canBeTranspose(QString fStr, QString sStr, size_t i, size_t j)
+{
+    return fStr.at(j - 1) == sStr.at(i - 2) && fStr.at(j - 2) == sStr.at(i - 1);
+}
+
+size_t MainWindow::damerauLev(
+QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
+{
+    for (int i = 1; i <= sWord.size(); i++)
+        for (int j = 1; j <= fWord.size(); j++)
+        {
+            int temp = std::min({matrix[i - 1][j] + 1, matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] +
+            (((fWord.mid(0, j)).back() == sWord.mid(0, i).back()) ? 0 : 1)});
+            if (i > 1 && j > 1 && canBeTranspose(fWord, sWord, i, j))
+                temp = std::min(temp, matrix[i - 2][j - 2] + 1);
+            matrix[i][j] = temp;
+        }
+    return matrix[sWord.size()][fWord.size()];
+}
 \end{lstlisting}
 
-\section{Тесты}
-Тестирование было организовано с помощью библиотеки  \textbf{unittest}.
-Было создано две вариации тестов:
+\section{Тестирование программного продукта}
+В таблице \ref{table} приведены тестовые данные и вывод программы для алгоритмов вычисления расстояния Левенштейна и Дамерау-Левенштейна. Тесты пройдены успешно.
 
-В первой сравнивались результаты функции с реальным результатом.
+\label{table}
+\begin{table}[h]
+	\begin{center}
+		\caption{\label{tabular:functional_test} Тесты}
+		\begin{tabular}{|c|c|c|c|}
+	\hline
+			                    &                    & \multicolumn{2}{c|}{\bfseries Ожидаемый результат}    \\ \cline{3-4}\hline
+	Строка 1& Строка 2 & Алг. Левенштейна & Алг. Дамерау-Левенштейна \\ [0.5ex] 
+ 	\hline\hline
+ 	a & a & a & a\\
+ 	\hline
+ 	a & a & a & a\\
+ 	\hline
+	a & a & 0a & a\\
+	\hline
+	a & a & a & a\\
+	\hline
+	0a & a & a & a\\
+	\hline
+	a & a & a & a\\
+	\hline
+	a & a & a & a\\
+	\hline
+		\end{tabular}
+	\end{center}
+\end{table}
 
-Во второй сравнивались реузультаты двух функций(рекурсивной и табличной).
-При сравнении результатов двух функций использовалась функция RandomString, которая генерирует случайную строку нужной длины.
-
-\begin{lstlisting}[label=randStr,caption=Функция генерации случайной строки]
-def RandomString(strLength = 5):
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(strLength))
-\end{lstlisting}
-
+\section{Вывод}
+Новый автомат...
 
 \chapter{Исследовательская часть}
 
+\section{Пример работы программного обеспечения}
+Ниже на рисунках (АШРЕФЫ ПИХАЙ КОМУ ГОВОРЮ) предоставлены таблицы, сгенерированные по окончанию работы каждого из алгоритмов.
 
-Был проведен замер времени работы каждого из алгоритмов.
+\section{Технические характеристики}
+Технические характеристики ЭВМ, на котором выполнялись исследования:
+\begin{itemize}
+\item бла-бла-бла
+\end{itemize}
+
+\section{Время выполнения алгоритмов}
+Ога...
+
+\section{Оценка затрат памяти}
+Ого как умно сформулировал...
+
+\section{Вывод}
+Ё-моё...
 
 \begin{center}
 	\begin{tabular}{|c c c c c|} 
