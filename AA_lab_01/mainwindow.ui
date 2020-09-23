@@ -16,30 +16,30 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QPushButton" name="DamerauRecursive">
+     <widget class="QPushButton" name="levenshteinRecursive">
       <property name="text">
-       <string>Damerau Recursive</string>
+       <string>levenshtein Recursive</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="DamerauRecursiveMatrix">
+     <widget class="QPushButton" name="levenshteinRecursiveMatrix">
       <property name="text">
-       <string>Damerau Recursive with Matrix</string>
+       <string>levenshtein Recursive with Matrix</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="DamerauNonRecursiveMatrix">
+     <widget class="QPushButton" name="levenshteinNonRecursiveMatrix">
       <property name="text">
-       <string>Damerau Non-Recursive with Matrix</string>
+       <string>levenshtein Non-Recursive with Matrix</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="DamerauLevenshtein">
+     <widget class="QPushButton" name="damerauLevenshtein">
       <property name="text">
-       <string>Damerau-Levenshtein</string>
+       <string>levenshtein-Levenshtein</string>
       </property>
      </widget>
     </item>

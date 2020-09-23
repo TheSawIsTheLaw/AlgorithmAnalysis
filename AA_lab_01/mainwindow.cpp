@@ -64,24 +64,24 @@ bool MainWindow::getTwoWords(QString &fWord_, QString &sWord_)
     return false;
 }
 
-size_t MainWindow::damerauRecursive(QString fWord, QString sWord)
+size_t MainWindow::levenshteinRecursive(QString fWord, QString sWord)
 {
     //    qDebug() << "Current Words are: " << fWord << sWord;
     if (!fWord.size() || !sWord.size())
         return fWord.size() + sWord.size();
 
-    return std::min({damerauRecursive(fWord, sWord.mid(0, sWord.size() - 1)) + 1,
-    damerauRecursive(fWord.mid(0, fWord.size() - 1), sWord) + 1,
-    damerauRecursive(fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1)) +
+    return std::min({levenshteinRecursive(fWord, sWord.mid(0, sWord.size() - 1)) + 1,
+    levenshteinRecursive(fWord.mid(0, fWord.size() - 1), sWord) + 1,
+    levenshteinRecursive(fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1)) +
     ((fWord.back() == sWord.back()) ? 0 : 1)});
 }
 
-void MainWindow::on_DamerauRecursive_clicked()
+void MainWindow::on_levenshteinRecursive_clicked()
 {
-    QString fWord, sWord;
+    QString fWord /* = "VxgtUsx"*/, sWord /* = "jRMFAyC"*/;
     if (getTwoWords(fWord, sWord))
         return;
-    qDebug() << "GOT IN DAMERAU RECURSIVE" << fWord << sWord;
+    qDebug() << "GOT IN levenshtein RECURSIVE" << fWord << sWord;
 
     LARGE_INTEGER li;
     LARGE_INTEGER notli;
@@ -90,9 +90,9 @@ void MainWindow::on_DamerauRecursive_clicked()
     __int64 counterStart = 0;
     __int64 result = 0;
 
-    size_t answer = damerauRecursive(fWord, sWord);
+    size_t answer = levenshteinRecursive(fWord, sWord);
     counterStart = li.QuadPart;
-    damerauRecursive(fWord, sWord);
+    levenshteinRecursive(fWord, sWord);
     QueryPerformanceCounter(&notli);
     result = notli.QuadPart - counterStart;
     qDebug() << result;
@@ -102,7 +102,7 @@ void MainWindow::on_DamerauRecursive_clicked()
     qDebug() << "READY IN RECURSIVE: " << answer;
 }
 
-size_t MainWindow::damerauRecursiveMatrix(
+size_t MainWindow::levenshteinRecursiveMatrix(
 QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
 {
     //    qDebug() << "Current Words are: " << fWord << sWord;
@@ -110,21 +110,29 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
         return matrix[sWord.size()][fWord.size()];
 
     matrix[sWord.size()][fWord.size()] =
-    std::min({damerauRecursiveMatrix(fWord.mid(0, fWord.size() - 1), sWord, matrix) + 1,
-    damerauRecursiveMatrix(fWord, sWord.mid(0, sWord.size() - 1), matrix) + 1,
-    damerauRecursiveMatrix(
+    std::min({levenshteinRecursiveMatrix(fWord.mid(0, fWord.size() - 1), sWord, matrix) + 1,
+    levenshteinRecursiveMatrix(fWord, sWord.mid(0, sWord.size() - 1), matrix) + 1,
+    levenshteinRecursiveMatrix(
     fWord.mid(0, fWord.size() - 1), sWord.mid(0, sWord.size() - 1), matrix) +
     ((fWord.back() == sWord.back()) ? 0 : 1)});
 
     return matrix[sWord.size()][fWord.size()];
 }
 
-void MainWindow::on_DamerauRecursiveMatrix_clicked()
+void MainWindow::on_levenshteinRecursiveMatrix_clicked()
 {
-    QString fWord, sWord;
+    QString
+    fWord /*= "VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJGOoryez5fYpJWcPRhm7"
+            "TEjeUoD49M26XDtCJrGtjJXf3aZ9La9nshv3cAbwuAJuKc00ndp6EWNHQcArjwXQzAtd"
+            "pnHs2uOF1kfhWjzXUS44zKnHVNCaeLyzBlce3RCdGwbJx8s2SlfvYoyBZsKrN1cX"*/
+    ,
+    sWord /*= "jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2G4J0JV1XP8ecmHkTYd"
+            "Y1uzSm8WFY3KjgGggAw3GrPISl76Mzb1f3ElDEyOeorQGS6CxLWS3lH8sNgZta9vSDML"
+            "vnbPaXP24H5dYkBXLRruvzSlLs1T8hyezy0U3awz65ctATEclCBG4H1pC9mMusWF"*/
+    ;
     if (getTwoWords(fWord, sWord))
         return;
-    qDebug() << "GOT IN DAMERAU RECURSIVE MAT" << fWord << sWord;
+    qDebug() << "GOT IN levenshtein RECURSIVE MAT" << fWord << sWord;
 
     LARGE_INTEGER li;
     LARGE_INTEGER notli;
@@ -145,7 +153,7 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
 
     for (size_t i = 0; i < matrix[0].size(); i++) matrix[0][i] = i;
 
-    size_t answer = damerauRecursiveMatrix(fWord, sWord, matrix);
+    size_t answer = levenshteinRecursiveMatrix(fWord, sWord, matrix);
 
     std::vector<std::vector<int>> newMatrix;
     for (int i = 0; i <= sWord.size(); i++)
@@ -158,7 +166,7 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
 
     for (size_t i = 0; i < matrix[0].size(); i++) newMatrix[0][i] = i;
     counterStart = li.QuadPart;
-    damerauRecursiveMatrix(fWord, sWord, newMatrix);
+    levenshteinRecursiveMatrix(fWord, sWord, newMatrix);
     QueryPerformanceCounter(&notli);
     result = notli.QuadPart - counterStart;
     newMatrix.erase(newMatrix.begin(), newMatrix.end());
@@ -166,10 +174,10 @@ void MainWindow::on_DamerauRecursiveMatrix_clicked()
 
     createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
-    qDebug() << "READY IN DAMERAU RECURSIVE MAT" << answer;
+    //    qDebug() << "READY IN levenshtein RECURSIVE MAT" << answer;
 }
 
-size_t MainWindow::damerauNonRecursiveMatrix(
+size_t MainWindow::levenshteinNonRecursiveMatrix(
 QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
 {
     for (int i = 1; i <= sWord.size(); i++)
@@ -181,12 +189,20 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
     return matrix[sWord.size()][fWord.size()];
 }
 
-void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
+void MainWindow::on_levenshteinNonRecursiveMatrix_clicked()
 {
-    QString fWord, sWord;
+    QString
+    fWord /* = "VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJGOoryez5fYpJWcPRhm7"
+             "TEjeUoD49M26XDtCJrGtjJXf3aZ9La9nshv3cAbwuAJuKc00ndp6EWNHQcArjwXQzAtd"
+             "pnHs2uOF1kfhWjzXUS44zKnHVNCaeLyzBlce3RCdGwbJx8s2SlfvYoyBZsKrN1cX"*/
+    ,
+    sWord /* = "jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2G4J0JV1XP8ecmHkTYd"
+             "Y1uzSm8WFY3KjgGggAw3GrPISl76Mzb1f3ElDEyOeorQGS6CxLWS3lH8sNgZta9vSDML"
+             "vnbPaXP24H5dYkBXLRruvzSlLs1T8hyezy0U3awz65ctATEclCBG4H1pC9mMusWF"*/
+    ;
     if (getTwoWords(fWord, sWord))
         return;
-    qDebug() << "GOT IN DAMERAU NON-RECURSIVE MAT" << fWord << sWord;
+    qDebug() << "GOT IN levenshtein NON-RECURSIVE MAT" << fWord << sWord;
 
     LARGE_INTEGER li;
     LARGE_INTEGER notli;
@@ -203,7 +219,7 @@ void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
 
     for (size_t i = 0; i < matrix[0].size(); i++) matrix[0][i] = i;
 
-    size_t answer = damerauNonRecursiveMatrix(fWord, sWord, matrix);
+    size_t answer = levenshteinNonRecursiveMatrix(fWord, sWord, matrix);
 
     std::vector<std::vector<int>> newMatrix;
     for (int i = 0; i <= sWord.size(); i++)
@@ -213,7 +229,7 @@ void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
 
     for (size_t i = 0; i < newMatrix[0].size(); i++) newMatrix[0][i] = i;
     counterStart = li.QuadPart;
-    damerauNonRecursiveMatrix(fWord, sWord, newMatrix);
+    levenshteinNonRecursiveMatrix(fWord, sWord, newMatrix);
     QueryPerformanceCounter(&notli);
     result = notli.QuadPart - counterStart;
     newMatrix.erase(newMatrix.begin(), newMatrix.end());
@@ -221,7 +237,7 @@ void MainWindow::on_DamerauNonRecursiveMatrix_clicked()
 
     createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
-    qDebug() << "READY IN DAMERAU NON-RECURSIVE MAT" << answer;
+    //    qDebug() << "READY IN levenshtein NON-RECURSIVE MAT" << answer;
 }
 
 bool canBeTranspose(QString fStr, QString sStr, size_t i, size_t j)
@@ -245,11 +261,16 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
     return matrix[sWord.size()][fWord.size()];
 }
 
-void MainWindow::on_DamerauLevenshtein_clicked()
+void MainWindow::on_damerauLevenshtein_clicked()
 {
-    QString fWord, sWord;
-    if (getTwoWords(fWord, sWord))
-        return;
+    QString fWord = "VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJGOoryez5fYpJWcPRhm7"
+                    "TEjeUoD49M26XDtCJrGtjJXf3aZ9La9nshv3cAbwuAJuKc00ndp6EWNHQcArjwXQzAtd"
+                    "pnHs2uOF1kfhWjzXUS44zKnHVNCaeLyzBlce3RCdGwbJx8s2SlfvYoyBZsKrN1cX",
+            sWord = "jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2G4J0JV1XP8ecmHkTYd"
+                    "Y1uzSm8WFY3KjgGggAw3GrPISl76Mzb1f3ElDEyOeorQGS6CxLWS3lH8sNgZta9vSDML"
+                    "vnbPaXP24H5dYkBXLRruvzSlLs1T8hyezy0U3awz65ctATEclCBG4H1pC9mMusWF";
+    //    if (getTwoWords(fWord, sWord))
+    //        return;
 
     LARGE_INTEGER li;
     LARGE_INTEGER notli;
@@ -282,5 +303,5 @@ void MainWindow::on_DamerauLevenshtein_clicked()
 
     createCSVfileForMatrix("result.csv", fWord, sWord, matrix, result, answer);
 
-    qDebug() << "READY IN DAMERAU-LEV" << answer;
+    //    qDebug() << "READY IN levenshtein-LEV" << answer;
 }
