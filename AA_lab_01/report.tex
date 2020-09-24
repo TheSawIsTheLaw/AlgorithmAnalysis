@@ -42,44 +42,37 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \usepackage{filecontents}
 \usetikzlibrary{datavisualization}
 \usetikzlibrary{datavisualization.formats.functions}
-\begin{filecontents}{LevR.dat}
-3 0.00006
-4 0.00033
-5 0.00033
-6 0.00780
-7 0.03876
-8 0.20780
-9 1.18171
+\begin{filecontents}{LevRec.dat}
+5 10867
+7 258961
+10 33589820
 \end{filecontents}
 
-\begin{filecontents}{LevT.dat}
-3 0.00003
-4 0.00003
-5 0.00005
-6 0.00005
-7 0.00007
-8 0.00008
-9 0.00009
+\begin{filecontents}{LevRecMat.dat}
+10 3146
+20 12896
+30 29325
+50 70918
+100 184238
+200 643895
 \end{filecontents}
 
-\begin{filecontents}{DamLevR.dat}
-3 0.00006
-4 0.00027
-5 0.00143
-6 0.00787
-7 0.04130
-8 0.23259
-9 1.26665
+\begin{filecontents}{LevIterMat.dat}
+10 2001
+20 4686
+30 10744
+50 29257
+100 86268
+200 248651
 \end{filecontents}
 
-\begin{filecontents}{DamLevT.dat}
-3 0.00003
-4 0.00003
-5 0.00005
-6 0.00006
-7 0.00007
-8 0.00013
-9 0.00012
+\begin{filecontents}{DamLev.dat}
+10 2137
+20 6251
+30 13631
+50 38427
+100 118891
+200 299743
 \end{filecontents}
 
 
@@ -297,7 +290,6 @@ size_t MainWindow::levenshteinRecursive(QString fWord, QString sWord)
 size_t MainWindow::levenshteinRecursiveMatrix(
 QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
 {
-    //    qDebug() << "Current Words are: " << fWord << sWord;
     if (matrix[sWord.size()][fWord.size()] != std::numeric_limits<int>().max())
         return matrix[sWord.size()][fWord.size()];
 
@@ -390,11 +382,75 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
 \section{Технические характеристики}
 Технические характеристики ЭВМ, на котором выполнялись исследования:
 \begin{itemize}
-\item бла-бла-бла
+\item ОС: Windows 10
+\item Оперативная память: 16 Гб
+\item Процессор: Intel Core i7-10510U
+
+При проведении замеров времени ноутбук был подключен к сети электропитания.
 \end{itemize}
 
 \section{Время выполнения алгоритмов}
-Ога...
+Алгоритмы тестировались данных, сгенерированных случайным образом один раз. При увеличении количества символов во входных данных - к уже сгенерированным строкам прибавлялись новые сгенерированные символы.
+
+Тестовые данные:
+\begin{itemize}
+\item 5 символов:\newline
+VxgtU (строка 1),\newline
+jRMFA (строка 2)
+\item 7 символов:\newline
+VxgtUsx (строка 1),\newline
+jRMFAyC (строка 2)
+\item 10 символов:\newline
+VxgtUsx2u3 (строка 1),\newline
+jRMFAyCfiV (строка 2)
+\item 20 символов:\newline
+VxgtUsx2u39dtX81sxy8 (строка 1),\newline
+jRMFAyCfiVxyhmILtGMG (строка 2)
+\item 30 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJ (строка 1),\newline
+jRMFAyCfiVxyhmILtGMG4IVZTjPQ7l (строка 2)
+\item 50 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJG (строка 1),\newline jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2 (строка 2)
+\item 100 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJG\newline
+Ooryez5fYpJWcPRhm7TEjeUoD49M26XDt CJrGtjJXf3aZ9La9n (строка 1),\newline jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2\newline
+G4J0JV1XP8ecmHkTYdY1uzSm8WFY3KjgG ggAw3GrPISl76Mzb1 (строка 2)
+\item 200 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJGO\newline
+oryez5fYpJWcPRhm7TEjeUoD49M26XDtCJrGtjJXf3aZ9La9nsh\newline
+v3cAbwuAJuKc00ndp6EWNHQcArjwXQzAtdpnHs2uOF1kfhWjzXU\newline
+S44zKnHVNCaeLyzBlce3RCdGwbJx8s2SlfvYoyBZsKrN1cX (строка 1),\newline
+jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2G\newline
+4J0JV1XP8ecmHkTYdY1uzSm8WFY3KjgGggAw3GrPISl76Mzb1f3\newline
+ElDEyOeorQGS6CxLWS3lH8sNgZta9vSDMLvnbPaXP24H5dYkBXL\newline
+RruvzSlLs1T8hyezy0U3awz65ctATEclCBG4H1pC9mMusWF (строка 2)
+\end{itemize}
+
+Результаты замеров времени приведены в таблице РЕФРЕФРЕФ. Прочерк в таблице означает, что для заданных значений тестирование не проводилось. На рисунках РЕФРЕФРЕФ, РЕФЕРЕФЕРФЕ приведены графики зависимостей времени работы алгоритмов от длины строк, подаваемых на вход.
+
+\begin{center}
+	\begin{tabular}{|c c c c c|} 
+ 	\hline
+	Длина строк & LevRec & LevMatRec & LevMatIter & DamLev \\ [0.5ex] 
+ 	\hline\hline
+ 	5 & 10867 & - & - & -\\
+ 	\hline
+ 	7 & 258961 & - & - & -\\
+ 	\hline
+	10 & 33589820 & 3146 & 2001 & 2137\\
+	\hline
+	20 & - & 12896 & 4686 & 6251\\
+	\hline
+	30 & - & 29325 & 10744 & 13631\\
+	\hline
+	50 & - & 70918 & 2927 & 38427\\
+	\hline
+	100 & - & 184238 & 86268 & 118891\\
+	\hline
+	200 & - & 642895 & 248651 & 299743\\
+	\hline
+	\end{tabular}
+\end{center}
 
 \section{Оценка затрат памяти}
 Ого как умно сформулировал...
@@ -402,31 +458,22 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
 \section{Вывод}
 Ё-моё...
 
-\begin{center}
-	\begin{tabular}{|c c c c c|} 
- 	\hline
-	len & Lev(R) & DamLev(R) & Lev(T) & DamLev(T) \\ [0.5ex] 
- 	\hline\hline
- 	3 & 0.00006 & 0.00006 & 0.00003 & 0.00003\\
- 	\hline
- 	4 & 0.00033 & 0.00027 & 0.00003 & 0.00003\\
- 	\hline
-	5 & 0.00141 & 0.00143 & 0.00005 & 0.00005\\
-	\hline
-	6 & 0.00780 & 0.00787 & 0.00005 & 0.00006\\
-	\hline
-	7 & 0.03876 & 0.04130 & 0.00007 & 0.00007\\
-	\hline
-	8 & 0.20780 & 0.23259 & 0.00008 & 0.00013\\
-	\hline
-	9 & 1.18171 & 1.26665 & 0.00009 & 0.00012\\
-	\hline
-	\end{tabular}
-\end{center}
+\begin{tikzpicture}
 
+\begin{axis}[
+    	axis lines = left,
+    	xlabel = $len$,
+    	ylabel = {$time$},
+	legend pos=north west,
+	ymajorgrids=true
+] 
+\addplot[color=orange] table[x index=0, y index=1] {LevRecMat.dat};
+\addplot[color=blue, mark=square] table[x index=0, y index=1] {LevIterMat.dat};
 
-
-
+\addlegendentry{Рекурсивная реализация с матрицей}
+\addlegendentry{Итеративная реализация с матрицей}
+\end{axis}
+\end{tikzpicture}
 
 \begin{tikzpicture}
 
@@ -437,15 +484,11 @@ QString fWord, QString sWord, std::vector<std::vector<int>> &matrix)
 	legend pos=north west,
 	ymajorgrids=true
 ]
-\addplot[color=red] table[x index=0, y index=1] {LevR.dat}; 
-\addplot[color=orange] table[x index=0, y index=1] {DamLevR.dat};
-\addplot[color=blue, mark=square] table[x index=0, y index=1] {LevT.dat};
-\addplot[color=green, mark=square] table[x index=0, y index=1] {DamLevT.dat};
+\addplot[color=blue, mark=square] table[x index=0, y index=1] {LevIterMat.dat};
+\addplot[color=green, mark=square] table[x index=0, y index=1] {DamLev.dat};
 
-\addlegendentry{LevR}
-\addlegendentry{DamLevR}
-\addlegendentry{LevT}
-\addlegendentry{DamLevT}
+\addlegendentry{Левенштейн}
+\addlegendentry{Дамерау-Левенштейн}
 \end{axis}
 \end{tikzpicture}
 
