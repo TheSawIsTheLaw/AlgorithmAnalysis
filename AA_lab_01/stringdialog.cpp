@@ -14,24 +14,21 @@ StringDialog::~StringDialog() { delete ui; }
 
 void StringDialog::on_buttonBox_accepted()
 {
-    QString firstWord_ = ui->lineEdit->text();
-    QString secondWord_ = ui->lineEdit_2->text();
+    //    if (firstWord_.size() == 0 || secondWord_.size() == 0)
+    //    {
+    //        QErrorMessage *error = new QErrorMessage();
+    //        error->showMessage(
+    //        "One of words is empty. It's not so good. And not funny. Please, try
+    //        again..."); return;
+    //    }
+    firstWord = ui->lineEdit->text();
 
-    qDebug() << "IN STRDIALOG:" << firstWord_ << secondWord_;
+    secondWord = ui->lineEdit_2->text();
 
-    if (firstWord_.size() == 0 || secondWord_.size() == 0)
-    {
-        QErrorMessage *error = new QErrorMessage();
-        error->showMessage(
-        "One of words is empty. It's not so good. And not funny. Please, try again...");
-        return;
-    }
-
-    firstWord = firstWord_;
-    secondWord = secondWord_;
+    validity = true;
 }
 
-bool StringDialog::areStringsValid() { return firstWord.size() && secondWord.size(); }
+bool StringDialog::areStringsValid() { return validity; }
 
 QString &StringDialog::getFirstWord() { return firstWord; }
 
