@@ -1,5 +1,3 @@
-import kotlin.reflect.typeOf
-
 //fun printOutMatrix(matrix: Array<IntArray>)
 //{
 //    for (i in 0..matrix.size())
@@ -76,6 +74,57 @@ fun WinogradMultiplication(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>) :
     return product
 }
 
+fun rowsComputationModified(matrix: Array<IntArray>) : IntArray
+{
+    val computedRows = IntArray(matrix.size)
+
+    for (i in matrix.indices)
+        for (j in 0 until (matrix[0].size - 1) step 2)
+            computedRows[i] += matrix[i][j] * matrix[i][j + 1]
+
+    return computedRows
+}
+
+fun colsComputationModified(matrix: Array<IntArray>) : IntArray
+{
+    val computedCols = IntArray(matrix[0].size)
+
+    for (i in 0 until (matrix.size - 1) step 2)
+        for (j in matrix[0].indices)
+            computedCols[j] += matrix[i][j] * matrix[i + 1][j]
+
+    return computedCols
+}
+
+fun WinogradMultiplicationModified(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>) : Array<IntArray>
+{
+    if (fMatrix[0].size != sMatrix.size)
+        return emptyArray()
+
+    val computedRows = rowsComputation(fMatrix)
+    val computedCols = colsComputation(sMatrix)
+
+    val product = Array(fMatrix.size) { IntArray(sMatrix[0].size) }
+    for (i in product.indices)
+        for (j in product[0].indices)
+        {
+            product[i][j] = -computedRows[i] - computedCols[j]
+
+            for (k in 0 until (sMatrix.size - 1) step 2)
+                product[i][j] += (fMatrix[i][k] + sMatrix[k + 1][j]) * (fMatrix[i][k + 1] + sMatrix[k][j])
+        }
+
+    if (sMatrix.size % 2 != 0)
+    {
+        val curK = sMatrix.size - 1
+        for (i in product.indices)
+            for (j in product[0].indices)
+                product[i][j] = product[i][j] + fMatrix[i][curK] * sMatrix[curK][j]
+    }
+
+    return product
+}
+
 fun main()
 {
     val firstMatrix = arrayOf(intArrayOf(3, -2, 5), intArrayOf(3, 0, 4))
@@ -90,4 +139,8 @@ fun main()
     println("\n\nResult of multiplication in Winograd")
     val newProd = WinogradMultiplication(firstMatrix, secondMatrix)
     printOutMatrix(newProd)
+
+    println("\n\nResult of multiplication in Upd Winograd")
+    val newestProd = WinogradMultiplicationModified(firstMatrix, secondMatrix)
+    printOutMatrix(newestProd)
 }
