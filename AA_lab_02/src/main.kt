@@ -1,3 +1,4 @@
+import kotlin.random.Random
 import kotlin.system.measureNanoTime
 
 fun printOutMatrix(matrix: Array<IntArray>)
@@ -5,7 +6,7 @@ fun printOutMatrix(matrix: Array<IntArray>)
     for (i in matrix.indices)
     {
         for (j in matrix[i].indices)
-            print("%3d".format(matrix[i][j]))
+            print("%6d".format(matrix[i][j]))
         print("\n")
     }
 }
@@ -57,7 +58,7 @@ fun WinogradMultiplication(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>) :
             product[i][j] = -computedRows[i] - computedCols[j]
 
             for (k in 0 until (sMatrix.size / 2))
-                product[i][j] = product [i][j] + (fMatrix[i][k * 2] + sMatrix[k * 2 + 1][j]) * (fMatrix[i][k * 2 + 1] + sMatrix[k * 2][j])
+                product[i][j] = product[i][j] + (fMatrix[i][k * 2] + sMatrix[k * 2 + 1][j]) * (fMatrix[i][k * 2 + 1] + sMatrix[k * 2][j])
         }
 
     if (sMatrix.size % 2 != 0)
@@ -141,28 +142,48 @@ fun timeResearch(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>,
                  func : (fMatrix: Array<IntArray>, sMatrix: Array<IntArray>) -> Array<IntArray>)
 {
     func(fMatrix, sMatrix)
-    var time : Long = 0
-    for (i in 0..10)
-        time += measureNanoTime {
+    var time : Long = measureNanoTime {
+        for (i in 0..10)
             func(fMatrix, sMatrix)
-        }
-    time /= 10
+    }
+
     println("Time research result is: $time")
 }
 
+
+fun makeMat(rowSize: Int, colSize: Int) : Array<IntArray>
+{
+    return Array(rowSize) { IntArray(colSize) }
+}
+
+
+fun fullMatRandomly(matrix: Array<IntArray>)
+{
+    for (i in matrix.indices)
+        for (j in matrix[0].indices)
+            matrix[i][j] = Random.nextInt(-20, 20)
+}
+
+
 fun main()
 {
-    val firstMatrix = arrayOf(intArrayOf(3, -2, 5), intArrayOf(3, 0, 4))
-    val secondMatrix = arrayOf(intArrayOf(1, 1, 1), intArrayOf(3, 3, 3), intArrayOf(2, 2, 2))
-    printOutMatrix(firstMatrix)
-    printOutMatrix(secondMatrix)
+    val firstMatrix = makeMat(100, 100)
+    fullMatRandomly(firstMatrix)
+    val secondMatrix = makeMat(100, 100)
+    fullMatRandomly(secondMatrix)
+
+    println("First matrix is:")
+//    printOutMatrix(firstMatrix)
+
+    println("Second matrix is:")
+//    printOutMatrix(secondMatrix)
 
     println("\n\nResult of multiplication in classic:")
     val prod = matricesMult(firstMatrix, secondMatrix);
 
     timeResearch(firstMatrix, secondMatrix, ::matricesMult)
 
-    printOutMatrix(prod)
+//    printOutMatrix(prod)
 
     println("\n\nResult of multiplication in Winograd")
 
@@ -170,12 +191,12 @@ fun main()
 
     timeResearch(firstMatrix, secondMatrix, ::WinogradMultiplication)
 
-    printOutMatrix(newProd)
+//    printOutMatrix(newProd)
 
     println("\n\nResult of multiplication in Upd Winograd")
     val newestProd = WinogradMultiplicationModified(firstMatrix, secondMatrix)
 
     timeResearch(firstMatrix, secondMatrix, ::WinogradMultiplicationModified)
 
-    printOutMatrix(newestProd)
+//    printOutMatrix(newestProd)
 }
