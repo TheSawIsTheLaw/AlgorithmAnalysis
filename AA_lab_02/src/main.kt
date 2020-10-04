@@ -50,6 +50,9 @@ fun colsComputation(matrix: Array<IntArray>) : IntArray
 
 fun WinogradMultiplication(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>) : Array<IntArray>
 {
+    if (fMatrix[0].size != sMatrix.size)
+        return emptyArray()
+
     val computedRows = rowsComputation(fMatrix)
     val computedCols = colsComputation(sMatrix)
 
@@ -87,10 +90,4 @@ fun main()
     println("\n\nResult of multiplication in Winograd")
     val newProd = WinogradMultiplication(firstMatrix, secondMatrix)
     printOutMatrix(newProd)
-
-////    test
-//    val testArr = arrayOfNulls<Number>(9)
-//    for (i in testArr.indices)
-//        print(testArr[i])
-
 }
