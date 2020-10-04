@@ -5,7 +5,6 @@
 
 fun printOutMatrix(matrix: Array<IntArray>)
 {
-    print("\n")
     for (i in matrix.indices)
     {
         for (j in matrix[i].indices)
@@ -77,7 +76,6 @@ fun WinogradMultiplication(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>) :
 fun rowsComputationModified(matrix: Array<IntArray>) : IntArray
 {
     val computedRows = IntArray(matrix.size)
-
     for (i in matrix.indices)
         for (j in 0 until (matrix[0].size - 1) step 2)
             computedRows[i] += matrix[i][j] * matrix[i][j + 1]
