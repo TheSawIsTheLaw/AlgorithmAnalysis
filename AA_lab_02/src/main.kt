@@ -13,6 +13,9 @@ fun printOutMatrix(matrix: Array<IntArray>)
 
 fun matricesMult(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>) : Array<IntArray>
 {
+    if (fMatrix[0].size != sMatrix.size)
+        return emptyArray()
+
     val product = Array(fMatrix.size) { IntArray(sMatrix[0].size) }
     for (i in fMatrix.indices)
         for (j in sMatrix[0].indices)
@@ -143,8 +146,7 @@ fun timeResearch(fMatrix: Array<IntArray>, sMatrix: Array<IntArray>,
 {
     func(fMatrix, sMatrix)
     var time : Long = measureNanoTime {
-        for (i in 0..10)
-            func(fMatrix, sMatrix)
+        func(fMatrix, sMatrix)
     }
 
     println("Time research result is: $time")
