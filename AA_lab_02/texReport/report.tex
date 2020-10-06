@@ -1,0 +1,385 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+%\usepackage[14pt]{extsizes}
+\usepackage{listings}
+\usepackage[justification=centering]{caption}
+
+% Для листинга кода:
+\lstset{ %
+language=kotlin,                 % выбор языка для подсветки (здесь это С)
+basicstyle=\small\sffamily, % размер и начертание шрифта для подсветки кода
+numbers=left,               % где поставить нумерацию строк (слева\справа)
+numberstyle=\tiny,           % размер шрифта для номеров строк
+stepnumber=1,                   % размер шага между двумя номерами строк
+numbersep=5pt,                % как далеко отстоят номера строк от подсвечиваемого кода
+showspaces=false,            % показывать или нет пробелfile:///home/trvehazzk3r/Desktop/test/report.teы специальными отступами
+showstringspaces=false,      % показывать или нет пробелы в строках
+showtabs=false,             % показывать или нет табуляцию в строках
+frame=single,              % рисовать рамку вокруг кода
+tabsize=2,                 % размер табуляции по умолчанию равен 2 пробелам
+captionpos=t,              % позиция заголовка вверху [t] или внизу [b] 
+breaklines=true,           % автоматически переносить строки (да\нет)
+breakatwhitespace=false, % переносить строки только если есть пробел
+escapeinside={\#*}{*)}   % если нужно добавить комментарии в коде
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
+}
+
+% Для измененных титулов глав:
+\usepackage{titlesec, blindtext, color} % подключаем нужные пакеты
+\definecolor{gray75}{gray}{0.75} % определяем цвет
+\newcommand{\hsp}{\hspace{20pt}} % длина линии в 20pt
+% titleformat определяет стиль
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+
+
+% plot
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+\begin{filecontents}{LevRec.dat}
+5 10867
+7 258961
+10 33589820
+\end{filecontents}
+
+\begin{filecontents}{LevRecMat.dat}
+10 3146
+20 12896
+30 29325
+50 70918
+100 184238
+200 643895
+\end{filecontents}
+
+\begin{filecontents}{LevIterMat.dat}
+10 2001
+20 4686
+30 10744
+50 29257
+100 86268
+200 248651
+\end{filecontents}
+
+\begin{filecontents}{DamLev.dat}
+10 2137
+20 6251
+30 13631
+50 38427
+100 118891
+200 299743
+\end{filecontents}
+
+
+\begin{document}
+\begin{titlepage}
+	\fontsize{12pt}{12pt}\selectfont
+	\noindent \begin{minipage}{0.15\textwidth}
+		\includegraphics[width=\linewidth]{inc/img/b_logo.jpg}
+	\end{minipage}
+	\noindent\begin{minipage}{0.9\textwidth}\centering
+		\textbf{Министерство науки и высшего образования Российской Федерации}\\
+		\textbf{Федеральное государственное бюджетное образовательное учреждение высшего образования}\\
+		\textbf{«Московский государственный технический университет имени Н.Э.~Баумана}\\
+		\textbf{(национальный исследовательский университет)»}\\
+		\textbf{(МГТУ им. Н.Э.~Баумана)}
+	\end{minipage}
+	
+	\noindent\rule{15cm}{3pt}
+	\newline\newline
+	\noindent ФАКУЛЬТЕТ \underline{~~~~~~~~~~~~~~~~«Информатика и системы управления»~~~~~~~~~~~~~~~~} \newline\newline
+	\noindent КАФЕДРА \underline{«Программное обеспечение ЭВМ и информационные технологии»}\newline\newline\newline\newline\newline\newline\newline
+	
+	
+	\begin{center}
+		\Large\textbf{Отчет по лабораторной работе №1 по курсу "Анализ алгоритмов"}\newline
+	\end{center}
+	
+	\noindent\textbf{Тема} \underline{Расстояния Левенштейна и Дамерау-Левенштейна}\newline\newline\newline
+	\noindent\textbf{Студент} \underline{Якуба Д. В.}\newline\newline
+	\noindent\textbf{Группа} \underline{ИУ7-53Б}\newline\newline
+	\noindent\textbf{Оценка (баллы)} \underline{~~~~~~~~~~~~~~~~~~~}\newline\newline
+	\noindent\textbf{Преподаватели} \underline{Волкова Л.Л., Строганов Ю.В.}\newline
+	
+	\begin{center}
+		\vfill
+		Москва~---~\the\year
+		~г.
+	\end{center}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+\chapter*{Введение}
+\addcontentsline{toc}{chapter}{Введение}
+\section*{Цели лабораторной работы}
+\begin{itemize}
+\item изучение классического алгоритма, алгоритма Копперсмита-Винограда и оптимизированного алгоритма Копперсмита-Винограда умножения матриц;
+\item реализация классического алгоритма, алгоритма Копперсмита-Винограда и оптимизиованного алгоритма Копперсмита-Винограда умножения матриц;
+\end{itemize}
+\section*{Определение}
+Алгоритм Копперсмита-Винограда = это алгоритм умножения квадратных матриц, предложенный в 1987 году Д. Копперсмитом и Ш. Виноградом \cite{Coppersmith}. В исходной весрии асимптотическая сложность алгоритма составляла $O(n^{2.3755})$, где $n$ 0 размер стороны матрицы. Алгоритм Копперсмита-Винограда с учётом усерии улучшений и доработок в последующие годы, обладает лучшей асимптотикой среди известных алгоритмов умножения матриц
+
+\chapter{Аналитическая часть}
+
+
+\section{Рекурсивный алгоритм нахождения расстояния Левенштейна}
+
+\section*{Вывод}
+
+\newpage
+
+\chapter{Конструкторская часть}
+\section{Блок-схема рекурсивного алгоритма Левенштейна}
+
+
+\chapter{Технологическая часть}
+\section{Требования к программному обеспечению}
+
+\section{Средства реализации программного обеспечения}
+При написании программного продукта был использован язык программирования Kotlin.
+
+Данный выбор обусловлен следующими факторами:
+\begin{itemize}
+\item Высокая вычислительная производительность;.
+\end{itemize}
+
+Для тестирования производительности реализаций алгоритмов использовалась утилита measureNanoTime.
+
+При написаннии программного продукта использовалась среда разработки IntelliJ IDEA.
+
+Данный выбор обусловлен тем, что язык программирования Kotlin - это разработка компании JetBrains, поставляющей данную среду разработки;
+
+\section{Листинг кода}
+В листингах \ref{levRecList} - \ref{DamLevList} предоставлены реализации рассматриваемых алгоритмов.
+\begin{lstlisting}[caption=Функция реализации рекурсивного алгоритма Левенштейна,
+label={levRecList}]
+s
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Функция реализации рекурсивного алгоритма Левенштейна с использованием матрицы расстояний,
+label={levRecMatList}]
+
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Функция реализации итеративного алгоритма Левенштейна,
+label={levIterList}]
+
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Функция реализации алгоритма Дамерау-Левенштейна,
+label={DamLevList}]
+
+\end{lstlisting}
+
+\section{Тестирование программного продукта}
+В таблице \ref{table} приведены тестовые данные и вывод программы для алгоритмов вычисления расстояния Левенштейна и Дамерау-Левенштейна. Тесты пройдены успешно.
+
+\newpage
+\begin{table}[h]
+	\begin{center}
+		\caption{\label{table} Тесты}
+		\begin{tabular}{|c|c|c|c|}
+	\hline
+			                    &                    & \multicolumn{2}{c|}{\bfseries Ожидаемый результат}    \\ \cline{3-4}\hline
+	Строка 1& Строка 2 & Алг. Левенштейна & Алг. Дамерау-Левенштейна \\ [0.5ex] 
+ 	\hline\hline
+ 	table & tumbler & 3 & 3\\
+ 	\hline
+ 	hell & help & 1 & 1\\
+ 	\hline
+	KillUsAll & KlilUsAll & 2 & 1\\
+	\hline
+	smoke & mssql & 5 & 4\\
+	\hline
+	OfMiceAndMen & OfMonstersAndMen & 6 & 6\\
+	\hline
+	roofer & killer & 4 & 4\\
+	\hline
+	orange & orangina & 3 & 3\\
+	\hline
+	prolifer & profiler & 2 & 2\\
+	\hline
+	cat & dog & 3 & 3\\
+	\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\section*{Вывод}
+Спроектированные алгоритмы вычисления расстояния Левенштейна рекурсивно, рекурсивно с использованием матрицы расстояний, итеративно с использованием матрицы расстояний, а также алгоритм вычисления расстояния Дамерау-Левенштейна итеративно с использованием матрицы были реализованы и протестированы.
+
+\chapter{Исследовательская часть}
+
+\section{Пример работы программного обеспечения}
+
+
+\section{Технические характеристики}
+Технические характеристики ЭВМ, на котором выполнялись исследования:
+\begin{itemize}
+\item ОС: Manjaro Linux 20.1.1 Mikah
+\item Оперативная память: 16 Гб
+\item Процессор: Intel Core i7-10510U
+
+При проведении замеров времени ноутбук был подключен к сети электропитания.
+\end{itemize}
+
+\section{Время выполнения алгоритмов}
+Алгоритмы тестировались на данных, сгенерированных случайным образом один раз.
+
+Тестовые данные:
+\begin{itemize}
+\item 5 символов:\newline
+VxgtU (строка 1),\newline
+jRMFA (строка 2)
+\item 7 символов:\newline
+VxgtUsx (строка 1),\newline
+jRMFAyC (строка 2)
+\item 10 символов:\newline
+VxgtUsx2u3 (строка 1),\newline
+jRMFAyCfiV (строка 2)
+\item 20 символов:\newline
+VxgtUsx2u39dtX81sxy8 (строка 1),\newline
+jRMFAyCfiVxyhmILtGMG (строка 2)
+\item 30 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJ (строка 1),\newline
+jRMFAyCfiVxyhmILtGMG4IVZTjPQ7l (строка 2)
+\item 50 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJG (строка 1),\newline jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2 (строка 2)
+\item 100 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJG\newline
+Ooryez5fYpJWcPRhm7TEjeUoD49M26XDt CJrGtjJXf3aZ9La9n (строка 1),\newline jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2\newline
+G4J0JV1XP8ecmHkTYdY1uzSm8WFY3KjgG ggAw3GrPISl76Mzb1 (строка 2)
+\item 200 символов:\newline
+VxgtUsx2u39dtX81sxy8GInrYeVNmJvvG7WkaA7Qjs82qP6bJGO\newline
+oryez5fYpJWcPRhm7TEjeUoD49M26XDtCJrGtjJXf3aZ9La9nsh\newline
+v3cAbwuAJuKc00ndp6EWNHQcArjwXQzAtdpnHs2uOF1kfhWjzXU\newline
+S44zKnHVNCaeLyzBlce3RCdGwbJx8s2SlfvYoyBZsKrN1cX (строка 1),\newline
+jRMFAyCfiVxyhmILtGMG4IVZTjPQ7laMIEG6xv9zbdXq9WcJY2G\newline
+4J0JV1XP8ecmHkTYdY1uzSm8WFY3KjgGggAw3GrPISl76Mzb1f3\newline
+ElDEyOeorQGS6CxLWS3lH8sNgZta9vSDMLvnbPaXP24H5dYkBXL\newline
+RruvzSlLs1T8hyezy0U3awz65ctATEclCBG4H1pC9mMusWF (строка 2)
+\end{itemize}
+
+Результаты замеров времени приведены в таблице \ref{time}. На рисунках \ref{recTime}, \ref{IterTime} приведены графики зависимостей времени работы алгоритмов от //.
+
+\newpage
+\begin{table}[h]
+	\begin{center}
+		\caption{\label{time} Замеры времени для строк различной длины}
+		\begin{tabular}{|c c c c c|} 
+ 			\hline
+			Длина строк & LevRec & LevMatRec & LevMatIter & DamLev \\ [0.5ex] 
+ 			\hline\hline
+ 			5 & 10867 & - & - & -\\
+ 			\hline
+ 			7 & 258961 & - & - & -\\
+ 			\hline
+			10 & 33589820 & 3146 & 2001 & 2137\\
+			\hline
+			20 & - & 12896 & 4686 & 6251\\
+			\hline
+			30 & - & 29325 & 10744 & 13631\\
+			\hline
+			50 & - & 70918 & 29277 & 38427\\
+			\hline
+			100 & - & 184238 & 86268 & 118891\\
+			\hline
+			200 & - & 642895 & 248651 & 299743\\
+			\hline
+			\end{tabular}
+	\end{center}
+\end{table}
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tikzpicture}
+
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = $len$,
+  		  	ylabel = {$time$},
+			legend pos=north west,
+			ymajorgrids=true
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {LevRecMat.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {LevIterMat.dat};
+
+		\addlegendentry{Рекурсивная реализация с матрицей}
+		\addlegendentry{Итеративная реализация с матрицей}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы рекурсивных реализаций алгоритмов вычисления расстояния Левенштейна от длины строк}
+	\label{recTime}
+	\end{center}
+\end{figure}
+
+\begin{figure}[h]
+	\begin{center}
+	\begin{tikzpicture}
+
+		\begin{axis}[
+ 		   	axis lines = left,
+ 		   	xlabel = $len$,
+ 		   	ylabel = {$time$},
+			legend pos=north west,
+			ymajorgrids=true
+		]
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {LevIterMat.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {DamLev.dat};
+
+		\addlegendentry{Левенштейн}
+		\addlegendentry{Дамерау-Левенштейн}
+		\end{axis}
+\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы итеративных реализаций алгоритмов вычисления расстояния Левенштейна и Дамерау-Левенштейна от длины строк.}
+	\label{IterTime}
+	\end{center}
+\end{figure}
+
+\section{Оценка затрат памяти}
+Максимальная глубина стека вызовов при исполнении рекурсивного алгоритма Левенштейна определяется выражением \ref{quoteForRec}:
+
+\begin{equation}
+\label{quoteForRec}
+(sizeof(s_{1}) + sizeof(s_{2})) * (2 * sizeof(string) + sizeof(int))
+\end{equation}
+Здесь sizeof - оператор вычисления размера; $s_{1}$, $s_{2}$ - строки; $string$ - строковый тип; $int$ - целочисленный тип.
+
+При исполнении интеративной реализации задействованная память будет определяться выражением \ref{quoteForIter}:
+
+\begin{equation}
+\label{quoteForIter}
+(sizeof(s_{1} + 1) * (sizeof(s_{2} + 1) * sizeof(int) + sizeof(int) + 2 * sizeof(string)
+\end{equation}
+
+\section*{Вывод}
+
+\chapter*{Заключение}
+\addcontentsline{toc}{chapter}{Заключение}
+В ходе выполнения лабораторной работы:
+\begin{itemize}
+\item 
+\item 
+\item 
+\item 
+\item 
+\item Были получены практические навыки реализации алгоритмов на ЯП Kotlin.
+\end{itemize}
+
+\chapter*{Список источников}
+\addcontentsline{toc}{chapter}{Список источников}
+\bibliographystyle{utf8gost705u}  % стилевой файл для оформления по ГОСТу
+\bibliography{biblio.bib}          % имя библиографической базы (bib-файла)
+
+
+\end{document} 
