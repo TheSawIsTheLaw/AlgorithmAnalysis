@@ -5,9 +5,26 @@
 \usepackage{listings}
 \usepackage[justification=centering]{caption}
 
+\lstdefinelanguage{Kotlin}{
+  comment=[l]{//},
+  commentstyle={\color{gray}\ttfamily},
+  emph={delegate, filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println, return@},
+  emphstyle={\color{OrangeRed}},
+  identifierstyle=\color{black},
+  keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, null, object, override, package, private, public, return, set, super, suspend, this, throw, true, try, typealias, val, var, vararg, when, where, while},
+  keywordstyle={\color{NavyBlue}\bfseries},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[s]{"""*}{*"""},
+  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String},
+  ndkeywordstyle={\color{BurntOrange}\bfseries},
+  sensitive=true,
+  stringstyle={\color{ForestGreen}\ttfamily},
+}
+
 % Для листинга кода:
 \lstset{ %
-language=kotlin,                 % выбор языка для подсветки (здесь это С)
+language=Kotlin,                 % выбор языка для подсветки (здесь это С)
 basicstyle=\small\sffamily, % размер и начертание шрифта для подсветки кода
 numbers=left,               % где поставить нумерацию строк (слева\справа)
 numberstyle=\tiny,           % размер шрифта для номеров строк
@@ -125,7 +142,7 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \item реализация классического алгоритма, алгоритма Копперсмита-Винограда и оптимизиованного алгоритма Копперсмита-Винограда умножения матриц;
 \end{itemize}
 \section*{Определение}
-Алгоритм Копперсмита-Винограда = это алгоритм умножения квадратных матриц, предложенный в 1987 году Д. Копперсмитом и Ш. Виноградом \cite{Coppersmith}. В исходной весрии асимптотическая сложность алгоритма составляла $O(n^{2.3755})$, где $n$ 0 размер стороны матрицы. Алгоритм Копперсмита-Винограда с учётом усерии улучшений и доработок в последующие годы, обладает лучшей асимптотикой среди известных алгоритмов умножения матриц
+Алгоритм Копперсмита-Винограда = это алгоритм умножения квадратных матриц, предложенный в 1987 году Д. Копперсмитом и Ш. Виноградом \cite{CoppersmithAndWinograd}. В исходной весрии асимптотическая сложность алгоритма составляла $O(n^{2.3755})$, где $n$ 0 размер стороны матрицы. Алгоритм Копперсмита-Винограда с учётом усерии улучшений и доработок в последующие годы, обладает лучшей асимптотикой среди известных алгоритмов умножения матриц
 
 \chapter{Аналитическая часть}
 
@@ -144,7 +161,7 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \section{Требования к программному обеспечению}
 
 \section{Средства реализации программного обеспечения}
-При написании программного продукта был использован язык программирования Kotlin.
+При написании программного продукта был использован язык программирования Kotlin \cite{Kotlin}.
 
 Данный выбор обусловлен следующими факторами:
 \begin{itemize}
