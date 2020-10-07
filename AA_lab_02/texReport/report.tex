@@ -215,6 +215,32 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \chapter{Конструкторская часть}
 \section{Блок-схема рекурсивного алгоритма Левенштейна}
 
+\section{Модель вычислений}
+
+Для последующего вычисления трудоемкости необходимо ввести модель вычислений:
+\begin{enumerate}
+    \item операции из списка (\ref{for:opers}) имеют трудоемкость 1;
+        \begin{equation}
+            \label{for:opers}
+            +, -, /, \%, ==, !=, <, >, <=, >=, [], ++, {-}-, +=, -=
+        \end{equation}
+    \item трудоемкость оператора выбора \code{if условие then A else B} рассчитывается, как (\ref{for:if});
+	\begin{equation}
+        \label{for:if}
+        f_{if} = f_{\text{условия}} +
+        \begin{cases}
+        f_A, & \text{если условие выполняется,}\\
+        f_B, & \text{иначе.}
+        \end{cases}
+	\end{equation}
+\item трудоемкость цикла рассчитывается, как (\ref{for:for});
+    \begin{equation}
+        \label{for:for}
+        f_{for} = f_{\text{инициализации}} + f_{\text{сравнения}} + N(f_{\text{тела}} + f_{\text{инкремента}} + f_{\text{сравнения}})
+    \end{equation}
+	\item трудоемкость вызова функции равна 0.
+\end{enumerate}
+
 
 \chapter{Технологическая часть}
 \section{Требования к программному обеспечению}
