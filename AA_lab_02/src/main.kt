@@ -181,7 +181,7 @@ fun main()
 //    printOutMatrix(secondMatrix)
 
     println("\n\nResult of multiplication in classic:")
-    val prod = matricesMult(firstMatrix, secondMatrix);
+//    val prod = matricesMult(firstMatrix, secondMatrix);
 
     timeResearch(firstMatrix, secondMatrix, ::matricesMult)
 
@@ -189,14 +189,14 @@ fun main()
 
     println("\n\nResult of multiplication in Winograd")
 
-    val newProd = WinogradMultiplication(firstMatrix, secondMatrix)
+//    val newProd = WinogradMultiplication(firstMatrix, secondMatrix)
 
     timeResearch(firstMatrix, secondMatrix, ::WinogradMultiplication)
 
 //    printOutMatrix(newProd)
 
     println("\n\nResult of multiplication in Upd Winograd")
-    val newestProd = WinogradMultiplicationModified(firstMatrix, secondMatrix)
+//    val newestProd = WinogradMultiplicationModified(firstMatrix, secondMatrix)
 
     timeResearch(firstMatrix, secondMatrix, ::WinogradMultiplicationModified)
 
