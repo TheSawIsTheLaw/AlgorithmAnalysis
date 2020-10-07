@@ -13,3 +13,5 @@ out
 *.toc
 *.blg
 *.log
+
+*.jar
