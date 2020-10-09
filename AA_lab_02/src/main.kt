@@ -78,14 +78,8 @@ fun rowsComputationModified(matrix: Array<IntArray>) : IntArray
 {
     val computedRows = IntArray(matrix.size)
     for (i in matrix.indices)
-    {
-        var j = 0
-        while (j < matrix[0].size - 1)
-        {
+        for (j in matrix[0].indices step 2)
             computedRows[i] += matrix[i][j] * matrix[i][j + 1]
-            j += 2
-        }
-    }
 
     return computedRows
 }
@@ -94,13 +88,9 @@ fun colsComputationModified(matrix: Array<IntArray>) : IntArray
 {
     val computedCols = IntArray(matrix[0].size)
 
-    var i = 0
-   while (i < matrix.size - 1)
-    {
+    for (i in matrix.indices step 2)
         for (j in matrix[0].indices)
             computedCols[j] += matrix[i][j] * matrix[i + 1][j]
-        i += 2
-    }
 
     return computedCols
 }
