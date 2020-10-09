@@ -213,12 +213,95 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \newpage
 
 \chapter{Конструкторская часть}
-\section{Блок-схема рекурсивного алгоритма Левенштейна}
+\section{Блок-схема классического алгоритма умножения матриц}
+Блок-схема классического алгоритма умножения матриц предоставлена на рисунке \ref{img:classic}
 \begin{figure}
-\center
+\begin{center}
 \includegraphics[scale=0.33]{inc/img/classic.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема классического алгоритма умножения матрицы.}
+	\label{img:classic}	
+\end{center}
+\end{figure}
+\section{Блок-схема алгоритма Копперсмита-Винограда}
+Блок-схема алгоритма Копперсмита-Винограда и алгоритмов предвычисления предоставлены на рисунках \ref{img:cols} - \ref{img:Winograd2}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{inc/img/colsComp.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма предвычисления столбцов.}
+	\label{img:cols}	
+\end{center}
 \end{figure}
 
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{inc/img/rowsComp.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма предвычисления строк.}
+	\label{img:rows}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{inc/img/Winograd.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма Копперсмита-Винограда.}
+	\label{img:Winograd1}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.295]{inc/img/WinogradPart2.png}
+\captionsetup{justification=centering}
+	\caption{Продолжение блок-схемы алгоритма Копперсмита-Винограда.}
+	\label{img:Winograd2}	
+\end{center}
+\end{figure}
+
+\section{Блок-схема улучшенного алгоритма Копперсмита-Винограда}
+Блок-схема улучшенного алгоритма Копперсмита-Винограда и алгоритмов предвычисления предоставлены на рисунках \ref{img:colsUpd} - \ref{img:WinogradUpd2}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{inc/img/colsCompUpd.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма предвычисления столбцов.}
+	\label{img:colsUpd}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{inc/img/rowsCompUpd.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма предвычисления строк.}
+	\label{img:rowsUpd}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{inc/img/WinogradUpd.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема улучшенного алгоритма Копперсмита-Винограда.}
+	\label{img:WinogradUpd1}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.295]{inc/img/WinogradUpdPart2.png}
+\captionsetup{justification=centering}
+	\caption{Продолжение блок-схемы улучшенного алгоритма Копперсмита-Винограда.}
+	\label{img:WinogradUpd2}	
+\end{center}
+\end{figure}
+
+\newpage
 \section{Модель вычислений}
 
 Для последующего вычисления трудоемкости необходимо ввести модель вычислений:
