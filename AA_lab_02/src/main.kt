@@ -109,23 +109,15 @@ fun WinogradMultiplicationModified(fMatrix: Array<IntArray>, sMatrix: Array<IntA
         {
             product[i][j] = -computedRows[i] - computedCols[j]
 
-            var k = 0
-            while (k < sMatrix.size - 1)
-            {
+            for (k in 0 until (sMatrix.size - 1) step 2)
                 product[i][j] += (fMatrix[i][k] + sMatrix[k + 1][j]) * (fMatrix[i][k + 1] + sMatrix[k][j])
-                k += 2
-            }
-
-//            for (k in 0 until (sMatrix.size - 1) step 2)
-//                product[i][j] += (fMatrix[i][k] + sMatrix[k + 1][j]) * (fMatrix[i][k + 1] + sMatrix[k][j])
         }
 
     if (sMatrix.size % 2 != 0)
     {
-        val curK = sMatrix.size - 1
         for (i in product.indices)
             for (j in product[0].indices)
-                product[i][j] = product[i][j] + fMatrix[i][curK] * sMatrix[curK][j]
+                product[i][j] += fMatrix[i][sMatrix.size - 1] * sMatrix[sMatrix.size - 1][j]
     }
 
     return product
