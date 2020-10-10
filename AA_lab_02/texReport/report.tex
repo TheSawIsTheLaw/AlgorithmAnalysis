@@ -13,14 +13,14 @@
   emphstyle={\color{OrangeRed}},
   identifierstyle=\color{black},
   keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, null, object, override, package, private, public, return, set, super, suspend, this, throw, true, try, typealias, val, var, vararg, when, where, while},
-  keywordstyle={\color{NavyBlue}\bfseries},
+  keywordstyle={\color{blue}\bfseries},
   morecomment=[s]{/*}{*/},
   morestring=[b]",
   morestring=[s]{"""*}{*"""},
   ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String},
-  ndkeywordstyle={\color{BurntOrange}\bfseries},
+  ndkeywordstyle={\color{orange}\bfseries},
   sensitive=true,
-  stringstyle={\color{ForestGreen}\ttfamily},
+  stringstyle={\color{green}\ttfamily},
 }
 
 % Для листинга кода:
@@ -764,6 +764,7 @@ fun WinogradMultiplicationModified(fMatrix: Array<IntArray>, sMatrix: Array<IntA
 \end{figure}
 
 \section*{Вывод}
+При сравнении результатов замеров времени заметно, что скорость работы классического алгоритма однозначно отстаёт от скорости работы улучшенного Алгоритма Копперсмита-Винограда. Уже на 600 элементах улучшенный алгоритм Копперсмита-Винограда работает быстрее классического на $\approx8\%$. При нечётном количестве строк и столбцов матриц улучшенный алгоритм способен быть медленнее $\approx4\%$, при факте того, что классический алгоритм похожей динамики не имеет. Обычный алгоритм Копперсмита-Винограда начинает выигрывать по скорости классический только по достижению 300 строк и столбцов в матрице, при факте того, что в случае матрицы с нечётной размерностью он всё ещё будет проигрывать. При размерности 600 он будет выгрывать у классической реализации на $\approx3\%$. В случае матриц размера меньше 400 на 400 его использование не будет целесообразным.
 
 \chapter*{Заключение}
 \addcontentsline{toc}{chapter}{Заключение}
@@ -776,7 +777,8 @@ fun WinogradMultiplicationModified(fMatrix: Array<IntArray>, sMatrix: Array<IntA
 \item был подготовлен отчёт по проделанной работе;
 \item Были получены практические навыки реализации алгоритмов на ЯП Kotlin.
 \end{itemize}
-\newpage
+
+Исследования показали, что использование алгоритма Копперсмита-Винограда способно оправдать себя только в случае матриц, размерность которых не менее 400. При этом выигрыш будет составлять $\approx0.02\%$ только в случае чётной размерности. Реализация улучшенного алгоритма Копперсмита-Винограда показывает быстрее классического алгоритма уже при размерности матрицы 100. Чем больше элементов в матрице - тем заметнее разница во времени работы этих двух алгоритмов.
 
 \addcontentsline{toc}{chapter}{Литература}
 \bibliographystyle{utf8gost705u}  % стилевой файл для оформления по ГОСТу
