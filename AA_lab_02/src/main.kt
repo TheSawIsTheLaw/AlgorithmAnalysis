@@ -1,3 +1,4 @@
+import java.util.*
 import kotlin.random.Random
 import kotlin.system.measureNanoTime
 
@@ -166,13 +167,31 @@ fun fullMatRandomly(matrix: Array<IntArray>)
             matrix[i][j] = Random.nextInt(-20, 20)
 }
 
+fun getMat() : Array<IntArray>
+{
+    val input = Scanner(System.`in`)
+    println("\nRows number: ")
+    val rows = input.nextInt()
+    println("Cols number: ")
+    val cols = input.nextInt()
+    if (rows < 1 || cols < 1)
+        return emptyArray()
+
+    var matrix = makeMat(rows, cols)
+
+    println("Matrix elems:")
+    for (i in 0 until rows)
+        for (j in 0 until cols)
+            matrix[i][j] = input.nextInt()
+
+    return matrix
+}
+
 
 fun main()
 {
-    val firstMatrix = makeMat(3, 3)
-    fullMatRandomly(firstMatrix)
-    val secondMatrix = makeMat(3, 3)
-    fullMatRandomly(secondMatrix)
+    val firstMatrix = getMat()
+    val secondMatrix = getMat()
 
     println("First matrix is:")
     printOutMatrix(firstMatrix)
