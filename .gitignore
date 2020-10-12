@@ -1,2 +1,17 @@
 build*
 *.pro.user
+.idea
+out
+*.iml
+
+*.dat
+*.aux
+*.bbl
+*.dvi
+*.out
+*.synctex*
+*.toc
+*.blg
+*.log
+
+*.jar
