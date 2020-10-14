@@ -201,11 +201,43 @@ K_{p(1)} \leq K_{p(2)} \leq ... \leq K_{p(n)}
 Были рассмотрены алгоритмы сортировки пузырьком, вставками и выбором. В данной работе стоит задача реализации рассмотренных алгоритмов. Также будет необходимо оценить теоретическую оценку алгоритмов и проверить её экспериментально.
 
 \chapter{Конструкторская часть}
-\section{Блок-схема классического алгоритма умножения матриц}
+\section{Блок-схема алгоритма сортировки пузырьком}
+Блок-схема алгоритма сортировки пузырьком предоставлена на рисунке \ref{img:bubbleSortScheme}.
 
-\section{Блок-схема алгоритма Копперсмита-Винограда}
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/bubbleSort.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма сортировки пузырьком.}
+	\label{img:bubbleSortScheme}	
+\end{center}
+\end{figure}
 
-\section{Блок-схема улучшенного алгоритма Копперсмита-Винограда}
+\section{Блок-схема алгоритма сортировки вставками}
+Блок-схема алгоритма сортировки вставками предоставлена на рисунке \ref{img:insertionSortScheme}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/insertionSort.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма сортировки вставками.}
+	\label{img:insertionSortScheme}	
+\end{center}
+\end{figure}
+
+\section{Блок-схема алгоритма сортировки выбором}
+Блок-схема алгоритма сортировки выбором предоставлена на рисунке \ref{img:selectionSortScheme}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.33]{inc/img/selectionSort.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма сортировки выбором.}
+	\label{img:selectionSortScheme}	
+\end{center}
+\end{figure}
+
+\newpage
 
 \section{Модель вычислений}
 
@@ -221,6 +253,9 @@ K_{p(1)} \leq K_{p(2)} \leq ... \leq K_{p(n)}
 
 \chapter{Технологическая часть}
 \section{Требования к программному обеспечению}
+Программное обеспечение принимает на вход массив целочисленных значений.
+
+В результате выполнения программы должен быть получен упорядоченный по возрастанию массив.
 
 \section{Средства реализации программного обеспечения}
 При написании программного продукта был использован язык программирования Kotlin \cite{Kotlin}.
@@ -239,19 +274,65 @@ K_{p(1)} \leq K_{p(2)} \leq ... \leq K_{p(n)}
 
 \section{Листинг кода}
 В листингах \ref{classic} - \ref{WinogradUpd} предоставлены реализации рассматриваемых алгоритмов.
-\begin{lstlisting}[caption=Функция реализации алгоритма классического умножения матриц,
+\begin{lstlisting}[caption=Функция реализации алгоритма сортировки пузырьком.
 label={classic}]
-
+fun bubbleSort(arr: IntArray)
+{
+    var i = 0;
+    while (i < arr.size - 1)
+    {
+        var j = 0;
+        while (j < arr.size - 1 - i)
+        {
+            if (arr[j] > arr[j + 1])
+                arr[j + 1] = arr[j].also { arr[j] = arr[j + 1] }
+            j++
+        }
+        i++
+    }
+}
 \end{lstlisting}
 
-\begin{lstlisting}[caption=Функция реализации алгоритма Копперсмита-Винограда,
+\begin{lstlisting}[caption=Функция реализации алгоритма сортировки вставками.
 label={Winograd}]
-
+fun insertionSort(arr: IntArray)
+{
+    var i = 2;
+    while (i < arr.size)
+    {
+        var min = arr[i]
+        var j = i;
+        while (j > 0 && arr[j - 1] > min)
+        {
+            arr[j] = arr[j - 1]
+            j--
+        }
+        arr[j] = min
+        i++
+    }
+}
 \end{lstlisting}
 
-\begin{lstlisting}[caption=Функция реализации улучшенного алгоритма Копперсмита-Винограда,
+\begin{lstlisting}[caption=Функция реализации алгоритма сортировки выбором.
 label={WinogradUpd}]
-
+fun selectionSort(arr: IntArray)
+{
+    var i = 0;
+    while (i < arr.size - 1)
+    {
+        var j = i + 1
+        var min = i
+        while (j < arr.size)
+        {
+            if (arr[j] < arr[min])
+                min = j
+            j++
+        }
+        if (min != i)
+            arr[i] = arr[min].also { arr[min] = arr[i] }
+        i++
+    }
+}
 \end{lstlisting}
 
 \section{Тестирование программного продукта}
@@ -345,7 +426,6 @@ label={WinogradUpd}]
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=1]{inc/img/randExample.png}
 \captionsetup{justification=centering}
 	\caption{Пример работы ПО.}
 	\label{img:exampleRand}	
@@ -354,7 +434,6 @@ label={WinogradUpd}]
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.9]{inc/img/inpExample.png}
 \captionsetup{justification=centering}
 	\caption{Пример работы ПО.}
 	\label{img:exampleInp}	
