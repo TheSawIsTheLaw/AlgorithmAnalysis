@@ -108,9 +108,9 @@ fun setUnsorted(arr : IntArray)
 fun main()
 {
     var arr = IntArray(5000)
-//    setRandom(arr)
+    setRandom(arr)
 //    setSorted(arr)
-    setUnsorted(arr)
+//    setUnsorted(arr)
 
     var duration = measureTimedValue {
         bubbleSort(arr)
