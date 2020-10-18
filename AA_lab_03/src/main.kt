@@ -19,7 +19,7 @@ fun bubbleSort(arr: IntArray)
 
 fun insertionSort(arr: IntArray)
 {
-    var i = 2;
+    var i = 1;
     while (i < arr.size)
     {
         var min = arr[i]
@@ -69,8 +69,8 @@ fun setRandom(arr: IntArray)
 @kotlin.time.ExperimentalTime
 fun main()
 {
-    var arr1: IntArray = IntArray(10)
-    setRandom(arr1)
+    var arr1: IntArray = intArrayOf(2, 1, 3)
+//    setRandom(arr1)
 
 //    var duration = measureTimedValue {
 //        selectionSort(arr1)
