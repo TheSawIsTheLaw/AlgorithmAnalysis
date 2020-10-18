@@ -1,3 +1,4 @@
+import java.util.*
 import kotlin.random.Random.Default.nextInt
 import kotlin.time.measureTimedValue
 
@@ -66,17 +67,75 @@ fun setRandom(arr: IntArray)
         arr[i] = nextInt(0, 30);
 }
 
+fun getArr() : IntArray
+{
+    val input = Scanner(System.`in`)
+    println("\nNumber of elements: ")
+    val size = input.nextInt()
+
+    if (size < 1)
+        return IntArray(0)
+
+    var outArr = IntArray(size)
+
+    print("Array elements: ")
+
+    for (i in outArr.indices)
+        outArr[i] = input.nextInt()
+    return outArr
+}
+
+fun printOutIntArray(arr : IntArray)
+{
+    for (i in arr.indices)
+        print("${arr[i]} ")
+    println()
+}
+
+fun setSorted(arr : IntArray)
+{
+    for (i in arr.indices)
+        arr[i] = i
+}
+
+fun setUnsorted(arr : IntArray)
+{
+    for (i in arr.indices)
+        arr[i] = arr.size - i
+}
+
 @kotlin.time.ExperimentalTime
 fun main()
 {
-    var arr1: IntArray = intArrayOf(2, 1, 3)
-//    setRandom(arr1)
+    var arr = IntArray(5000)
+//    setRandom(arr)
+//    setSorted(arr)
+    setUnsorted(arr)
 
-//    var duration = measureTimedValue {
-//        selectionSort(arr1)
-//    }
-//    print(duration)
+    var duration = measureTimedValue {
+        bubbleSort(arr)
+//        insertionSort(arr)
+//        selectionSort(arr)
+    }
+    print(duration.duration.inNanoseconds.toInt())
 
-    insertionSort(arr1)
-    printIntArray(arr1)
+//    insertionSort(arr1)
+//    printIntArray(arr1)
+
+//    var array = getArr()
+//    var selectionArr = array.copyOf()
+//    var bubbleArr = array.copyOf()
+//    var insertionArr = array.copyOf()
+//
+//    bubbleSort(bubbleArr)
+//    println("Ready in bubble sort:")
+//    printOutIntArray(bubbleArr)
+//
+//    selectionSort(selectionArr)
+//    println("Ready in selection sort:")
+//    printOutIntArray(selectionArr)
+//
+//    insertionSort(insertionArr)
+//    println("Ready in insertion sort:")
+//    printOutIntArray(insertionArr)
 }
