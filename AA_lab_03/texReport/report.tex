@@ -258,7 +258,7 @@ K_{p(1)} \leq K_{p(2)} \leq ... \leq K_{p(n)}
 	\end{equation}
 \item трудоемкость цикла рассчитывается, как (\ref{for});
     \begin{equation}
-        \label{for:for}
+        \label{for}
         f_{for} = f_{\text{инициализации}} + f_{\text{сравнения}} + N(f_{\text{тела}} + f_{\text{инкремента}} + f_{\text{сравнения}})
     \end{equation}
 	\item трудоемкость вызова функции равна 0.
@@ -275,6 +275,63 @@ K_{p(1)} \leq K_{p(2)} \leq ... \leq K_{p(n)}
 \item цикл по $j \in [0.. size - 1 - i]$, включённый в цикл по i.
 \end{itemize}
 
+При этом для цикла по $j$ из части блок-схемы, представленной на рисунке \ref{img:bubble:fj}, будем иметь:
+
+\begin{equation}
+f_{j} = 1 + 3 + \frac{1 + (size-1)}{2}(1 + 3 + f_{jbody})
+\end{equation}
+где $f_{jbody}$ - это трудоёмкость тела цикла, которая определяется выражением:
+
+\begin{equation}
+f_{jbody} = 5 + \begin{cases}
+				0, & \textbf{лучший случай}\\
+				9, & \textbf{худший случай}\\
+				\end{cases}
+\end{equation}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/bubblefj.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, определяющая $f_{j}$ и $f_{j body}$.}
+	\label{img:bubble:fj}	
+\end{center}
+\end{figure}
+
+Для цикла по $i$ из части блок-схемы, представленной на рисунке \ref{img:bubble:fi}, будем иметь:
+
+\begin{equation}
+f_{i} = 1 + 2 + (size - 1)f_{j}
+\end{equation}
+
+Как итог, имеем в лучшем случае:
+\begin{equation}
+f = f_{i} = 3 + (size-1)(4 + \frac{size}{2}(4 + 5)
+\end{equation}
+
+\begin{equation}
+f = -1 + 4size + \frac{9}{2}{size}^2 - \frac{9}{2}size \approx \frac{9}{2}{size^2} = O({size}^2)
+\end{equation}
+
+В худшем случае:
+\begin{equation}
+f = f_{i} = 3 + (size-1)(4 + \frac{size}{2}(4 + 14)
+\end{equation}
+
+\begin{equation}
+f = -1 + 4size + 9{size}^2 - 9size \approx 9{size^2} = O({size}^2)
+\end{equation}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{inc/img/bubblefi.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, определяющая $f_{i}$.}
+	\label{img:bubble:fi}	
+\end{center}
+\end{figure}
+\newpage 
+
 \subsection{Алгоритм сортировки вставками}
 Трудоёмкость алгоритма сортировки вставками будет включать включать в себя:
 \begin{itemize}
@@ -282,12 +339,126 @@ K_{p(1)} \leq K_{p(2)} \leq ... \leq K_{p(n)}
 \item цикл по $j \in [i..0]$, включённый в цикл по i.
 \end{itemize}
 
+При этом для цикла по $j$ из части блок-схемы, представленной на рисунке \ref{img:insertion:fj}, будем иметь:
+
+\begin{equation}
+f_{j} = 3 + 4 + \frac{size}{2}\begin{cases}
+				4, & \textbf{лучший случай}\\
+				1 + 4 + f_{jbody}, & \textbf{худший случай}\\
+				\end{cases}
+\end{equation}
+где $f_{jbody}$ - это трудоёмкость тела цикла, которая определяется выражением:
+
+\begin{equation}
+f_{jbody} = 4
+\end{equation}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/insertionfj.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, определяющая $f_{j}$ и $f_{j body}$.}
+	\label{img:insertion:fj}	
+\end{center}
+\end{figure}
+
+Для цикла по $i$ из части блок-схемы, представленной на рисунке \ref{img:insertion:fi}, будем иметь:
+
+\begin{equation}
+f_{i} = 1 + 1 + (size - 1)(1 + 1 + f_{j})
+\end{equation}
+
+Как итог, имеем в лучшем случае:
+\begin{equation}
+f = f_{i} = 2 + (size - 1)(9 + 2size)
+\end{equation}
+
+\begin{equation}
+f = 2{size}^2 + 7size - 7 \approx 2{size}^2 = O({size^2})
+\end{equation}
+
+В худшем случае:
+\begin{equation}
+f = f_{i} = 3 + (size-1)(4 + \frac{size}{2}(4 + 14)
+\end{equation}
+
+\begin{equation}
+f = -1 + 4size + 9{size}^2 - 9size \approx 9{size^2} = O({size}^2)
+\end{equation}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{inc/img/insertionfi.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, определяющая $f_{i}$.}
+	\label{img:insertion:fi}	
+\end{center}
+\end{figure}
+\newpage 
+
 \subsection{Алгоритм сортировки выбором}
 Трудоёмкость алгоритма сортировки выбором будет включать включать в себя:
 \begin{itemize}
 \item цикл по $i \in [0..size - 1]$;
 \item цикл по $j \in [i + 1..size]$, включённый в цикл по i.
 \end{itemize}
+
+При этом для цикла по $j$ из части блок-схемы, представленной на рисунке \ref{img:selection:fj}, будем иметь:
+
+\begin{equation}
+f_{j} = 3 + 1 + \frac{size}{2}(1 + 1 + f_{jbody})
+\end{equation}
+где $f_{jbody}$ - это трудоёмкость тела цикла, которая определяется выражением:
+
+\begin{equation}
+f_{jbody} = \begin{cases}
+				3, & \textbf{лучший случай}\\
+				4, & \textbf{худший случай}\\
+				\end{cases}
+\end{equation}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/selectionfj.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, определяющая $f_{j}$ и $f_{j body}$.}
+	\label{img:selection:fj}	
+\end{center}
+\end{figure}
+
+Для цикла по $i$ из части блок-схемы, представленной на рисунке \ref{img:selection:fi}, будем иметь:
+
+\begin{equation}
+f_{i} = 1 + 1 + (size - 1)(1 + 1 + 2 + f_{j})
+\end{equation}
+
+Как итог, имеем в лучшем случае:
+\begin{equation}
+f = f_{i} = 2 + (size - 1)(4 + 4 + \frac{size}{2}(1 + 1 + 3))
+\end{equation}
+
+\begin{equation}
+f = -6 + \frac{11}{2}size + \frac{5}{2}{size}^2 \approx \frac{5}{2}{size}^2 = O({size}^2)
+\end{equation}
+
+В худшем случае:
+\begin{equation}
+f = f_{i} = 2 + (size - 1)(4 + 4 + \frac{size}{2}(1 + 1 + 4))
+\end{equation}
+
+\begin{equation}
+f = -6 + 5size + 3{size}^2 \approx 3{size}^2 = O({size}^2)
+\end{equation}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.5]{inc/img/selectionfi.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, определяющая $f_{i}$.}
+	\label{img:selection:fi}	
+\end{center}
+\end{figure}
+\newpage 
 
 \section*{Вывод}
 На основе теоретичесих данных, полученных из аналитического раздела, были построены схемы рассматриваемых алгоритмов сортировок, оценены их трудоёмкости в лучшем и худшем случаях.
