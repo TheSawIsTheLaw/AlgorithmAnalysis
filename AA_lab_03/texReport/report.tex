@@ -60,60 +60,132 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \usepackage{filecontents}
 \usetikzlibrary{datavisualization}
 \usetikzlibrary{datavisualization.formats.functions}
-\begin{filecontents}{KA0.dat}
-100 2148121
-200 17350292
-300 68920554
-400 211301483
-500 367822853
-600 678478122
+
+\begin{filecontents}{SBSorted.dat}
+100 1818544
+200 2182084
+300 2836575
+400 3666706
+500 4561938
+1000 12282615
+1500 25296835
+2000 43069012
+3000 91881622
+4000 165458964
+5000 248940636
 \end{filecontents}
 
-\begin{filecontents}{KV0.dat}
-100 2302331
-200 22592034
-300 73453362
-400 205981760
-500 351730341
-600 658012453
+\begin{filecontents}{SBSortedReverse.dat}
+100 1902381
+200 2690147
+300 3973067
+400 6108805
+500 8344909
+1000 28119897
+1500 59508253
+2000 102249552
+3000 218854972
+4000 379629421
+5000 592686305
 \end{filecontents}
 
-\begin{filecontents}{UKV0.dat}
-100 1921005
-200 1425033
-300 57000923
-400 172968826
-500 340284336
-600 625149992
+\begin{filecontents}{SBUnsorted.dat}
+100 1592950
+200 2200640
+300 3280409
+400 4728961
+500 6573267
+1000 21195842
+1500 45146080
+2000 79173129 
+3000 166840980
+4000 280142359
+5000 449032194
 \end{filecontents}
 
-\begin{filecontents}{KA1.dat}
-101 2312114
-201 20247410
-301 75166547
-401 227614782
-501 364368768
-601 672846913
+\begin{filecontents}{SISorted.dat}
+100 1630961
+200 1647635
+300 1640207
+400 1640022
+500 1645407
+1000 1654109
+1500 1662390
+2000 1700609
+3000 1810398
+4000 1823571
+5000 1766772
 \end{filecontents}
 
-\begin{filecontents}{KV1.dat}
-101 2623891
-201 21694235
-301 77955778
-401 218087162
-501 362588416
-601 671159157
+\begin{filecontents}{SISortedReverse.dat}
+100 1770645
+200 2035881
+300 2809635
+400 3078558
+500 3876786
+1000 10741734
+1500 21659401
+2000 37367527
+3000 78513340
+4000 131840967
+5000 197947307
 \end{filecontents}
 
-\begin{filecontents}{UKV1.dat}
-101 2032155
-201 17554153
-301 64421195
-401 171881527
-501 358108198
-601 647843183
+\begin{filecontents}{SIUnsorted.dat}
+100 1498909
+200 1562519
+300 1808384
+400 2184299
+500 2566161
+1000 5769483
+1500 11233626
+2000 18556919
+3000 38942468
+4000 66181509
+5000 99391239
 \end{filecontents}
 
+\begin{filecontents}{SSSorted.dat}
+100 1826308
+200 2144446
+300 2530081
+400 2924786
+500 3594866
+1000 8634889
+1500 17374004
+2000 29104145
+3000 61997393
+4000 105764286
+5000 164210924
+\end{filecontents}
+
+\begin{filecontents}{SSSortedReverse.dat}
+100 1712426
+200 1948340
+300 2299634
+400 2837866
+500 3483199
+1000 9179446
+1500 17961391
+2000 30242327
+3000 65218978
+4000 114500414
+5000 173933001
+\end{filecontents}
+
+\begin{filecontents}{SSUnsorted.dat}
+100 1460379
+200 1680307
+300 2038358
+400 2558087
+500 3166091
+1000 8411547
+1500 17161009
+2000 28673064
+3000 64444295
+4000 102043152
+5000 172713187
+\end{filecontents}
 
 \begin{document}
 \begin{titlepage}
@@ -679,32 +751,32 @@ fun selectionSort(arr: IntArray)
 
 \begin{table}[h]
 	\begin{center}
-		\caption{\label{time3} Замеры времени для неупорядоченных}
+		\caption{\label{time3} Замеры времени для неупорядоченных массивов}
 		\begin{tabular}{|c c c c|} 
  			\hline
 			Размер массива & СП & СВст & СВыб \\ [0.5ex] 
  			\hline\hline
- 			100 & 1592950 & & \\
+ 			100 & 1592950 & 1498909 & 1460379\\
  			\hline
- 			200 & 2200640 & & \\
+ 			200 & 2200640 & 1562519 & 1680307\\
  			\hline
-			300 & 3280409 & & \\
+			300 & 3280409 & 1808384 & 2038358\\
 			\hline
-			400 & 4728961 & & \\
+			400 & 4728961 & 2184299 & 2558087\\
 			\hline
-			500 & 6573267 &  & \\
+			500 & 6573267 & 2566161 & 3166091\\
 			\hline
-			1000 & 21195842 &  & \\
+			1000 & 21195842 & 5769483 & 8411547\\
 			\hline
-			1500 & 45146080 &  & \\
+			1500 & 45146080 & 11233626 & 17161009\\
 			\hline
-			2000 & 79173129 &  & \\
+			2000 & 79173129 & 18556919 & 28673064\\
 			\hline
-			3000 & 166840980 &  & \\
+			3000 & 166840980 & 38942468 & 64444295\\
 			\hline
-			4000 & 280142359 &  & \\
+			4000 & 280142359 & 66181509 & 102043152\\
 			\hline
-			5000 & 449032194 &  	& \\
+			5000 & 449032194 & 99391239 	& 172713187\\
 			\hline
 			\end{tabular}
 	\end{center}
@@ -721,44 +793,70 @@ fun selectionSort(arr: IntArray)
 			legend pos=north west,
 			ymajorgrids=true
 		] 
-		\addplot[color=orange] table[x index=0, y index=1] {KA0.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KV0.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {UKV0.dat};
+		\addplot[color=orange] table[x index=0, y index=1] {SBSorted.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SISorted.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSSorted.dat};
 
-		\addlegendentry{КА}
-		\addlegendentry{КВ}
-		\addlegendentry{УКВ}
+		\addlegendentry{СП}
+		\addlegendentry{СВст}
+		\addlegendentry{СВыб}
 		\end{axis}
 	\end{tikzpicture}
 	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размера матриц (чётные значения размерностей)}
+	\caption{Зависимость времени работы от размера отсортированных массивов}
 	\label{timeRes1}
 	\end{center}
 \end{figure}
 
 \begin{figure}[h]
-	\begin{center}
+\begin{center}
 	\begin{tikzpicture}
 
-		\begin{axis}[
- 		   	axis lines = left,
- 		   	xlabel = размер,
- 		   	ylabel = {время, нс},
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = размер,
+  		  	ylabel = {время, нс},
 			legend pos=north west,
 			ymajorgrids=true
-		]
-		\addplot[color=orange] table[x index=0, y index=1] {KA1.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KV1.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {UKV1.dat};
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {SBSortedReverse.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SISortedReverse.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSSortedReverse.dat};
 
-		\addlegendentry{КА}
-		\addlegendentry{КВ}
-		\addlegendentry{УКВ}
+		\addlegendentry{СП}
+		\addlegendentry{СВст}
+		\addlegendentry{СВыб}
 		\end{axis}
-\end{tikzpicture}
+	\end{tikzpicture}
 	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размера матриц (нечётные значения размерностей)}
+	\caption{Зависимость времени работы от размера отсортированных в обратном порядке массивов}
 	\label{timeRes2}
+	\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tikzpicture}
+
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = размер,
+  		  	ylabel = {время, нс},
+			legend pos=north west,
+			ymajorgrids=true
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {SBUnsorted.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SIUnsorted.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSUnsorted.dat};
+
+		\addlegendentry{СП}
+		\addlegendentry{СВст}
+		\addlegendentry{СВыб}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы от размера массивов, заданных случайным образом}
+	\label{timeRes3}
 	\end{center}
 \end{figure}
 

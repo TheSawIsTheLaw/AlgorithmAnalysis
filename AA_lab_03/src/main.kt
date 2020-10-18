@@ -113,9 +113,9 @@ fun main()
 //    setUnsorted(arr)
 
     var duration = measureTimedValue {
-        bubbleSort(arr)
+//        bubbleSort(arr)
 //        insertionSort(arr)
-//        selectionSort(arr)
+        selectionSort(arr)
     }
     print(duration.duration.inNanoseconds.toInt())
 
