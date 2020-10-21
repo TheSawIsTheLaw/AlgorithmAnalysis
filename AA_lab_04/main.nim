@@ -1,14 +1,15 @@
 import strformat
 import random
 import strutils
+import sequtils
 
 type
   Matrix[W, H: static[int]] =
     array[1..W, array[1..H, int]]
 
-proc printMat(mat : Matrix)=
-    for i in low(mat)..high(mat):
-        for j in low(mat[1])..high(mat):
+proc printMat(mat : seq[seq[int]])=
+    for i in 0..mat.len - 1:
+        for j in 0..mat[1].len - 1:
             stdout.write fmt"{mat[i][j]} "
         echo ""
 
@@ -73,11 +74,43 @@ proc getCols() : int=
     stdout.write "Cols: "
     return parseInt(readline(stdin))
 
+proc getMat() : seq[seq[int]]=
+    var rows = getRows()
+    var cols = getCols()
+
+    var mat = newSeqWith(rows, newSeq[int](cols))
+
+    var inpStr = ""
+
+    for i in 0..rows - 1:
+        inpStr.add(readline(stdin))
+        var temp = inpStr.split(' ')
+        var j = 0
+        for k in temp:
+            try:
+                mat[i][j] = k.parseInt
+            except:
+                discard
+            finally:
+                j += 1
+                if j == cols:
+                    break
+        inpStr = ""
+
+    return mat
 
 proc main()=
-    var s : seq[int]
+    var fMat = getMat()
 
-    ##var secondMat = getMat()
+    echo "\nGot matrix:"
+    printMat(fMat)
+    echo ""
+
+    var sMat = getMat()
+
+    echo "\nGot matrix:"
+    printMat(sMat)
+    echo ""
 
     ##var prod = winogradMult(firstMat, secondMat)
 
