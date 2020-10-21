@@ -53,7 +53,6 @@ proc winogradMult(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
     for i in 0..product.len - 1:
         for j in 0..product[0].len - 1:
             product[i][j] += -computedRows[i] - computedCols[j]
-            echo i, ' ', j, ' ', product[i][j]
 
             var k = 0
             while k < sMat.len - 1:
@@ -155,18 +154,35 @@ proc prepareThreadProd(info : tuple[startOfInterval, endOfInterval, row : int, p
     for j in info.startOfInterval..info.endOfInterval - 1:
         info.product[info.row][j] += -info.computedRows[info.row] - info.computedCols[j]
 
+proc finThreadProd(info : tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], fMat, sMat : seq[seq[int]]])=
+    var k = 0
+    for j in info.startOfInterval..info.endOfInterval - 1:
+        k = 0
+        while k < info.sMat.len - 1:
+            info.product[info.row][j] += (info.fMat[info.row][k] + info.sMat[k + 1][j]) * (info.fMat[info.row][k + 1] + info.sMat[k][j])
+            k += 2
+
 
 proc multParallel(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, computedCols : seq[int]) : seq[seq[int]]=
     var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
 
     var prodPtr = addr product
-    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]]]]
+    var fThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]]]]
     var size = (product[0].len / THREADS).int
     for i in 0..product.len - 1:
-        for j in 0..thr.len - 2:
-            createThread(thr[j], prepareThreadProd, (j * size, (j + 1) * size, i, prodPtr, computedRows, computedCols))
-        createThread(thr[thr.len - 1], prepareThreadProd, (thr.len - 1 * size, product[0].len, i, prodPtr, computedRows, computedCols))
-        joinThreads(thr)
+        for j in 0..fThr.len - 2:
+            createThread(fThr[j], prepareThreadProd, (j * size, (j + 1) * size, i, prodPtr, computedRows, computedCols))
+        createThread(fThr[fThr.len - 1], prepareThreadProd, (fThr.len - 1 * size, product[0].len, i, prodPtr, computedRows, computedCols))
+        joinThreads(fThr)
+
+    printMat(product)
+
+    var sThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], fMat, sMat : seq[seq[int]]]]]
+    for i in 0..product.len - 1:
+        for j in 0..sThr.len - 2:
+            createThread(sThr[j], finThreadProd, (j * size, (j + 1) * size, i, prodPtr, fMat, sMat))
+        createThread(sThr[sThr.len - 1], finThreadProd, (sThr.len - 1 * size, product[0].len, i, prodPtr, fMat, sMat))
+        joinThreads(sThr)
 
     return product
 
@@ -182,7 +198,7 @@ proc winogradMultParallel(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[
 
     var product = multParallel(fMat, sMat, computedRows, computedCols)
 
-    return fMat
+    return product
 
 proc setRandomMat() : seq[seq[int]]=
     var matrix = newSeqWith(10, newSeq[int](10))
@@ -205,6 +221,10 @@ proc main()=
 
     var prod = winogradMultParallel(fMat, sMat)
     var prod2 = winogradMult(fMat, sMat)
+
+    printMat(prod)
+    echo ""
+    printMat(prod2)
 
 #    stdout.write "Result:\n"
 #    printMat(prod)
