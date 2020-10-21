@@ -184,6 +184,12 @@ proc multParallel(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, comp
         createThread(sThr[sThr.len - 1], finThreadProd, (sThr.len - 1 * size, product[0].len, i, prodPtr, fMat, sMat))
         joinThreads(sThr)
 
+    if sMat.len %% 2 != 0:
+        var curK = sMat.len - 1
+        for i in 0..product.len - 1:
+            for j in 0..product[0].len - 1:
+                product[i][j] += fMat[i][curK] * sMat[curK][j]
+
     return product
 
 
