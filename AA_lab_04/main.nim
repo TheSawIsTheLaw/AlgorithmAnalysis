@@ -113,9 +113,12 @@ proc rowsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     var compRows = newSeq[int](matrix.len)
     var compRowsPtr = addr compRows
     var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int, computedRows : ptr seq[int], matrix : seq[seq[int]]]]]
-    var size = (matrix.len / (THREADS + 1)).int
-    for i in 0..thr.len - 1:
+    var size = (matrix.len / THREADS).int
+    for i in 0..thr.len - 2:
         createThread(thr[i], rowsCompThreadFunc, (i * size, (i + 1) * size, compRowsPtr, matrix))
+
+    createThread(thr[thr.len - 1], rowsCompThreadFunc, ((thr.len - 1) * size, matrix.len, compRowsPtr, matrix))
+
     joinThreads(thr)
     return compRows
 
@@ -155,18 +158,21 @@ proc winogradMultParallel(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[
 
     return fMat
 
-proc setRandomMat(matrix : var seq[seq[int]])=
+proc setRandomMat() : seq[seq[int]]=
+    var matrix = newSeqWith(10, newSeq[int](10))
     for i in 0..matrix.len - 1:
         for j in 0..matrix.len - 1:
             matrix[i][j] = random(20)
 
+    return matrix
+
 proc main()=
-    var fMat = getMat()
+    var fMat = setRandomMat()
     echo "\nGot matrix:"
     printMat(fMat)
     echo ""
 
-    var sMat = getMat()
+    var sMat = setRandomMat()
     echo "\nGot matrix:"
     printMat(sMat)
     echo ""
