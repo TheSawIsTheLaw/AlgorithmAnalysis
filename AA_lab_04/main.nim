@@ -7,6 +7,8 @@ import locks
 
 const THREADS = 4
 
+randomize()
+
 var L : Lock
 initLock(L)
 
@@ -51,6 +53,7 @@ proc winogradMult(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
     for i in 0..product.len - 1:
         for j in 0..product[0].len - 1:
             product[i][j] += -computedRows[i] - computedCols[j]
+            echo i, ' ', j, ' ', product[i][j]
 
             var k = 0
             while k < sMat.len - 1:
@@ -133,6 +136,7 @@ proc colsCompThreadFunc(info : tuple[startOfInterval, endOfInterval : int,
         i += 2
     release(L)
 
+
 proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     var compCols = newSeq[int](matrix[0].len)
     var compColsPtr = addr compCols
@@ -147,14 +151,36 @@ proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     return compCols
 
 
+proc prepareThreadProd(info : tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]])=
+    for j in info.startOfInterval..info.endOfInterval - 1:
+        info.product[info.row][j] += -info.computedRows[info.row] - info.computedCols[j]
+
+
+proc multParallel(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, computedCols : seq[int]) : seq[seq[int]]=
+    var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
+
+    var prodPtr = addr product
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]]]]
+    var size = (product[0].len / THREADS).int
+    for i in 0..product.len - 1:
+        for j in 0..thr.len - 2:
+            createThread(thr[j], prepareThreadProd, (j * size, (j + 1) * size, i, prodPtr, computedRows, computedCols))
+        createThread(thr[thr.len - 1], prepareThreadProd, (thr.len - 1 * size, product[0].len, i, prodPtr, computedRows, computedCols))
+        joinThreads(thr)
+
+    return product
+
+
 proc winogradMultParallel(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
     if (fMat[0].len != sMat.len):
         return
 
     var computedRows = rowsCompParallel(fMat)
     echo computedRows
-    var computedCols = colsCOmpParallel(sMat)
+    var computedCols = colsCompParallel(sMat)
     echo computedCols
+
+    var product = multParallel(fMat, sMat, computedRows, computedCols)
 
     return fMat
 
