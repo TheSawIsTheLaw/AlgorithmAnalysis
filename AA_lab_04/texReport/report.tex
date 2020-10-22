@@ -307,34 +307,96 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 
 \chapter{Конструкторская часть}
 \section{Блок-схема алгоритма Копперсмита-Винограда}
-Блок-схема алгоритма сортировки пузырьком предоставлена на рисунке \ref{img:bubbleSortScheme}.
+Блок-схема алгоритма Копперсмита-Винограда предоставлена на рисунках \ref{img:winodradScheme}-\ref{img:colsPreComp}.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{inc/img/bubbleSort.png}
+\includegraphics[scale=0.4]{inc/img/winogradScheme.png}
 \captionsetup{justification=centering}
-	\caption{Блок-схема алгоритма сортировки пузырьком.}
-	\label{img:bubbleSortScheme}	
+	\caption{Блок-схема алгоритма Копперсмита-Винограда.}
+	\label{img:winodradScheme}	
 \end{center}
 \end{figure}
-
-\section{Блок-схема алгоритма сортировки вставками}
-Блок-схема алгоритма сортировки вставками предоставлена на рисунке \ref{img:insertionSortScheme}.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{inc/img/insertionSort.png}
+\includegraphics[scale=0.4]{inc/img/rowsCompUpd.png}
 \captionsetup{justification=centering}
-	\caption{Блок-схема алгоритма сортировки вставками.}
-	\label{img:insertionSortScheme}	
+	\caption{Блок-схема предрасчёта строк для алгоритма Копперсмита-Винограда.}
+	\label{img:rowsPreComp}	
 \end{center}
 \end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/colsCompUpd.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема предрасчёта столбцов для алгоритма Копперсмита-Винограда.}
+	\label{img:colsPreComp}	
+\end{center}
+\end{figure}
+\newpage
 
 \section{Параллельная реализация алгоритма Копперсмита-Винограда}
+Для распараллеливания алгоритма требуется определить, какие из частей алгоритма могут быть выполнены вне зависимости друг от друга.
 
-\section{Схема параллельной реализации алгоритма Копперсмита-Винограда с разделением третьего этапа}
+Часть блок-схемы, отвечающая за предрасчёт строк и столбцов (рисунок \ref{img:paralPart1}), однозначно может быть распараллелен. Но до завершения двух этих подпрограмм к выполнению следующих этапов приступать нельзя, так как вычисленные массивы будут использоваться далее. В данной части будет использоваться полное выделенное количество потоков последовательно - первоначально для вычисления строк, а далее - для вычисления столбцов.
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/paralPart1.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, в которой происходит вызов подпрограмм предрасчёта строк и столбцов.}
+	\label{img:paralPart1}	
+\end{center}
+\end{figure}
+\newpage
 
-\section{Схема параллельной реализации алгоритма Копперсмита-Винограда без разделения третьего этапа}
+Непосредственное вычисление значения каждого элемента матрицы, показанное на рисунке \ref{img:paralPart2}, может быть также поэлементно распараллелено. Однако тут важно заметить, что часть данного этапа, показанная на рисунке \ref{img:paralPart21}, и часть, показанная на рисунке \ref{img:paralPart22}, могут быть выполнены как раздельно, так и совместно при обработке каждого из элементов. Важно заметить, что, при раздельном выполнении, потребуется создавать новые потоки, что является достаточно затратным по времени действием.
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/paralPart2.png}
+\captionsetup{justification=centering}
+	\caption{Часть блок-схемы, в которой происходит расчёт значения каждого элемента матрицы.}
+	\label{img:paralPart2}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/paralPart21.png}
+\captionsetup{justification=centering}
+	\caption{Первая часть рассматриваемого этапа.}
+	\label{img:paralPart21}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/paralPart22.png}
+\captionsetup{justification=centering}
+	\caption{Вторая часть рассматриваемого этапа.}
+	\label{img:paralPart22}	
+\end{center}
+\end{figure}
+\newpage
+
+Довычисление значений в случае нечётной размерности итоговой матрицы, показанное на рисунке \ref{img:paralPart3} в каждой итерации цикла требует обращения к матрице, что при распараллеливании приведёт к большому числу блокирований разделяемой памяти и будет неэффективно. Поэтому данный этап останется без изменений.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/paralPart3.png}
+\captionsetup{justification=centering}
+	\caption{Довычисление значений итоговой матрицы при нечётной размерности оной.}
+	\label{img:paralPart3}	
+\end{center}
+\end{figure}
+\newpage
+
+\section{Схема параллельной реализации алгоритма Копперсмита-Винограда с разделением этапа вычисления элементов матрицы}
+На рисунке \ref{} предоставлена схема с параллельным выполнением двух частей этапа вычисления элементов матрицы.
+
+\section{Схема параллельной реализации алгоритма Копперсмита-Винограда без разделения этапа вычисления элементов матрицы}
+На рисунке \ref{} предоставлена схема с последовательным выполнением двух частей этапа вычисления элементов матрицы.
 
 \newpage
 
