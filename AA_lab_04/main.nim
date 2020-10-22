@@ -3,6 +3,8 @@ import random
 import strutils
 import sequtils
 
+import times
+
 import locks
 
 const THREADS = 4
@@ -102,19 +104,19 @@ proc getMat() : seq[seq[int]]=
 
 proc rowsCompThreadFunc(info: tuple[startOfInterval, endOfInterval : int,
                                     computedRows : ptr seq[int],
-                                    matrix : seq[seq[int]]]) {.thread.}=
-    acquire(L)
+                                    matrix : seq[seq[int]]])=
     for i in info.startOfInterval..info.endOfInterval - 1:
         var j = 0
         while j < info.matrix[0].len - 1:
             info.computedRows[i] += info.matrix[i][j] * info.matrix[i][j + 1]
             j += 2
-    release(L)
 
 proc rowsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     var compRows = newSeq[int](matrix.len)
     var compRowsPtr = addr compRows
-    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int, computedRows : ptr seq[int], matrix : seq[seq[int]]]]]
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int,
+                                             computedRows : ptr seq[int],
+                                             matrix : seq[seq[int]]]]]
     var size = (matrix.len / THREADS).int
     for i in 0..thr.len - 2:
         createThread(thr[i], rowsCompThreadFunc, (i * size, (i + 1) * size, compRowsPtr, matrix))
@@ -139,7 +141,9 @@ proc colsCompThreadFunc(info : tuple[startOfInterval, endOfInterval : int,
 proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     var compCols = newSeq[int](matrix[0].len)
     var compColsPtr = addr compCols
-    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int, computedCols : ptr seq[int], matrix : seq[seq[int]]]]]
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int,
+                                             computedCols : ptr seq[int],
+                                             matrix : seq[seq[int]]]]]
     var size = (matrix[0].len / THREADS).int
     for i in 0..thr.len - 2:
         createThread(thr[i], colsCompThreadFunc, (i * size, (i + 1) * size, compColsPtr, matrix))
@@ -150,11 +154,15 @@ proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     return compCols
 
 
-proc prepareThreadProd(info : tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]])=
+proc prepareThreadProd(info : tuple[startOfInterval, endOfInterval, row : int,
+                                    product : ptr seq[seq[int]],
+                                    computedRows, computedCols : seq[int]])=
     for j in info.startOfInterval..info.endOfInterval - 1:
         info.product[info.row][j] += -info.computedRows[info.row] - info.computedCols[j]
 
-proc finThreadProd(info : tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], fMat, sMat : seq[seq[int]]])=
+proc finThreadProd(info : tuple[startOfInterval, endOfInterval, row : int,
+                                product : ptr seq[seq[int]],
+                                fMat, sMat : seq[seq[int]]])=
     var k = 0
     for j in info.startOfInterval..info.endOfInterval - 1:
         k = 0
@@ -163,25 +171,27 @@ proc finThreadProd(info : tuple[startOfInterval, endOfInterval, row : int, produ
             k += 2
 
 
-proc multParallel(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, computedCols : seq[int]) : seq[seq[int]]=
+proc multParallelFirst(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, computedCols : seq[int]) : seq[seq[int]]=
     var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
 
     var prodPtr = addr product
-    var fThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]]]]
+    var fThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int,
+                                        product : ptr seq[seq[int]],
+                                        computedRows, computedCols : seq[int]]]]
     var size = (product[0].len / THREADS).int
     for i in 0..product.len - 1:
         for j in 0..fThr.len - 2:
             createThread(fThr[j], prepareThreadProd, (j * size, (j + 1) * size, i, prodPtr, computedRows, computedCols))
-        createThread(fThr[fThr.len - 1], prepareThreadProd, (fThr.len - 1 * size, product[0].len, i, prodPtr, computedRows, computedCols))
+        createThread(fThr[fThr.len - 1], prepareThreadProd, ((fThr.len - 1) * size, product[0].len, i, prodPtr, computedRows, computedCols))
         joinThreads(fThr)
 
-    printMat(product)
-
-    var sThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int, product : ptr seq[seq[int]], fMat, sMat : seq[seq[int]]]]]
+    var sThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int,
+                                        product : ptr seq[seq[int]],
+                                        fMat, sMat : seq[seq[int]]]]]
     for i in 0..product.len - 1:
         for j in 0..sThr.len - 2:
             createThread(sThr[j], finThreadProd, (j * size, (j + 1) * size, i, prodPtr, fMat, sMat))
-        createThread(sThr[sThr.len - 1], finThreadProd, (sThr.len - 1 * size, product[0].len, i, prodPtr, fMat, sMat))
+        createThread(sThr[sThr.len - 1], finThreadProd, ((sThr.len - 1) * size, product[0].len, i, prodPtr, fMat, sMat))
         joinThreads(sThr)
 
     if sMat.len %% 2 != 0:
@@ -193,7 +203,7 @@ proc multParallel(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, comp
     return product
 
 
-proc winogradMultParallel(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
+proc winogradMultParallelFirst(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
     if (fMat[0].len != sMat.len):
         return
 
@@ -202,7 +212,54 @@ proc winogradMultParallel(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[
     var computedCols = colsCompParallel(sMat)
     echo computedCols
 
-    var product = multParallel(fMat, sMat, computedRows, computedCols)
+    var product = multParallelFirst(fMat, sMat, computedRows, computedCols)
+
+    return product
+
+proc twinThreadProd(info : tuple[startOfInterval, endOfInterval, row : int,
+                                    product : ptr seq[seq[int]],
+                                    computedRows, computedCols : seq[int],
+                                    fMat, sMat : seq[seq[int]]])=
+    for j in info.startOfInterval..info.endOfInterval - 1:
+        info.product[info.row][j] += -info.computedRows[info.row] - info.computedCols[j]
+        var k = 0
+        while k < info.sMat.len - 1:
+            info.product[info.row][j] += (info.fMat[info.row][k] + info.sMat[k + 1][j]) * (info.fMat[info.row][k + 1] + info.sMat[k][j])
+            k += 2
+
+proc multParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, computedCols : seq[int]) : seq[seq[int]]=
+    var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
+
+    var prodPtr = addr product
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval, row : int,
+                                             product : ptr seq[seq[int]],
+                                             computedRows, computedCols : seq[int],
+                                             fMat, sMat : seq[seq[int]]]]]
+    var size = (product[0].len / THREADS).int
+    for i in 0..product.len - 1:
+        for j in 0..thr.len - 2:
+            createThread(thr[j], twinThreadProd, (j * size, (j + 1) * size, i, prodPtr, computedRows, computedCols, fMat, sMat))
+        createThread(thr[thr.len - 1], twinThreadProd, ((thr.len - 1) * size, product[0].len, i, prodPtr, computedRows, computedCols, fMat, sMat))
+        joinThreads(thr)
+
+    if sMat.len %% 2 != 0:
+        var curK = sMat.len - 1
+        for i in 0..product.len - 1:
+            for j in 0..product[0].len - 1:
+                product[i][j] += fMat[i][curK] * sMat[curK][j]
+
+    return product
+
+proc winogradMultParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
+    if (fMat[0].len != sMat.len):
+        return
+
+    var computedRows = rowsCompParallel(fMat)
+    echo computedRows
+    var computedCols = colsCompParallel(sMat)
+    echo computedCols
+
+    var product = multParallelSecond(fMat, sMat, computedRows, computedCols)
 
     return product
 
@@ -225,14 +282,22 @@ proc main()=
     printMat(sMat)
     echo ""
 
-    var prod = winogradMultParallel(fMat, sMat)
-    var prod2 = winogradMult(fMat, sMat)
 
+    #var timeStart = now()
+    var prod = winogradMultParallelFirst(fMat, sMat)
     printMat(prod)
+    #var timeEnd = now()
+    #echo "Time: ", timeEnd - timeStart
+    #timeStart = now()
+    var prod2 = winogradMult(fMat, sMat)
     echo ""
     printMat(prod2)
 
-#    stdout.write "Result:\n"
-#    printMat(prod)
+    var prod3 = winogradMultParallelSecond(fMat, sMat)
+    echo ""
+    printMat(prod3)
+    #timeEnd = now()
+    #echo "Time: ", timeEnd - timeStart
+
 
 main()
