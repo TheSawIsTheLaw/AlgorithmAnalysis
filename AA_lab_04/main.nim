@@ -47,9 +47,7 @@ proc winogradMult(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
         return
 
     var computedRows = rowsComp(fMat)
-    echo "Truly: ", computedRows
     var computedCols = colsComp(sMat)
-    echo "Truly: ", computedCols
 
     var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
     for i in 0..product.len - 1:
@@ -206,9 +204,7 @@ proc winogradMultParallelFirst(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq
         return
 
     var computedRows = rowsCompParallel(fMat)
-    echo computedRows
     var computedCols = colsCompParallel(sMat)
-    echo computedCols
 
     var product = multParallelFirst(fMat, sMat, computedRows, computedCols)
 
@@ -253,9 +249,7 @@ proc winogradMultParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]]) : se
         return
 
     var computedRows = rowsCompParallel(fMat)
-    echo computedRows
     var computedCols = colsCompParallel(sMat)
-    echo computedCols
 
     var product = multParallelSecond(fMat, sMat, computedRows, computedCols)
 
@@ -270,19 +264,28 @@ proc setRandomMat() : seq[seq[int]]=
     return matrix
 
 proc main()=
-    var fMat = setRandomMat()
+    var fMat = getMat()
     echo "\nGot matrix:"
     printMat(fMat)
     echo ""
 
-    var sMat = setRandomMat()
+    var sMat = getMat()
     echo "\nGot matrix:"
     printMat(sMat)
     echo ""
 
-    var timeStart = now()
-    var prod = winogradMultParallelSecond(fMat, sMat)
-    var timeEnd = now()
-    echo "Time: ", timeEnd - timeStart
+    var prod = winogradMultParallelFirst(fMat, sMat)
+    echo "First parallel result:"
+    printMat(prod)
+    echo ""
+
+    var prod2 = winogradMultParallelSecond(fMat, sMat)
+    echo "Second parallel result:"
+    printMat(prod2)
+    echo ""
+
+    var prod3 = winogradMult(fMat, sMat)
+    echo "Classic Winograd result:"
+    printMat(prod3)
 
 main()
