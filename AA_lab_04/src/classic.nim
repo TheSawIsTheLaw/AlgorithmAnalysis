@@ -72,6 +72,6 @@ proc main()=
     var timeStart = now()
     var prod = winogradMult(fMat, sMat)
     var timeEnd = now()
-    echo "Time: ", timeEnd - timeStart
+    echo '\n', (timeEnd - timeStart).nanoseconds
 
 main()
