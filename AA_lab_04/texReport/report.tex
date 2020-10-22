@@ -1,0 +1,712 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+%\usepackage[14pt]{extsizes}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage[justification=centering]{caption}
+
+\lstdefinelanguage{Nim}{
+  comment=[l]{//},
+  commentstyle={\color{gray}\ttfamily},
+  emph={delegate, filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println, return@},
+  emphstyle={\color{OrangeRed}},
+  identifierstyle=\color{black},
+  keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, null, object, override, package, private, public, return, set, super, suspend, this, throw, true, try, typealias, val, var, vararg, when, where, while},
+  keywordstyle={\color{blue}\bfseries},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[s]{"""*}{*"""},
+  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String},
+  ndkeywordstyle={\color{orange}\bfseries},
+  sensitive=true,
+  stringstyle={\color{green}\ttfamily},
+}
+
+% Для листинга кода:
+\lstset{ %
+language=Nim,                 % выбор языка для подсветки (здесь это С)
+basicstyle=\footnotesize\sffamily, % размер и начертание шрифта для подсветки кода
+numbers=left,               % где поставить нумерацию строк (слева\справа)
+numberstyle=\tiny,           % размер шрифта для номеров строк
+stepnumber=1,                   % размер шага между двумя номерами строк
+numbersep=5pt,                % как далеко отстоят номера строк от подсвечиваемого кода
+showspaces=false,            % показывать или нет пробелы специальными отступами
+showstringspaces=false,      % показывать или нет пробелы в строках
+showtabs=false,             % показывать или нет табуляцию в строках
+frame=single,              % рисовать рамку вокруг кода
+tabsize=2,                 % размер табуляции по умолчанию равен 2 пробелам
+captionpos=t,              % позиция заголовка вверху [t] или внизу [b] 
+breaklines=true,           % автоматически переносить строки (да\нет)
+breakatwhitespace=false, % переносить строки только если есть пробел
+escapeinside={\#*}{*)}   % если нужно добавить комментарии в коде
+}
+
+\usepackage{hyperref}
+\hypersetup{
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
+}
+
+% Для измененных титулов глав:
+\usepackage{titlesec, blindtext, color} % подключаем нужные пакеты
+\definecolor{gray75}{gray}{0.75} % определяем цвет
+\newcommand{\hsp}{\hspace{20pt}} % длина линии в 20pt
+% titleformat определяет стиль
+\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\hsp\textcolor{gray75}{|}\hsp}{0pt}{\Huge\bfseries}
+
+% plot
+\usepackage{pgfplots}
+\usepackage{filecontents}
+\usetikzlibrary{datavisualization}
+\usetikzlibrary{datavisualization.formats.functions}
+
+\begin{filecontents}{SBSorted.dat}
+100 1818544
+200 2182084
+300 2836575
+400 3666706
+500 4561938
+1000 12282615
+1500 25296835
+2000 43069012
+3000 91881622
+4000 165458964
+5000 248940636
+\end{filecontents}
+
+\begin{filecontents}{SBSortedReverse.dat}
+100 1902381
+200 2690147
+300 3973067
+400 6108805
+500 8344909
+1000 28119897
+1500 59508253
+2000 102249552
+3000 218854972
+4000 379629421
+5000 592686305
+\end{filecontents}
+
+\begin{filecontents}{SBUnsorted.dat}
+100 1592950
+200 2200640
+300 3280409
+400 4728961
+500 6573267
+1000 21195842
+1500 45146080
+2000 79173129 
+3000 166840980
+4000 280142359
+5000 449032194
+\end{filecontents}
+
+\begin{filecontents}{SISorted.dat}
+100 1630961
+200 1647635
+300 1640207
+400 1640022
+500 1645407
+1000 1654109
+1500 1662390
+2000 1700609
+3000 1810398
+4000 1823571
+5000 1766772
+\end{filecontents}
+
+\begin{filecontents}{SISortedReverse.dat}
+100 1770645
+200 2035881
+300 2809635
+400 3078558
+500 3876786
+1000 10741734
+1500 21659401
+2000 37367527
+3000 78513340
+4000 131840967
+5000 197947307
+\end{filecontents}
+
+\begin{filecontents}{SIUnsorted.dat}
+100 1498909
+200 1562519
+300 1808384
+400 2184299
+500 2566161
+1000 5769483
+1500 11233626
+2000 18556919
+3000 38942468
+4000 66181509
+5000 99391239
+\end{filecontents}
+
+\begin{filecontents}{SSSorted.dat}
+100 1826308
+200 2144446
+300 2530081
+400 2924786
+500 3594866
+1000 8634889
+1500 17374004
+2000 29104145
+3000 61997393
+4000 105764286
+5000 164210924
+\end{filecontents}
+
+\begin{filecontents}{SSSortedReverse.dat}
+100 1712426
+200 1948340
+300 2299634
+400 2837866
+500 3483199
+1000 9179446
+1500 17961391
+2000 30242327
+3000 65218978
+4000 114500414
+5000 173933001
+\end{filecontents}
+
+\begin{filecontents}{SSUnsorted.dat}
+100 1460379
+200 1680307
+300 2038358
+400 2558087
+500 3166091
+1000 8411547
+1500 17161009
+2000 28673064
+3000 64444295
+4000 102043152
+5000 172713187
+\end{filecontents}
+
+\begin{document}
+\begin{titlepage}
+	\fontsize{12pt}{12pt}\selectfont
+	\noindent \begin{minipage}{0.15\textwidth}
+		\includegraphics[width=\linewidth]{inc/img/b_logo.jpg}
+	\end{minipage}
+	\noindent\begin{minipage}{0.9\textwidth}\centering
+		\textbf{Министерство науки и высшего образования Российской Федерации}\\
+		\textbf{Федеральное государственное бюджетное образовательное учреждение высшего образования}\\
+		\textbf{«Московский государственный технический университет имени Н.Э.~Баумана}\\
+		\textbf{(национальный исследовательский университет)»}\\
+		\textbf{(МГТУ им. Н.Э.~Баумана)}
+	\end{minipage}
+	
+	\noindent\rule{15cm}{3pt}
+	\newline\newline
+	\noindent ФАКУЛЬТЕТ \underline{~~~~~~~~~~~~~~~~«Информатика и системы управления»~~~~~~~~~~~~~~~~} \newline\newline
+	\noindent КАФЕДРА \underline{«Программное обеспечение ЭВМ и информационные технологии»}\newline\newline\newline\newline\newline\newline\newline
+	
+	
+	\begin{center}
+		\Large\textbf{Отчет по лабораторной работе №4 по курсу "Анализ алгоритмов"}\newline
+	\end{center}
+	
+	\noindent\textbf{Тема} \underline{Реализация параллельного алгоритма Копперсмита-Винограда}\newline\newline\newline
+	\noindent\textbf{Студент} \underline{Якуба Д. В.}\newline\newline
+	\noindent\textbf{Группа} \underline{ИУ7-53Б}\newline\newline
+	\noindent\textbf{Оценка (баллы)} \underline{~~~~~~~~~~~~~~~~~~~}\newline\newline
+	\noindent\textbf{Преподаватели} \underline{Волкова Л.Л., Строганов Ю.В.}\newline
+	
+	\begin{center}
+		\vfill
+		Москва~---~\the\year
+		~г.
+	\end{center}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+\chapter*{Введение}
+\addcontentsline{toc}{chapter}{Введение}
+\section*{Цели лабораторной работы}
+\begin{enumerate}
+\item изучение параллельных вычислений;
+\item изучение последовательного и двух параллельных реализаций алгоритмов Винограда;
+\item реализация последовательного и двух параллельных алгоритмов Винограда;
+\item проведение сравнительного анализа временных характеристик реализованных алгоритмов на основе экспериментальных данных;
+\item подготовка отчёта по лабораторной работе;
+\item получение практических навыков реализации алгоритмов на ЯП Nim.
+\end{enumerate}
+\section*{Определение}
+Многопоточность — это способность центрального процессора (CPU) или одного ядра в многоядерном процессоре одновременно выполнять несколько процессов или потоков, соответствующим образом поддерживаемых операционной системой.
+Этот подход отличается от многопроцессорности, так как многопоточность процессов и потоков совместно использует ресурсы одного или нескольких ядер: вычислительных блоков, кэш-памяти ЦПУ или буфера перевода с преобразованием (TLB).
+
+В тех случаях, когда многопроцессорные системы включают в себя несколько полных блоков обработки, многопоточность направлена на максимизацию использования ресурсов одного ядра, используя параллелизм на уровне потоков, а также на уровне инструкций.
+Поскольку эти два метода являются взаимодополняющими, их иногда объединяют в системах с несколькими многопоточными ЦП и в ЦП с несколькими многопоточными ядрами.
+
+Многопоточная парадигма стала более популярной с конца 1990-х годов, поскольку усилия по дальнейшему использованию параллелизма на уровне инструкций застопорились.
+Смысл многопоточности — квазимногозадачность на уровне одного исполняемого процесса.
+Значит, все потоки процесса помимо общего адресного пространства имеют и общие дескрипторы файлов. Выполняющийся процесс имеет как минимум один (главный) поток.
+
+\chapter{Аналитическая часть}
+\section{Алгоритм Копперсмита-Винограда умножения матриц}
+Пусть даны две прямоугольные матрицы
+\begin{equation}
+	A_{lm} = \begin{pmatrix}
+		a_{11} & a_{12} & \ldots & a_{1m}\\
+		a_{21} & a_{22} & \ldots & a_{2m}\\
+		\vdots & \vdots & \ddots & \vdots\\
+		a_{l1} & a_{l2} & \ldots & a_{lm}
+	\end{pmatrix},
+	\quad
+	B_{mn} = \begin{pmatrix}
+		b_{11} & b_{12} & \ldots & b_{1n}\\
+		b_{21} & b_{22} & \ldots & b_{2n}\\
+		\vdots & \vdots & \ddots & \vdots\\
+		b_{m1} & b_{m2} & \ldots & b_{mn}
+	\end{pmatrix},
+\end{equation}
+
+тогда матрица $C$
+\begin{equation}
+	C_{ln} = \begin{pmatrix}
+		c_{11} & c_{12} & \ldots & c_{1n}\\
+		c_{21} & c_{22} & \ldots & c_{2n}\\
+		\vdots & \vdots & \ddots & \vdots\\
+		c_{l1} & c_{l2} & \ldots & c_{ln}
+	\end{pmatrix},
+\end{equation}
+
+где
+\begin{equation}
+	\label{anal:eq}
+	c_{ij} =
+	\sum_{r=1}^{m} a_{ir}b_{rj} \quad (i=\overline{1,l}; j=\overline{1,n})
+\end{equation}
+
+будет называться произведением матриц $A$ и $B$.
+
+Если посмотреть на результат умножения двух матриц, то видно, что каждый элемент в нем представляет собой скалярное произведение соответствующих строки и столбца исходных матриц.
+Можно заметить также, что такое умножение допускает предварительную обработку, позволяющую часть работы выполнить заранее.
+
+Рассмотрим два вектора $V = (v_1, v_2, v_3, v_4)$ и $W = (w_1, w_2, w_3, w_4)$.
+Их скалярное произведение равно: $V \cdot W = v_1w_1 + v_2w_2 + v_3w_3 + v_4w_4$, что эквивалентно (\ref{for:new}):
+\begin{equation}
+    \label{for:new}
+    V \cdot W = (v_1 + w_2)(v_2 + w_1) + (v_3 + w_4)(v_4 + w_3) - v_1v_2 - v_3v_4 - w_1w_2 - w_3w_4.
+\end{equation}
+
+Несмотря на то, что второе выражение требует вычисления большего количества операций, чем стандартный алгоритм: вместо четырех умножений - шесть, а вместо трех сложений - десять, выражение в правой части последнего равенства допускает предварительную обработку: его части можно вычислить заранее и запомнить для каждой строки первой матрицы и для каждого столбца второй, что позволит для каждого элемента выполнять лишь два умножения и пять сложений, складывая затем только лишь с 2 предварительно посчитанными суммами соседних элементов текущих строк и столбцов \cite{CoppersmithAndWinograd}.
+Из-за того, что операция сложения быстрее операции умножения в ЭВМ, на практике алгоритм должен работать быстрее стандартного \cite{PogorelovVolkova}.
+
+Важно заметить, что каждый элемент матрицы $C$ вычисляется независимо от других, а матрицы $A$ и $B$ не изменяются, поэтому для распараллеливания алгоритма будет достаточно распределить элементы каждой строки матрицы $C$ между потоками.
+
+\section*{Вывод}
+Был рассмотрен алгоритм умножения матриц Копперсмита-Винограда. В данной работе стоит задача реализации данного алгоритма в последовательном и параллельных видах. Независимость вычислений элементов результата даёт возможность реализовать несколько параллельных вариантов исполнения данного алгоритма.
+
+\chapter{Конструкторская часть}
+\section{Блок-схема алгоритма Копперсмита-Винограда}
+Блок-схема алгоритма сортировки пузырьком предоставлена на рисунке \ref{img:bubbleSortScheme}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/bubbleSort.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма сортировки пузырьком.}
+	\label{img:bubbleSortScheme}	
+\end{center}
+\end{figure}
+
+\section{Блок-схема алгоритма сортировки вставками}
+Блок-схема алгоритма сортировки вставками предоставлена на рисунке \ref{img:insertionSortScheme}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/insertionSort.png}
+\captionsetup{justification=centering}
+	\caption{Блок-схема алгоритма сортировки вставками.}
+	\label{img:insertionSortScheme}	
+\end{center}
+\end{figure}
+
+\section{Параллельная реализация алгоритма Копперсмита-Винограда}
+
+\section{Схема параллельной реализации алгоритма Копперсмита-Винограда с разделением третьего этапа}
+
+\section{Схема параллельной реализации алгоритма Копперсмита-Винограда без разделения третьего этапа}
+
+\newpage
+
+\section*{Вывод}
+На основе теоретических данных, полученных из аналитического раздела, была построена схема алгоритма Копперсмита-Винограда. Были предложены 2 схемы параллельной реализации рассматриваемого алгоритма.
+
+\chapter{Технологическая часть}
+\section{Требования к программному обеспечению}
+\begin{itemize}
+\item входные данные - две матрицы размерностью $MxN$ и $KxL$;
+\item выходные данные - результат умножения двух переданных матриц.
+\end{itemize}
+
+\section{Средства реализации программного обеспечения}
+При написании программного продукта был использован язык программирования Nim \cite{Nim}.
+
+Данный выбор обусловлен следующими факторами:
+\begin{itemize}
+\item Компилируемость языка в C, C++, Objective C и JavaScript;
+\item Синтаксис языка близок к синтаксису ЯП Python;
+\end{itemize}
+
+Для тестирования производительности реализаций алгоритмов использовалась библиотека times.
+
+При написании программного продукта использовалась среда разработки IntelliJ IDEA.
+
+Данный выбор обусловлен тем, что данная среда разработки имеет плагин поддержки языка программирования Nim.
+
+\section{Листинг кода}
+В листингах \ref{list:bubbleSort} - \ref{list:selectionSort} предоставлены реализации рассматриваемых алгоритмов.
+\begin{lstlisting}[caption=Функция реализации алгоритма сортировки пузырьком,
+label={list:bubbleSort}]
+fun bubbleSort(arr: IntArray)
+{
+    var i = 0;
+    while (i < arr.size - 1)
+    {
+        var j = 0;
+        while (j < arr.size - 1 - i)
+        {
+            if (arr[j] > arr[j + 1])
+                arr[j + 1] = arr[j].also { arr[j] = arr[j + 1] }
+            j++
+        }
+        i++
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Функция реализации алгоритма сортировки вставками,
+label={list:insertionSort}]
+fun insertionSort(arr: IntArray)
+{
+    var i = 1;
+    while (i < arr.size)
+    {
+        var min = arr[i]
+        var j = i;
+        while (j > 0 && arr[j - 1] > min)
+        {
+            arr[j] = arr[j - 1]
+            j--
+        }
+        arr[j] = min
+        i++
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Функция реализации алгоритма сортировки выбором,
+label={list:selectionSort}]
+fun selectionSort(arr: IntArray)
+{
+    var i = 0;
+    while (i < arr.size - 1)
+    {
+        var j = i + 1
+        var min = i
+        while (j < arr.size)
+        {
+            if (arr[j] < arr[min])
+                min = j
+            j++
+        }
+        if (min != i)
+            arr[i] = arr[min].also { arr[min] = arr[i] }
+        i++
+    }
+}
+\end{lstlisting}
+
+\section{Тестирование программного продукта}
+В таблице~\ref{tests} приведены тесты для функций, реализующих алгоритм сортировки пузырьком, вставками и выбором. Тесты пройдены успешно.
+
+\begin{table}[h!]
+	\begin{center}
+		\begin{tabular}{|c|c|c|}
+			\hline
+			Начальный массив & Ожидаемый результат & Полученный результат \\ 
+			\hline
+			$[5, 4, 3, 2, 1]$ & $[1, 2, 3, 4, 5]$  & $[1, 2, 3, 4, 5]$\\
+			$[0, 0, 0]$  & $[0, 0, 0]$  & $[0, 0, 0]$\\
+			$[1, 2, 3]$ & $[1, 2, 3]$ & $[1, 2, 3]$\\
+			$[-8, 2, 3, -2]$ & $[-8, -2, 2, 3]$ & $[-8, -2, 2, 3]$\\
+			$[]$  & $[]$  & $[]$\\
+			\hline
+		\end{tabular}
+		\caption{\label{tests}Тестирование функций}
+	\end{center}
+\end{table}
+\section*{Вывод}
+Спроектированные алгоритмы сортировок были реализованы и протестированы.
+
+\chapter{Исследовательская часть}
+
+\section{Пример работы программного обеспечения}
+Ниже на рисунках \ref{img:exampleOut1}- \ref{img:exampleOut2} предоставлены примеры работы каждого из алгоритмов на введённых пользователем данных.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=1]{inc/img/exampleOutput.png}
+\captionsetup{justification=centering}
+	\caption{Пример работы ПО.}
+	\label{img:exampleOut1}	
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=1]{inc/img/exampleOutput1.png}
+\captionsetup{justification=centering}
+	\caption{Пример работы ПО.}
+	\label{img:exampleOut2}	
+\end{center}
+\end{figure}
+
+\newpage
+
+\section{Технические характеристики}
+Технические характеристики ЭВМ, на котором выполнялись исследования:
+\begin{itemize}
+\item ОС: Manjaro Linux 20.1.1 Mikah
+\item Оперативная память: 16 Гб
+\item Процессор: Intel Core i7-10510U
+\end{itemize}
+
+
+При проведении замеров времени ноутбук был подключен к сети электропитания.
+
+\section{Время выполнения алгоритмов}
+Алгоритмы тестировались на данных, сгенерированных случайным образом один раз.
+
+Результаты замеров времени приведены в таблицах \ref{time1} - \ref{time3}. На рисунках \ref{timeRes1} и \ref{timeRes3} приведены графики зависимостей времени работы алгоритмов от количества элементов в случаях передачи упорядоченного, неупорядоченного и упорядоченного в обратном порядке массива. В таблице СП - Сортировка Пузырьком, СВст - Сортировка Вставками, СВыб - Сортировка выбором.
+
+\newpage
+\begin{table}[h]
+	\begin{center}
+		\caption{\label{time1} Замеры времени для упорядоченных массивов}
+		\begin{tabular}{|c c c c|} 
+ 			\hline
+			Размер массива & СП & СВст & СВыб \\ [0.5ex] 
+ 			\hline\hline
+ 			100 & 1818544 & 1630961 & 1826308\\
+ 			\hline
+ 			200 & 2182084 & 1647635 & 2144446 \\
+ 			\hline
+			300 & 2836575 & 1640207 & 2530081\\
+			\hline
+			400 & 3666706 & 1640022 & 2924786\\
+			\hline
+			500 & 4561938 & 1645407 & 3594866\\
+			\hline
+			1000 & 12282615 & 1654109 & 8634889\\
+			\hline
+			1500 & 25296835 & 1662390 & 17374004\\
+			\hline
+			2000 & 43069012 & 1700609 & 29104145\\
+			\hline
+			3000 & 91881622 & 1810398 & 61997393\\
+			\hline
+			4000 & 165458964 & 1823571 & 105764286\\
+			\hline
+			5000 & 248940636 & 1766772 & 164210924\\
+			\hline
+			\end{tabular}
+	\end{center}
+\end{table}
+
+\newpage
+
+\begin{table}[h]
+	\begin{center}
+		\caption{\label{time2} Замеры времени для упорядоченных в обратном порядке массивов}
+		\begin{tabular}{|c c c c|} 
+ 			\hline
+			Размер массива & СП & СВст & СВыб \\ [0.5ex] 
+ 			\hline\hline
+ 			100 & 1902381 & 1770645 & 1712426\\
+ 			\hline
+ 			200 & 2690147 & 2035881 & 1948340\\
+ 			\hline
+			300 & 3973067 & 2809635 & 2299634\\
+			\hline
+			400 & 6108805 & 3078558 & 2837866\\
+			\hline
+			500 & 8344909 & 3876786 & 3483199\\
+			\hline
+			1000 & 28119897 & 10741734 & 9179446\\
+			\hline
+			1500 & 59508253 & 21659401 & 17961391\\
+			\hline
+			2000 & 102249552 & 37367527 & 30242327\\
+			\hline
+			3000 & 218854972 & 78513340 & 65218978\\
+			\hline
+			4000 & 379629421 & 131840967 & 114500414\\
+			\hline
+			5000 & 592686305 & 197947307	& 173933001\\
+			\hline
+			\end{tabular}
+	\end{center}
+\end{table}
+
+\newpage
+
+\begin{table}[h]
+	\begin{center}
+		\caption{\label{time3} Замеры времени для неупорядоченных массивов}
+		\begin{tabular}{|c c c c|} 
+ 			\hline
+			Размер массива & СП & СВст & СВыб \\ [0.5ex] 
+ 			\hline\hline
+ 			100 & 1592950 & 1498909 & 1460379\\
+ 			\hline
+ 			200 & 2200640 & 1562519 & 1680307\\
+ 			\hline
+			300 & 3280409 & 1808384 & 2038358\\
+			\hline
+			400 & 4728961 & 2184299 & 2558087\\
+			\hline
+			500 & 6573267 & 2566161 & 3166091\\
+			\hline
+			1000 & 21195842 & 5769483 & 8411547\\
+			\hline
+			1500 & 45146080 & 11233626 & 17161009\\
+			\hline
+			2000 & 79173129 & 18556919 & 28673064\\
+			\hline
+			3000 & 166840980 & 38942468 & 64444295\\
+			\hline
+			4000 & 280142359 & 66181509 & 102043152\\
+			\hline
+			5000 & 449032194 & 99391239 	& 172713187\\
+			\hline
+			\end{tabular}
+	\end{center}
+\end{table}
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tikzpicture}
+
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = размер,
+  		  	ylabel = {время, нс},
+			legend pos=north west,
+			ymajorgrids=true
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {SBSorted.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SISorted.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSSorted.dat};
+
+		\addlegendentry{СП}
+		\addlegendentry{СВст}
+		\addlegendentry{СВыб}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы от размера отсортированных массивов}
+	\label{timeRes1}
+	\end{center}
+\end{figure}
+
+\newpage
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tikzpicture}
+
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = размер,
+  		  	ylabel = {время, нс},
+			legend pos=north west,
+			ymajorgrids=true
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {SBSortedReverse.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SISortedReverse.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSSortedReverse.dat};
+
+		\addlegendentry{СП}
+		\addlegendentry{СВст}
+		\addlegendentry{СВыб}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы от размера отсортированных в обратном порядке массивов}
+	\label{timeRes2}
+	\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tikzpicture}
+	
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = размер,
+  		  	ylabel = {время, нс},
+			legend pos=north west,
+			ymajorgrids=true
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {SBUnsorted.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SIUnsorted.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSUnsorted.dat};
+
+		\addlegendentry{СП}
+		\addlegendentry{СВст}
+		\addlegendentry{СВыб}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы от размера массивов, заданных случайным образом}
+	\label{timeRes3}
+	\end{center}
+\end{figure}
+
+\newpage
+
+\section*{Вывод}
+При сравнении результатов замеров по времени видно, что выводы в каждом из случаев неоднозначны.
+
+В случае уже отсортированных массивов, однозначно лучше всех показывает себя сортировка вставками. Связано это с особенностями реализации алгоритма, зависимость в текущих обстоятельствах будет, теоретически, линейной. Поэтому целесообразно указать на факт того, что сортировка пузырьком уже на 3000 элементов будет работать медленнее, чем сортировка выбором на  $\approx 50.8 \%$, при этом с увеличением количества элементов массива, это значение будет расти.
+
+В случае упорядоченного в обратном порядке массива, что можно назвать наихудшим случаем, лучше всех показывает себя сортировка выбором. При этом, разница между временем работы сортировки выбором и сортировки вставками на 4000 элементов массива будет равна $\approx 15\%$. Но наибольшая разница, которая заключается между временем работы сортировки выбором и сортировки пузырьком на 5000 элементов: $\approx 340\%$.
+
+Ситуация несколько изменится при рассмотрении скорости работы алгоритмов на массивах чисел, сгенерированных случайно. Здесь можно будет увидеть преобладание алгоритма сортировки выбором над алгоритмом сортировки вставками. На значениях величины массива, равных 4000, разница в скорости обработки будет составлять $\approx 65\%$. Наибольшая выявленная разница в скорости работы алгоритма вставками и алгоритма сортировки пузырьком будет составлять $\approx 260\%$.
+
+\chapter*{Заключение}
+\addcontentsline{toc}{chapter}{Заключение}
+В ходе выполнения лабораторной работы:
+\begin{enumerate}
+\item были изучены алгоритмы сортировки пузырьком, вставками и выбором;
+\item были реализованы алгоритмы сортировки пузырьком, вставками и выбором;
+\item был проведён сравнительный анализа трудоёмкости алгоритмов на основе теоретических расчетов и выбранной модели вычислений;
+\item был проведён сравнительный анализ алгоритмов на основе экспериментальных данных;
+\item был подготовлен отчёт по лабораторной работе;
+\item были получены практические навыки реализации алгоритмов на ЯП Kotlin.
+\end{enumerate}
+
+Исследования показали, что хуже всего себя показала реализация алгоритма сортировки пузырьком.
+
+При сортировке уже отсортированного массива "пузырёк" будет работать на $\approx 66\%$ медленнее при сортировке 5000 элементов, чем алгоритм сортировки выбором. Но наилучшим вариантом в данном случае будет выбор алгоритма сортировки вставками, так как возрастание скорости его работы в данном случае линейно.
+
+В случае отсортированного в обратном порядке массива лучше всего себя показывает сортировка вставками, она в $\approx 1.38$ раз быстрее алгоритма сортировки выбором. Наибольшая разница, которая заключается между временем работы сортировки выбором и сортировки пузырьком на 5000 элементов: $\approx 340\%$.
+
+Но в случае неупорядоченных массивов лучше всего себя показывает сортировка вставками, она в $\approx 1.74$ раза быстрее, чем сортировка выбором уже на 5000 элементов. Наибольшая выявленная разница в скорости работы алгоритма вставками и алгоритма сортировки пузырьком будет составлять $\approx 260\%$
+
+\addcontentsline{toc}{chapter}{Литература}
+\bibliographystyle{utf8gost705u}  % стилевой файл для оформления по ГОСТу
+\bibliography{biblio.bib}          % имя библиографической базы (bib-файла)
+
+
+\end{document} 
