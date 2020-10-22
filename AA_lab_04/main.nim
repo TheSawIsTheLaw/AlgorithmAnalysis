@@ -128,14 +128,12 @@ proc rowsCompParallel(matrix : seq[seq[int]]) : seq[int]=
 
 proc colsCompThreadFunc(info : tuple[startOfInterval, endOfInterval : int,
                         computedCols : ptr seq[int],
-                        matrix : seq[seq[int]]]) {.thread.}=
-    acquire(L)
+                        matrix : seq[seq[int]]])=
     var i = 0
     while i < info.matrix.len - 1:
         for j in info.startOfInterval..info.endOfInterval - 1:
             info.computedCols[j] += info.matrix[i][j] * info.matrix[i + 1][j]
         i += 2
-    release(L)
 
 
 proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
@@ -282,22 +280,9 @@ proc main()=
     printMat(sMat)
     echo ""
 
-
-    #var timeStart = now()
-    var prod = winogradMultParallelFirst(fMat, sMat)
-    printMat(prod)
-    #var timeEnd = now()
-    #echo "Time: ", timeEnd - timeStart
-    #timeStart = now()
-    var prod2 = winogradMult(fMat, sMat)
-    echo ""
-    printMat(prod2)
-
-    var prod3 = winogradMultParallelSecond(fMat, sMat)
-    echo ""
-    printMat(prod3)
-    #timeEnd = now()
-    #echo "Time: ", timeEnd - timeStart
-
+    var timeStart = now()
+    var prod = winogradMultParallelSecond(fMat, sMat)
+    var timeEnd = now()
+    echo "Time: ", timeEnd - timeStart
 
 main()
