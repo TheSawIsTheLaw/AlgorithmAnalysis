@@ -7,7 +7,7 @@ import times
 
 var NUM_ELEMS = parseInt(paramStr(1))
 
-const THREADS = 4
+const THREADS = 16
 
 randomize()
 
