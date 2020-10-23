@@ -230,8 +230,8 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \section*{Цели лабораторной работы}
 \begin{enumerate}
 \item изучение параллельных вычислений;
-\item изучение последовательного и двух параллельных реализаций алгоритмов Винограда;
-\item реализация последовательного и двух параллельных алгоритмов Винограда;
+\item изучение последовательного и двух параллельных реализаций алгоритмов Копперсмита-Винограда;
+\item реализация последовательного и двух параллельных алгоритмов Копперсмита-Винограда;
 \item проведение сравнительного анализа временных характеристик реализованных алгоритмов на основе экспериментальных данных;
 \item подготовка отчёта по лабораторной работе;
 \item получение практических навыков реализации алгоритмов на ЯП Nim.
@@ -454,7 +454,7 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 Данный выбор обусловлен тем, что данная среда разработки имеет плагин поддержки языка программирования Nim.
 
 \section{Листинг кода}
-В листингах \ref{list:bubbleSort} - \ref{list:selectionSort} предоставлены реализации рассматриваемых алгоритмов.
+В листингах \ref{list:winogradClassic} - \ref{list:paral2} предоставлены реализации рассматриваемых алгоритмов.
 \begin{lstlisting}[caption=Алгоритм Капперсмита-Винограда в последовательной реализации,
 label={list:winogradClassic}]
 proc rowsComp(matrix : seq[seq[int]]) : seq[int]=
@@ -507,9 +507,7 @@ proc winogradMult(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
 
 \begin{lstlisting}[caption=Реализация первой схемы параллельного алгоритма Копперсмита-Винограда,
 label={list:paral}]
-proc rowsCompThreadFunc(info: tuple[startOfInterval, endOfInterval : int,
-                                    computedRows : ptr seq[int],
-                                    matrix : seq[seq[int]]])=
+proc rowsCompThreadFunc(info: tuple[startOfInterval, endOfInterval : int, computedRows : ptr seq[int], matrix : seq[seq[int]]])=
     for i in info.startOfInterval..info.endOfInterval - 1:
         var j = 0
         while j < info.matrix[0].len - 1:
@@ -519,9 +517,7 @@ proc rowsCompThreadFunc(info: tuple[startOfInterval, endOfInterval : int,
 proc rowsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     var compRows = newSeq[int](matrix.len)
     var compRowsPtr = addr compRows
-    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int,
-                                             computedRows : ptr seq[int],
-                                             matrix : seq[seq[int]]]]]
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int, computedRows : ptr seq[int], matrix : seq[seq[int]]]]]
     var size = (matrix.len / THREADS).int
     for i in 0..thr.len - 2:
         createThread(thr[i], rowsCompThreadFunc, (i * size, (i + 1) * size, compRowsPtr, matrix))
@@ -531,9 +527,7 @@ proc rowsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     joinThreads(thr)
     return compRows
 
-proc colsCompThreadFunc(info : tuple[startOfInterval, endOfInterval : int,
-                        computedCols : ptr seq[int],
-                        matrix : seq[seq[int]]])=
+proc colsCompThreadFunc(info : tuple[startOfInterval, endOfInterval : int, computedCols : ptr seq[int], matrix : seq[seq[int]]])=
     var i = 0
     while i < info.matrix.len - 1:
         for j in info.startOfInterval..info.endOfInterval - 1:
@@ -544,9 +538,7 @@ proc colsCompThreadFunc(info : tuple[startOfInterval, endOfInterval : int,
 proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     var compCols = newSeq[int](matrix[0].len)
     var compColsPtr = addr compCols
-    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int,
-                                             computedCols : ptr seq[int],
-                                             matrix : seq[seq[int]]]]]
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int, computedCols : ptr seq[int], matrix : seq[seq[int]]]]]
     var size = (matrix[0].len / THREADS).int
     for i in 0..thr.len - 2:
         createThread(thr[i], colsCompThreadFunc, (i * size, (i + 1) * size, compColsPtr, matrix))
@@ -557,16 +549,12 @@ proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
     return compCols
 
 
-proc prepareThreadProd(info : tuple[startOfInterval, endOfInterval: int,
-                                    product : ptr seq[seq[int]],
-                                    computedRows, computedCols : seq[int]]) {.thread.}=
+proc prepareThreadProd(info : tuple[startOfInterval, endOfInterval: int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]]) {.thread.}=
     for i in info.startOfInterval..info.endOfInterval - 1:
         for j in 0..info.product[0].len - 1:
                 info.product[i][j] += -info.computedRows[i] - info.computedCols[j]
 
-proc finThreadProd(info : tuple[startOfInterval, endOfInterval: int,
-                                product : ptr seq[seq[int]],
-                                fMat, sMat : seq[seq[int]]]) {.thread.}=
+proc finThreadProd(info : tuple[startOfInterval, endOfInterval: int, product : ptr seq[seq[int]], fMat, sMat : seq[seq[int]]]) {.thread.}=
     for i in info.startOfInterval..info.endOfInterval - 1:
         var k = 0
         for j in 0..info.product[0].len - 1:
@@ -580,18 +568,14 @@ proc multParallelFirst(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows,
     var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
 
     var prodPtr = addr product
-    var fThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int,
-                                        product : ptr seq[seq[int]],
-                                        computedRows, computedCols : seq[int]]]]
+    var fThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int]]]]
     var size = (product.len / THREADS).int
     for i in 0..fThr.len - 2:
         createThread(fThr[i], prepareThreadProd, (i * size, (i + 1) * size, prodPtr, computedRows, computedCols))
     createThread(fThr[fThr.len - 1], prepareThreadProd, ((fThr.len - 1) * size, product.len, prodPtr, computedRows, computedCols))
     joinThreads(fThr)
 
-    var sThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int,
-                                        product : ptr seq[seq[int]],
-                                        fMat, sMat : seq[seq[int]]]]]
+    var sThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int, product : ptr seq[seq[int]], fMat, sMat : seq[seq[int]]]]]
     for i in 0..sThr.len - 2:
         createThread(sThr[i], finThreadProd, (i * size, (i + 1) * size, prodPtr, fMat, sMat))
     createThread(sThr[sThr.len - 1], finThreadProd, ((sThr.len - 1) * size, product.len, prodPtr, fMat, sMat))
@@ -620,10 +604,7 @@ proc winogradMultParallelFirst(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq
 
 \begin{lstlisting}[caption=Реализация второй схемы параллельного алгоритма Копперсмита-Винограда,
 label={list:paral2}]
-proc twinThreadProd(info : tuple[startOfInterval, endOfInterval : int,
-                                    product : ptr seq[seq[int]],
-                                    computedRows, computedCols : seq[int],
-                                    fMat, sMat : seq[seq[int]]]) {.thread.}=
+proc twinThreadProd(info : tuple[startOfInterval, endOfInterval : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int], fMat, sMat : seq[seq[int]]]) {.thread.}=
     for i in info.startOfInterval..info.endOfInterval - 1:
         for j in info.startOfInterval..info.endOfInterval - 1:
             info.product[i][j] += -info.computedRows[i] - info.computedCols[j]
@@ -636,10 +617,7 @@ proc multParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows
     var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
 
     var prodPtr = addr product
-    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int,
-                                             product : ptr seq[seq[int]],
-                                             computedRows, computedCols : seq[int],
-                                             fMat, sMat : seq[seq[int]]]]]
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int, product : ptr seq[seq[int]], computedRows, computedCols : seq[int], fMat, sMat : seq[seq[int]]]]]
     var size = (product.len / THREADS).int
     for i in 0..thr.len - 2:
         createThread(thr[i], twinThreadProd, (i * size, (i + 1) * size, prodPtr, computedRows, computedCols, fMat, sMat))
@@ -667,31 +645,92 @@ proc winogradMultParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]]) : se
 \end{lstlisting}
 
 \section{Тестирование программного продукта}
-В таблице~\ref{tests} приведены тесты для функций, реализующих алгоритм сортировки пузырьком, вставками и выбором. Тесты пройдены успешно.
+В таблице~\ref{tabular:test_rec} приведены тесты для функций, реализующих алгоритм Копперсмита-Винограда. Тесты пройдены успешно.
 
 \begin{table}[h!]
 	\begin{center}
-		\begin{tabular}{|c|c|c|}
+		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}}
 			\hline
-			Начальный массив & Ожидаемый результат & Полученный результат \\ 
-			\hline
-			$[5, 4, 3, 2, 1]$ & $[1, 2, 3, 4, 5]$  & $[1, 2, 3, 4, 5]$\\
-			$[0, 0, 0]$  & $[0, 0, 0]$  & $[0, 0, 0]$\\
-			$[1, 2, 3]$ & $[1, 2, 3]$ & $[1, 2, 3]$\\
-			$[-8, 2, 3, -2]$ & $[-8, -2, 2, 3]$ & $[-8, -2, 2, 3]$\\
-			$[]$  & $[]$  & $[]$\\
-			\hline
+			Матрица 1 & Матрица 2 &Ожидаемый результат \\ \hline
+			\vspace{4mm}
+			$\begin{pmatrix}
+			1 & 2 & 3\\
+			1 & 2 & 3\\
+			1 & 1 & 1
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			1 & 3 & 3\\
+			1 & 3 & 3\\
+			1 & 2 & 2
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			6 & 15 & 15\\
+			6 & 15 & 15\\
+			3 & 8 & 8
+			\end{pmatrix}$ \\
+			\vspace{2mm}
+			\vspace{2mm}
+			$\begin{pmatrix}
+            1 & 2 & 4\\
+            1 & 2 & 4
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			4\\
+			5\\
+            6
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			32\\
+			32
+			\end{pmatrix}$ \\
+			\vspace{2mm}
+			\vspace{2mm}
+			$\begin{pmatrix}
+			5
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			666
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			3330
+			\end{pmatrix}$ \\
+			\vspace{2mm}
+			\vspace{2mm}
+			$\begin{pmatrix}
+			-1 & -2 & 3\\
+			1 & 2 & 3\\
+			-1 & -2 & 3
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			1 & 1 & 1\\
+			2 & 2 & 2\\
+			3 & 3 & 3
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			4 & 4 & 4\\
+			14 & 14 & 14\\
+			4 & 4 & 4
+			\end{pmatrix}$\\
+			\vspace{2mm}
+			\vspace{2mm}
+			$\begin{pmatrix}
+			666 & 666
+			\end{pmatrix}$ &
+			$\begin{pmatrix}
+			777 & 777
+			\end{pmatrix}$ &
+			Ошибка\\
 		\end{tabular}
-		\caption{\label{tests}Тестирование функций}
 	\end{center}
+	\caption{\label{tabular:test_rec} Тестирование функций}
 \end{table}
 \section*{Вывод}
-Спроектированные алгоритмы сортировок были реализованы и протестированы.
+Спроектированные алгоритмы были реализованы и протестированы.
 
 \chapter{Исследовательская часть}
 
 \section{Пример работы программного обеспечения}
-Ниже на рисунках \ref{img:example1}- \ref{img:example2} предоставлены примеры работы каждого из алгоритмов на введённых пользователем данных.
+Ниже на рисунках \ref{img:example1}-\ref{img:example2} предоставлены примеры работы каждого из алгоритмов на введённых пользователем данных.
 
 \begin{figure}
 \begin{center}
@@ -981,12 +1020,12 @@ proc winogradMultParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]]) : se
 \addcontentsline{toc}{chapter}{Заключение}
 В ходе выполнения лабораторной работы:
 \begin{enumerate}
-\item были изучены алгоритмы сортировки пузырьком, вставками и выбором;
-\item были реализованы алгоритмы сортировки пузырьком, вставками и выбором;
-\item был проведён сравнительный анализа трудоёмкости алгоритмов на основе теоретических расчетов и выбранной модели вычислений;
+\item были изучены параллельные вычисления;
+\item были изучены последовательный и два параллельных реализаций алгоритмов Копперсмита-Винограда;
+\item были реализованы последовательный и два параллельных алгоритма Копперсмита-Винограда;
 \item был проведён сравнительный анализ алгоритмов на основе экспериментальных данных;
 \item был подготовлен отчёт по лабораторной работе;
-\item были получены практические навыки реализации алгоритмов на ЯП Kotlin.
+\item были получены практические навыки реализации алгоритмов на ЯП Nim.
 \end{enumerate}
 
 Исследования показали, что...
