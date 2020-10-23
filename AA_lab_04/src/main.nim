@@ -5,14 +5,9 @@ import sequtils
 
 import times
 
-import locks
-
 const THREADS = 4
 
 randomize()
-
-var L : Lock
-initLock(L)
 
 proc printMat(mat : seq[seq[int]])=
     for i in 0..mat.len - 1:
