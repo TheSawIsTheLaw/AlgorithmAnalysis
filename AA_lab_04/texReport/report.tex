@@ -17,7 +17,7 @@
   morecomment=[s]{/*}{*/},
   morestring=[b]",
   morestring=[s]{"""*}{*"""},
-  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String},
+  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, seq, Byte, Double, Float, int, Integer, Iterable, Long, Runnable, Short, String},
   ndkeywordstyle={\color{orange}\bfseries},
   sensitive=true,
   stringstyle={\color{green}\ttfamily},
@@ -455,65 +455,215 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 
 \section{Листинг кода}
 В листингах \ref{list:bubbleSort} - \ref{list:selectionSort} предоставлены реализации рассматриваемых алгоритмов.
-\begin{lstlisting}[caption=Функция реализации алгоритма сортировки пузырьком,
-label={list:bubbleSort}]
-fun bubbleSort(arr: IntArray)
-{
-    var i = 0;
-    while (i < arr.size - 1)
-    {
-        var j = 0;
-        while (j < arr.size - 1 - i)
-        {
-            if (arr[j] > arr[j + 1])
-                arr[j + 1] = arr[j].also { arr[j] = arr[j + 1] }
-            j++
-        }
-        i++
-    }
-}
+\begin{lstlisting}[caption=Алгоритм Капперсмита-Винограда в последовательной реализации,
+label={list:winogradClassic}]
+proc rowsComp(matrix : seq[seq[int]]) : seq[int]=
+    var computedRows = newSeq[int](matrix.len)
+
+    for i in 0..matrix.len - 1:
+        var j = 0
+        while j < matrix[0].len - 1:
+            computedRows[i] += matrix[i][j] * matrix[i][j + 1]
+            j += 2
+
+    return computedRows
+
+proc colsComp(matrix : seq[seq[int]]) : seq[int]=
+    var computedCols = newSeq[int](matrix[0].len)
+
+    var i = 0
+    while i < matrix.len - 1:
+        for j in 0..matrix[0].len - 1:
+            computedCols[j] += matrix[i][j] * matrix[i + 1][j]
+        i += 2
+
+    return computedCols
+
+proc winogradMult(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
+    if (fMat[0].len != sMat.len):
+        return
+
+    var computedRows = rowsComp(fMat)
+    var computedCols = colsComp(sMat)
+
+    var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
+    for i in 0..product.len - 1:
+        for j in 0..product[0].len - 1:
+            product[i][j] += -computedRows[i] - computedCols[j]
+
+            var k = 0
+            while k < sMat.len - 1:
+                product[i][j] += (fMat[i][k] + sMat[k + 1][j]) * (fMat[i][k + 1] + sMat[k][j])
+                k += 2
+
+    if sMat.len %% 2 != 0:
+        var curK = sMat.len - 1
+        for i in 0..product.len - 1:
+            for j in 0..product[0].len - 1:
+                product[i][j] += fMat[i][curK] * sMat[curK][j]
+
+    return product
 \end{lstlisting}
 
-\begin{lstlisting}[caption=Функция реализации алгоритма сортировки вставками,
-label={list:insertionSort}]
-fun insertionSort(arr: IntArray)
-{
-    var i = 1;
-    while (i < arr.size)
-    {
-        var min = arr[i]
-        var j = i;
-        while (j > 0 && arr[j - 1] > min)
-        {
-            arr[j] = arr[j - 1]
-            j--
-        }
-        arr[j] = min
-        i++
-    }
-}
+\begin{lstlisting}[caption=Реализация первой схемы параллельного алгоритма Копперсмита-Винограда,
+label={list:paral}]
+proc rowsCompThreadFunc(info: tuple[startOfInterval, endOfInterval : int,
+                                    computedRows : ptr seq[int],
+                                    matrix : seq[seq[int]]])=
+    for i in info.startOfInterval..info.endOfInterval - 1:
+        var j = 0
+        while j < info.matrix[0].len - 1:
+            info.computedRows[i] += info.matrix[i][j] * info.matrix[i][j + 1]
+            j += 2
+
+proc rowsCompParallel(matrix : seq[seq[int]]) : seq[int]=
+    var compRows = newSeq[int](matrix.len)
+    var compRowsPtr = addr compRows
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int,
+                                             computedRows : ptr seq[int],
+                                             matrix : seq[seq[int]]]]]
+    var size = (matrix.len / THREADS).int
+    for i in 0..thr.len - 2:
+        createThread(thr[i], rowsCompThreadFunc, (i * size, (i + 1) * size, compRowsPtr, matrix))
+
+    createThread(thr[thr.len - 1], rowsCompThreadFunc, ((thr.len - 1) * size, matrix.len, compRowsPtr, matrix))
+
+    joinThreads(thr)
+    return compRows
+
+proc colsCompThreadFunc(info : tuple[startOfInterval, endOfInterval : int,
+                        computedCols : ptr seq[int],
+                        matrix : seq[seq[int]]])=
+    var i = 0
+    while i < info.matrix.len - 1:
+        for j in info.startOfInterval..info.endOfInterval - 1:
+            info.computedCols[j] += info.matrix[i][j] * info.matrix[i + 1][j]
+        i += 2
+
+
+proc colsCompParallel(matrix : seq[seq[int]]) : seq[int]=
+    var compCols = newSeq[int](matrix[0].len)
+    var compColsPtr = addr compCols
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval: int,
+                                             computedCols : ptr seq[int],
+                                             matrix : seq[seq[int]]]]]
+    var size = (matrix[0].len / THREADS).int
+    for i in 0..thr.len - 2:
+        createThread(thr[i], colsCompThreadFunc, (i * size, (i + 1) * size, compColsPtr, matrix))
+
+    createThread(thr[thr.len - 1], colsCompThreadFunc, ((thr.len - 1) * size, matrix[0].len, compColsPtr, matrix))
+
+    joinThreads(thr)
+    return compCols
+
+
+proc prepareThreadProd(info : tuple[startOfInterval, endOfInterval: int,
+                                    product : ptr seq[seq[int]],
+                                    computedRows, computedCols : seq[int]]) {.thread.}=
+    for i in info.startOfInterval..info.endOfInterval - 1:
+        for j in 0..info.product[0].len - 1:
+                info.product[i][j] += -info.computedRows[i] - info.computedCols[j]
+
+proc finThreadProd(info : tuple[startOfInterval, endOfInterval: int,
+                                product : ptr seq[seq[int]],
+                                fMat, sMat : seq[seq[int]]]) {.thread.}=
+    for i in info.startOfInterval..info.endOfInterval - 1:
+        var k = 0
+        for j in 0..info.product[0].len - 1:
+            k = 0
+            while k < info.sMat.len - 1:
+                info.product[i][j] += (info.fMat[i][k] + info.sMat[k + 1][j]) * (info.fMat[i][k + 1] + info.sMat[k][j])
+                k += 2
+
+
+proc multParallelFirst(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, computedCols : seq[int]) : seq[seq[int]]=
+    var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
+
+    var prodPtr = addr product
+    var fThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int,
+                                        product : ptr seq[seq[int]],
+                                        computedRows, computedCols : seq[int]]]]
+    var size = (product.len / THREADS).int
+    for i in 0..fThr.len - 2:
+        createThread(fThr[i], prepareThreadProd, (i * size, (i + 1) * size, prodPtr, computedRows, computedCols))
+    createThread(fThr[fThr.len - 1], prepareThreadProd, ((fThr.len - 1) * size, product.len, prodPtr, computedRows, computedCols))
+    joinThreads(fThr)
+
+    var sThr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int,
+                                        product : ptr seq[seq[int]],
+                                        fMat, sMat : seq[seq[int]]]]]
+    for i in 0..sThr.len - 2:
+        createThread(sThr[i], finThreadProd, (i * size, (i + 1) * size, prodPtr, fMat, sMat))
+    createThread(sThr[sThr.len - 1], finThreadProd, ((sThr.len - 1) * size, product.len, prodPtr, fMat, sMat))
+    joinThreads(sThr)
+
+    if sMat.len %% 2 != 0:
+        var curK = sMat.len - 1
+        for i in 0..product.len - 1:
+            for j in 0..product[0].len - 1:
+                product[i][j] += fMat[i][curK] * sMat[curK][j]
+
+    return product
+
+
+proc winogradMultParallelFirst(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
+    if (fMat[0].len != sMat.len):
+        return
+
+    var computedRows = rowsCompParallel(fMat)
+    var computedCols = colsCompParallel(sMat)
+
+    var product = multParallelFirst(fMat, sMat, computedRows, computedCols)
+
+    return product
 \end{lstlisting}
 
-\begin{lstlisting}[caption=Функция реализации алгоритма сортировки выбором,
-label={list:selectionSort}]
-fun selectionSort(arr: IntArray)
-{
-    var i = 0;
-    while (i < arr.size - 1)
-    {
-        var j = i + 1
-        var min = i
-        while (j < arr.size)
-        {
-            if (arr[j] < arr[min])
-                min = j
-            j++
-        }
-        if (min != i)
-            arr[i] = arr[min].also { arr[min] = arr[i] }
-        i++
-    }
-}
+\begin{lstlisting}[caption=Реализация второй схемы параллельного алгоритма Копперсмита-Винограда,
+label={list:paral2}]
+proc twinThreadProd(info : tuple[startOfInterval, endOfInterval : int,
+                                    product : ptr seq[seq[int]],
+                                    computedRows, computedCols : seq[int],
+                                    fMat, sMat : seq[seq[int]]]) {.thread.}=
+    for i in info.startOfInterval..info.endOfInterval - 1:
+        for j in info.startOfInterval..info.endOfInterval - 1:
+            info.product[i][j] += -info.computedRows[i] - info.computedCols[j]
+            var k = 0
+            while k < info.sMat.len - 1:
+                info.product[i][j] += (info.fMat[i][k] + info.sMat[k + 1][j]) * (info.fMat[i][k + 1] + info.sMat[k][j])
+                k += 2
+
+proc multParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]], computedRows, computedCols : seq[int]) : seq[seq[int]]=
+    var product = newSeqWith(fMat.len, newSeq[int](sMat[0].len))
+
+    var prodPtr = addr product
+    var thr : array[0..THREADS, Thread[tuple[startOfInterval, endOfInterval : int,
+                                             product : ptr seq[seq[int]],
+                                             computedRows, computedCols : seq[int],
+                                             fMat, sMat : seq[seq[int]]]]]
+    var size = (product.len / THREADS).int
+    for i in 0..thr.len - 2:
+        createThread(thr[i], twinThreadProd, (i * size, (i + 1) * size, prodPtr, computedRows, computedCols, fMat, sMat))
+    createThread(thr[thr.len - 1], twinThreadProd, ((thr.len - 1) * size, product.len, prodPtr, computedRows, computedCols, fMat, sMat))
+    joinThreads(thr)
+
+    if sMat.len %% 2 != 0:
+        var curK = sMat.len - 1
+        for i in 0..product.len - 1:
+            for j in 0..product[0].len - 1:
+                product[i][j] += fMat[i][curK] * sMat[curK][j]
+
+    return product
+
+proc winogradMultParallelSecond(fMat : seq[seq[int]], sMat : seq[seq[int]]) : seq[seq[int]]=
+    if (fMat[0].len != sMat.len):
+        return
+
+    var computedRows = rowsCompParallel(fMat)
+    var computedCols = colsCompParallel(sMat)
+
+    var product = multParallelSecond(fMat, sMat, computedRows, computedCols)
+
+    return product
 \end{lstlisting}
 
 \section{Тестирование программного продукта}
@@ -825,13 +975,7 @@ fun selectionSort(arr: IntArray)
 \newpage
 
 \section*{Вывод}
-При сравнении результатов замеров по времени видно, что выводы в каждом из случаев неоднозначны.
-
-В случае уже отсортированных массивов, однозначно лучше всех показывает себя сортировка вставками. Связано это с особенностями реализации алгоритма, зависимость в текущих обстоятельствах будет, теоретически, линейной. Поэтому целесообразно указать на факт того, что сортировка пузырьком уже на 3000 элементов будет работать медленнее, чем сортировка выбором на  $\approx 50.8 \%$, при этом с увеличением количества элементов массива, это значение будет расти.
-
-В случае упорядоченного в обратном порядке массива, что можно назвать наихудшим случаем, лучше всех показывает себя сортировка выбором. При этом, разница между временем работы сортировки выбором и сортировки вставками на 4000 элементов массива будет равна $\approx 15\%$. Но наибольшая разница, которая заключается между временем работы сортировки выбором и сортировки пузырьком на 5000 элементов: $\approx 340\%$.
-
-Ситуация несколько изменится при рассмотрении скорости работы алгоритмов на массивах чисел, сгенерированных случайно. Здесь можно будет увидеть преобладание алгоритма сортировки выбором над алгоритмом сортировки вставками. На значениях величины массива, равных 4000, разница в скорости обработки будет составлять $\approx 65\%$. Наибольшая выявленная разница в скорости работы алгоритма вставками и алгоритма сортировки пузырьком будет составлять $\approx 260\%$.
+При сравнении результатов замеров по времени видно, что выводы в каждом из случаев...
 
 \chapter*{Заключение}
 \addcontentsline{toc}{chapter}{Заключение}
@@ -845,13 +989,7 @@ fun selectionSort(arr: IntArray)
 \item были получены практические навыки реализации алгоритмов на ЯП Kotlin.
 \end{enumerate}
 
-Исследования показали, что хуже всего себя показала реализация алгоритма сортировки пузырьком.
-
-При сортировке уже отсортированного массива "пузырёк" будет работать на $\approx 66\%$ медленнее при сортировке 5000 элементов, чем алгоритм сортировки выбором. Но наилучшим вариантом в данном случае будет выбор алгоритма сортировки вставками, так как возрастание скорости его работы в данном случае линейно.
-
-В случае отсортированного в обратном порядке массива лучше всего себя показывает сортировка вставками, она в $\approx 1.38$ раз быстрее алгоритма сортировки выбором. Наибольшая разница, которая заключается между временем работы сортировки выбором и сортировки пузырьком на 5000 элементов: $\approx 340\%$.
-
-Но в случае неупорядоченных массивов лучше всего себя показывает сортировка вставками, она в $\approx 1.74$ раза быстрее, чем сортировка выбором уже на 5000 элементов. Наибольшая выявленная разница в скорости работы алгоритма вставками и алгоритма сортировки пузырьком будет составлять $\approx 260\%$
+Исследования показали, что...
 
 \addcontentsline{toc}{chapter}{Литература}
 \bibliographystyle{utf8gost705u}  % стилевой файл для оформления по ГОСТу
