@@ -61,131 +61,129 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 \usetikzlibrary{datavisualization}
 \usetikzlibrary{datavisualization.formats.functions}
 
-\begin{filecontents}{SBSorted.dat}
-100 1818544
-200 2182084
-300 2836575
-400 3666706
-500 4561938
-1000 12282615
-1500 25296835
-2000 43069012
-3000 91881622
-4000 165458964
-5000 248940636
+\begin{filecontents}{KB11.dat}
+100 4692982
+200 49620266
+300 178730542
+400 429056319
+500 856058247
 \end{filecontents}
 
-\begin{filecontents}{SBSortedReverse.dat}
-100 1902381
-200 2690147
-300 3973067
-400 6108805
-500 8344909
-1000 28119897
-1500 59508253
-2000 102249552
-3000 218854972
-4000 379629421
-5000 592686305
+\begin{filecontents}{KB21.dat}
+100 6144734
+200 56025172
+300 199925329
+400 456832433
+500 737473554
 \end{filecontents}
 
-\begin{filecontents}{SBUnsorted.dat}
-100 1592950
-200 2200640
-300 3280409
-400 4728961
-500 6573267
-1000 21195842
-1500 45146080
-2000 79173129 
-3000 166840980
-4000 280142359
-5000 449032194
+\begin{filecontents}{KB31.dat}
+100 6125329
+200 58077386
+300 206518482
+400 561695647
+500 673711435
 \end{filecontents}
 
-\begin{filecontents}{SISorted.dat}
-100 1630961
-200 1647635
-300 1640207
-400 1640022
-500 1645407
-1000 1654109
-1500 1662390
-2000 1700609
-3000 1810398
-4000 1823571
-5000 1766772
+\begin{filecontents}{KB12.dat}
+100 4250527
+200 50728798
+300 186202130
+400 436860056
+500 870833440
 \end{filecontents}
 
-\begin{filecontents}{SISortedReverse.dat}
-100 1770645
-200 2035881
-300 2809635
-400 3078558
-500 3876786
-1000 10741734
-1500 21659401
-2000 37367527
-3000 78513340
-4000 131840967
-5000 197947307
+\begin{filecontents}{KB22.dat}
+100 4315274
+200 34809356
+300 120880876
+400 248104438
+500 576761740
 \end{filecontents}
 
-\begin{filecontents}{SIUnsorted.dat}
-100 1498909
-200 1562519
-300 1808384
-400 2184299
-500 2566161
-1000 5769483
-1500 11233626
-2000 18556919
-3000 38942468
-4000 66181509
-5000 99391239
+\begin{filecontents}{KB32.dat}
+100 2910312
+200 18273241
+300 61885504
+400 137340969
+500 267199177
 \end{filecontents}
 
-\begin{filecontents}{SSSorted.dat}
-100 1826308
-200 2144446
-300 2530081
-400 2924786
-500 3594866
-1000 8634889
-1500 17374004
-2000 29104145
-3000 61997393
-4000 105764286
-5000 164210924
+\begin{filecontents}{KB14.dat}
+100 4485824
+200 51678241
+300 176448578
+400 436787067
+500 850999256
 \end{filecontents}
 
-\begin{filecontents}{SSSortedReverse.dat}
-100 1712426
-200 1948340
-300 2299634
-400 2837866
-500 3483199
-1000 9179446
-1500 17961391
-2000 30242327
-3000 65218978
-4000 114500414
-5000 173933001
+\begin{filecontents}{KB24.dat}
+100 4239416
+200 28600648
+300 80224609
+400 208705553
+500 485612161
 \end{filecontents}
 
-\begin{filecontents}{SSUnsorted.dat}
-100 1460379
-200 1680307
-300 2038358
-400 2558087
-500 3166091
-1000 8411547
-1500 17161009
-2000 28673064
-3000 64444295
-4000 102043152
-5000 172713187
+\begin{filecontents}{KB34.dat}
+100 2969518
+200 10260636
+300 31277241
+400 70302333
+500 151094601
 \end{filecontents}
+
+\begin{filecontents}{KB18.dat}
+100 4403638
+200 52234883
+300 177331754
+400 442171563
+500 877219464
+\end{filecontents}
+
+\begin{filecontents}{KB28.dat}
+100 5304634
+200 26568390
+300 107137650
+400 337629280
+500 883596315
+\end{filecontents}
+
+\begin{filecontents}{KB38.dat}
+100 3712704
+200 11046163
+300 31637714
+400 58383234
+500 117636357
+\end{filecontents}
+
+\begin{filecontents}{KB116.dat}
+100 4463337
+200 50528949
+300 175677695
+400 433177913
+500 831773652
+\end{filecontents}
+
+\begin{filecontents}{KB216.dat}
+100 7381390
+200 32361454
+300 110593792
+400 342768739
+500 887656714
+\end{filecontents}
+
+\begin{filecontents}{KB316.dat}
+100 4981564
+200 17479130
+300 44960321
+400 68839512
+500 100236284
+\end{filecontents}
+
+
+
+
 
 \begin{document}
 \begin{titlepage}
@@ -579,7 +577,7 @@ fun selectionSort(arr: IntArray)
 \section{Время выполнения алгоритмов}
 Алгоритмы тестировались на данных, сгенерированных случайным образом.
 
-Результаты замеров времени приведены в таблицах \ref{time1} - \ref{time5}. На рисунках \ref{timeRes1} и \ref{timeRes5} приведены графики зависимостей времени работы алгоритмов от размерности обрабатываемых матрицы. В таблице КВ - последовательный алгоритм Копперсмита-Винограда, Парал1КВ - реализация схемы \ref{img:scheme1} параллельного алгоритма Копперсмита-Винограда, Парал2КВ - реализация схемы \ref{img:scheme2} параллельного алгоритма.
+Результаты замеров времени приведены в таблицах \ref{time1} - \ref{time5}. На рисунках \ref{timeRes1} и \ref{timeRes5} приведены графики зависимостей времени работы алгоритмов от размерности обрабатываемых матриц при 1, 2, 4, 8, 16 потоках. В таблице КВ - последовательный алгоритм Копперсмита-Винограда, Парал1КВ - реализация схемы \ref{img:scheme1} параллельного алгоритма Копперсмита-Винограда, Парал2КВ - реализация схемы \ref{img:scheme2} параллельного алгоритма.
 
 \newpage
 \begin{table}[h]
@@ -704,50 +702,47 @@ fun selectionSort(arr: IntArray)
 
 \begin{axis}[
   		  	axis lines = left,
-  		  	xlabel = размер,
+  		  	xlabel = размерность,
   		  	ylabel = {время, нс},
 			legend pos=north west,
 			ymajorgrids=true
 		] 
-		\addplot[color=orange] table[x index=0, y index=1] {SBSorted.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SISorted.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSSorted.dat};
+		\addplot[color=orange] table[x index=0, y index=1] {KB11.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB21.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB31.dat};
 
-		\addlegendentry{СП}
-		\addlegendentry{СВст}
-		\addlegendentry{СВыб}
+		\addlegendentry{КВ}
+		\addlegendentry{Paral1КВ}
+		\addlegendentry{Paral2КВ}
 		\end{axis}
 	\end{tikzpicture}
 	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размера отсортированных массивов}
+	\caption{Зависимость времени работы от размерности матриц (при 1 потоке).}
 	\label{timeRes1}
 	\end{center}
 \end{figure}
 
-\newpage
-
 \begin{figure}[h]
 \begin{center}
 	\begin{tikzpicture}
-
 \begin{axis}[
   		  	axis lines = left,
-  		  	xlabel = размер,
+  		  	xlabel = размерность,
   		  	ylabel = {время, нс},
 			legend pos=north west,
 			ymajorgrids=true
 		] 
-		\addplot[color=orange] table[x index=0, y index=1] {SBSortedReverse.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SISortedReverse.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSSortedReverse.dat};
+		\addplot[color=orange] table[x index=0, y index=1] {KB12.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB22.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB32.dat};
 
-		\addlegendentry{СП}
-		\addlegendentry{СВст}
-		\addlegendentry{СВыб}
+		\addlegendentry{КВ}
+		\addlegendentry{Парал1КВ}
+		\addlegendentry{Парал2КВ}
 		\end{axis}
 	\end{tikzpicture}
 	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размера отсортированных в обратном порядке массивов}
+	\caption{Зависимость времени работы от размерности матриц (при 2 потоках)}
 	\label{timeRes2}
 	\end{center}
 \end{figure}
@@ -755,26 +750,75 @@ fun selectionSort(arr: IntArray)
 \begin{figure}[h]
 \begin{center}
 	\begin{tikzpicture}
-	
 \begin{axis}[
   		  	axis lines = left,
-  		  	xlabel = размер,
+  		  	xlabel = размерность,
   		  	ylabel = {время, нс},
 			legend pos=north west,
 			ymajorgrids=true
 		] 
-		\addplot[color=orange] table[x index=0, y index=1] {SBUnsorted.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {SIUnsorted.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {SSUnsorted.dat};
+		\addplot[color=orange] table[x index=0, y index=1] {KB14.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB24.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB34.dat};
 
-		\addlegendentry{СП}
-		\addlegendentry{СВст}
-		\addlegendentry{СВыб}
+		\addlegendentry{КВ}
+		\addlegendentry{Парал1КВ}
+		\addlegendentry{Парал2КВ}
 		\end{axis}
 	\end{tikzpicture}
 	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размера массивов, заданных случайным образом}
+	\caption{Зависимость времени работы от размерности матриц (при 4 потоках)}
 	\label{timeRes3}
+	\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tikzpicture}
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = размерность,
+  		  	ylabel = {время, нс},
+			legend pos=north west,
+			ymajorgrids=true
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {KB18.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB28.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB38.dat};
+
+		\addlegendentry{КВ}
+		\addlegendentry{Парал1КВ}
+		\addlegendentry{Парал2КВ}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы от размерности матриц (при 8 потоках)}
+	\label{timeRes4}
+	\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+	\begin{tikzpicture}
+\begin{axis}[
+  		  	axis lines = left,
+  		  	xlabel = размерность,
+  		  	ylabel = {время, нс},
+			legend pos=north west,
+			ymajorgrids=true
+		] 
+		\addplot[color=orange] table[x index=0, y index=1] {KB116.dat};
+		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB216.dat};
+		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB316.dat};
+
+		\addlegendentry{КВ}
+		\addlegendentry{Парал1КВ}
+		\addlegendentry{Парал2КВ}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centering}
+	\caption{Зависимость времени работы от размерности матриц (при 16 потоках)}
+	\label{timeRes5}
 	\end{center}
 \end{figure}
 
