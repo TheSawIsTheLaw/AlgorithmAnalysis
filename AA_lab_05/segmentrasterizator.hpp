@@ -1,10 +1,12 @@
-#ifndef SEGMENTRASTERIZATION_HPP
-#define SEGMENTRASTERIZATION_HPP
+#ifndef SEGMENTRASTERIZATOR_HPP
+#define SEGMENTRASTERIZATOR_HPP
 
-#include <QtGui/qimage.h>
-#include <QtGui/qrgb.h>
 #include <vector>
 #include <math.h>
+
+#include <QImage>
+
+#include "config.hpp"
 
 class SegmentRasterizator
 {
@@ -21,11 +23,13 @@ private:
     bool stepFlag;
     float deltaX, deltaY;
     int stepX, stepY;
-    float accConst;
+    float tngModule;
+    float mistake;
 
     std::vector<std::pair<int, int>> dotsOfSegment;
 
-    QImage *image = nullptr;
+    QImage *image;
 };
 
-#endif // SEGMENTRASTERIZATION_HPP
+
+#endif // SEGMENTRASTERIZATOR_HPP
