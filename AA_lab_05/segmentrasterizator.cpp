@@ -14,13 +14,18 @@ SegmentRasterizator::SegmentRasterizator(int xStart_, int yStart_, int xEnd_, in
     image = NULL;
 }
 
+int sign(float num)
+{
+    return (num < -__FLT_EPSILON__) ? -1 : ((num > __FLT_EPSILON__) ? 1 : 0);
+}
+
 void SegmentRasterizator::prepareConstantsForRB()
 {
     deltaX = xEnd - xStart;
     deltaY = yEnd - yStart;
 
-    stepX = int(signbit(deltaX) ? deltaX : -deltaX);
-    stepY = int(signbit(deltaY) ? deltaY : -deltaY);
+    stepX = sign(deltaX);
+    stepY = sign(deltaY);
 
     deltaX = std::abs(deltaX);
     deltaY = std::abs(deltaY);
