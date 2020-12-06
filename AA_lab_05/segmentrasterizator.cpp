@@ -72,3 +72,8 @@ void SegmentRasterizator::createImg()
     for (auto iter = dotsOfSegment.begin(); iter < dotsOfSegment.end(); iter++)
         image->setPixel(iter->first, iter->second, Qt::black);
 }
+
+std::vector<std::pair<int, int>> SegmentRasterizator::getDotsOfSegment()
+{
+    return dotsOfSegment;
+}

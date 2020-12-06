@@ -17,6 +17,8 @@ public:
     void rastSegment(); // Растеризация отрезка в форе
     void createImg(); // Создание QImage с изображённым отрезком
 
+    std::vector<std::pair<int, int>> getDotsOfSegment();
+
 private:
     float xStart, yStart, xEnd, yEnd;
 
