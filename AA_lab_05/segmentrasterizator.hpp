@@ -13,9 +13,9 @@ class SegmentRasterizator
 public:
     SegmentRasterizator(int xStart_, int yStart_, int xEnd_, int yEnd_);
 
-    void prepareConstantsForRB(); // Подготовка констант для алгоритма Брезенхема
-    void rastSegment(); // Растеризация отрезка в форе
-    void createImg(); // Создание QImage с изображённым отрезком
+    void prepareConstantsForRB(int index); // Подготовка констант для алгоритма Брезенхема
+    void rastSegment(int index); // Растеризация отрезка в форе
+    void createImg(int index); // Создание QImage с изображённым отрезком
 
     std::vector<std::pair<int, int>> getDotsOfSegment();
 

@@ -1,5 +1,7 @@
 #include "director.hpp"
 
+#include "QDebug"
+
 Director::Director(std::queue<SegmentRasterizator> &startQueue_)
 {
     startQueue = startQueue_;
@@ -7,30 +9,43 @@ Director::Director(std::queue<SegmentRasterizator> &startQueue_)
 
 void Director::processPrepare()
 {
+    int i = 0;
     for (SegmentRasterizator curSeg(startQueue.front()); startQueue.size();
-         startQueue.pop())
+         startQueue.pop(), curSeg = startQueue.front())
     {
-        curSeg.prepareConstantsForRB();
+
+        curSeg.prepareConstantsForRB(i++);
         middleQueue.push(curSeg);
     }
 }
 
 void Director::processRast()
 {
-    for (SegmentRasterizator curSeg(middleQueue.front());
-         startQueue.size() || middleQueue.size(); middleQueue.pop())
+    int i = 0;
+    while (startQueue.size() || middleQueue.size())
     {
-        curSeg.rastSegment();
+        if (middleQueue.empty())
+            continue;
+        SegmentRasterizator curSeg(middleQueue.front());
+
+        curSeg.rastSegment(i++);
+
+        middleQueue.pop();
         endQueue.push(curSeg);
     }
 }
 
 void Director::processCreate()
 {
-    for (SegmentRasterizator curSeg(endQueue.front());
-         startQueue.size() || middleQueue.size() || endQueue.size(); endQueue.pop())
+    int i = 0;
+    while (startQueue.size() || middleQueue.size() || endQueue.size())
     {
-        curSeg.rastSegment();
+        if (endQueue.empty())
+            continue;
+        SegmentRasterizator curSeg(endQueue.front());
+
+        curSeg.createImg(i++);
+        endQueue.pop();
         final.push_back(curSeg);
     }
 }
