@@ -9,4 +9,10 @@
 
 #define DELTA 1e-5
 
+#define ANSI_BLUE_BRIGHT "\u001b[44;1m"
+#define ANSI_MAGENTA_BRIGHT "\u001b[45;1m"
+#define ANSI_CYAN_BRIGHT "\u001b[46;1m"
+
+#define ANSI_RESET "\u001b[0m"
+
 #endif // CONFIG_HPP

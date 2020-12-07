@@ -13,9 +13,9 @@ std::queue<SegmentRasterizator> getStartQueue(int numOfSegments)
     std::queue<SegmentRasterizator> queue;
     for (int i = 0; i < numOfSegments; i++)
     {
-        int x = rand() % (WIDTH - 50) + 1;
-        int y = rand() % (HEIGHT - 50) + 1;
-        queue.push(SegmentRasterizator(x, y, x + 50, y + 50));
+        int x = rand() % (WIDTH - 500) + 1;
+        int y = rand() % (HEIGHT - 500) + 1;
+        queue.push(SegmentRasterizator(x, y, x + rand() % 500 + 1, y + rand() % 500 + 1));
     }
     return queue;
 }

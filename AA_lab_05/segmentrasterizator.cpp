@@ -40,7 +40,7 @@ int sign(float num)
 
 void SegmentRasterizator::prepareConstantsForRB(int index)
 {
-    std::printf("From START worker: task %d BEGIN %s\n", index, now_str().c_str());
+    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
 
     deltaX = xEnd - xStart;
     deltaY = yEnd - yStart;
@@ -62,12 +62,12 @@ void SegmentRasterizator::prepareConstantsForRB(int index)
     tngModule = deltaY / deltaX;
     mistake = tngModule - 0.5;
 
-    std::printf("From START worker: task %d ENDED %s\n", index, now_str().c_str());
+    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
 }
 
 void SegmentRasterizator::rastSegment(int index)
 {
-    std::printf("From MIDDLE worker: task %d BEGIN %s\n", index, now_str().c_str());
+    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
 
     float curX = xStart, curY = yStart;
     for (int i = 0; i < deltaX; i++)
@@ -88,12 +88,12 @@ void SegmentRasterizator::rastSegment(int index)
         mistake += tngModule;
     }
 
-    std::printf("From MIDDLE worker: task %d ENDED %s\n", index, now_str().c_str());
+    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
 }
 
 void SegmentRasterizator::createImg(int index)
 {
-    std::printf("From END worker: task %d BEGIN %s\n", index, now_str().c_str());
+    std::printf(ANSI_CYAN_BRIGHT"From END worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
 
     if (image)
         delete image;
@@ -103,7 +103,7 @@ void SegmentRasterizator::createImg(int index)
     for (auto iter = dotsOfSegment.begin(); iter < dotsOfSegment.end(); iter++)
         image->setPixel(iter->first, iter->second, Qt::black);
 
-    std::printf("From END worker: task %d ENDED %s\n", index, now_str().c_str());
+    std::printf(ANSI_CYAN_BRIGHT " From END worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
 }
 
 std::vector<std::pair<int, int>> SegmentRasterizator::getDotsOfSegment()
