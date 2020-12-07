@@ -40,6 +40,13 @@ fun DDALine(screen : Array<Array<Triple<Int, Int, Int>>>,
     }
 }
 
+fun sumMatr(fMat : Array<IntArray>, sMat : Array<IntArray>, answMat : Array<IntArray>)
+{
+    for (i in fMat.indices)                             // 1
+        for (j in fMat[0].indices)                      // 2
+            answMat[i][j] = fMat[i][j] + sMat[i][j]     // 3
+}
+
 fun showScreen(screen : Array<Array<Triple<Int, Int, Int>>>)
 {
     for (i in screen)

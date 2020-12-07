@@ -134,7 +134,6 @@ array[j + 1] = temp<y:LabelModel><y:SmartNodeLabelModel distance="4.0"/></y:Labe
       </data>
     </node>
     <node id="n11">
-      <data key="d5"/>
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.annotation">
           <y:Geometry height="100.0" width="200.0" x="487.594670849673" y="0.0"/>
@@ -255,12 +254,11 @@ array - массив размера n<y:LabelModel><y:SmartNodeLabelModel distan
       </data>
     </edge>
     <edge id="e10" source="n11" target="n0">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="-99.98291015625" sy="0.0" tx="-100.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="none"/>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>
