@@ -10,6 +10,7 @@
 
 std::queue<SegmentRasterizator> getStartQueue(int numOfSegments)
 {
+    srand(time(0));
     std::queue<SegmentRasterizator> queue;
     for (int i = 0; i < numOfSegments; i++)
     {
