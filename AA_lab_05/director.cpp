@@ -30,8 +30,8 @@ void Director::processRast()
 
         curSeg.rastSegment(i++);
 
-        middleQueue.pop();
         endQueue.push(curSeg);
+        middleQueue.pop();
     }
 }
 

@@ -70,7 +70,7 @@ void SegmentRasterizator::rastSegment(int index)
     std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
 
     float curX = xStart, curY = yStart;
-    for (int i = 0; i < deltaX; i++)
+    for (int i = 0; i <= deltaX; i++)
     {
         dotsOfSegment.push_back(std::pair<int, int>(curX, curY));
         if (stepFlag)
