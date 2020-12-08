@@ -126,7 +126,7 @@ escapeinside={\#*}{*)}   % если нужно добавить коммента
 
 \begin{equation}
 \label{1:mistake}
-	mistake = \frac{\symup\Delta y}{\symup\Delta x} - \frac{1}{2}
+	{mistake}= \frac{\symup\Delta y}{\symup\Delta x} - \frac{1}{2}
 \end{equation}
 
 Выражение \ref{1:mistake} фактически определяет ошибку для следующего шага.
@@ -246,11 +246,11 @@ std::string now_str()
     const long hours = td.hours();
     const long minutes = td.minutes();
     const long seconds = td.seconds();
-    const long milliseconds =
-        td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
+    const long nanoseconds =
+        td.total_nanoseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000000000);
 
     char buf[40];
-    sprintf(buf, "%02ld:%02ld:%02ld.%03ld", hours, minutes, seconds, milliseconds);
+    sprintf(buf, "%02ld:%02ld:%02ld.%09ld", hours, minutes, seconds, nanoseconds);
 
     return buf;
 }
@@ -266,7 +266,8 @@ SegmentRasterizator::SegmentRasterizator(int xStart_, int yStart_, int xEnd_, in
     else if (yStart == yEnd)
         yEnd += 1;
 
-    image = NULL;
+    image = new QImage(WIDTH, HEIGHT, QImage::Format_RGB32);
+    image->fill(Qt::white);
 }
 
 int sign(float num)
@@ -276,7 +277,7 @@ int sign(float num)
 
 void SegmentRasterizator::prepareConstantsForRB(int index)
 {
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
 
     deltaX = xEnd - xStart;
     deltaY = yEnd - yStart;
@@ -298,12 +299,12 @@ void SegmentRasterizator::prepareConstantsForRB(int index)
     tngModule = deltaY / deltaX;
     mistake = tngModule - 0.5;
 
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
 }
 
 void SegmentRasterizator::rastSegment(int index)
 {
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
 
     float curX = xStart, curY = yStart;
     for (int i = 0; i <= deltaX; i++)
@@ -324,22 +325,22 @@ void SegmentRasterizator::rastSegment(int index)
         mistake += tngModule;
     }
 
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
 }
 
 void SegmentRasterizator::createImg(int index)
 {
-    std::printf(ANSI_CYAN_BRIGHT"From END worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
-
-    if (image)
-        delete image;
-    image = new QImage(WIDTH, HEIGHT, QImage::Format_RGB32);
-    image->fill(Qt::white);
+    std::printf(ANSI_CYAN_BRIGHT"From END worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
 
     for (auto iter = dotsOfSegment.begin(); iter < dotsOfSegment.end(); iter++)
         image->setPixel(iter->first, iter->second, Qt::black);
 
-    std::printf(ANSI_CYAN_BRIGHT " From END worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_CYAN_BRIGHT "From END worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
+}
+
+std::vector<std::pair<int, int>> SegmentRasterizator::getDotsOfSegment()
+{
+    return dotsOfSegment;
 }
 \end{lstlisting}
 
@@ -443,30 +444,6 @@ std::vector<SegmentRasterizator> Director::getFinal() { return final; }
 Спроектированные алгоритмы были реализованы и протестированы.
 
 \chapter{Исследовательская часть}
-
-\section{Пример работы программного обеспечения}
-Ниже на рисунках \ref{img:example1}-\ref{img:example2} предоставлены примеры работы каждого из алгоритмов на введённых пользователем данных.
-
-\begin{figure}
-\begin{center}
-\includegraphics[]{inc/img/example1.png}
-\captionsetup{justification=centering}
-	\caption{Пример работы ПО.}
-	\label{img:example1}	
-\end{center}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[]{inc/img/example2.png}
-\captionsetup{justification=centering}
-	\caption{Пример работы ПО.}
-	\label{img:example2}	
-\end{center}
-\end{figure}
-
-\newpage
-
 \section{Технические характеристики}
 Технические характеристики ЭВМ, на котором выполнялись исследования:
 \begin{itemize}
@@ -475,271 +452,65 @@ std::vector<SegmentRasterizator> Director::getFinal() { return final; }
 \item Процессор: Intel Core i7-10510U
 \end{itemize}
 
-
 При проведении замеров времени ноутбук был подключен к сети электропитания.
 
+\section{Пример работы программного обеспечения}
+На рисунке \ref{img:example} приведен пример работы программы для 7 визуализируемых отрезков.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.9]{inc/img/example.png}
+\captionsetup{justification=centering}
+	\caption{Пример работы ПО.}
+	\label{img:example}	
+\end{center}
+\end{figure}
+
+\newpage
 \section{Время выполнения алгоритмов}
-Алгоритмы тестировались на данных, сгенерированных случайным образом.
+Алгоритм тестировался на данных, сгенерированных случайным образом.
 
-Результаты замеров времени приведены в таблицах \ref{time1} - \ref{time5}. На рисунках \ref{timeRes1} и \ref{timeRes5} приведены графики зависимостей времени работы алгоритмов от размерности обрабатываемых матриц при 1, 2, 4, 8, 16 потоках. В таблице КВ - последовательный алгоритм Копперсмита-Винограда, Парал1КВ - реализация схемы \ref{img:scheme1} параллельного алгоритма Копперсмита-Винограда, Парал2КВ - реализация схемы \ref{img:scheme2} параллельного алгоритма.
+В таблице \ref{time1} предоставлено время работы над каждым отрезком в предоставленном примере каждого из выделенных этапов.
 
-\newpage
+Из таблицы видно, что среднее время выполнения этапа 1 составляет $\approx 17428.6$ наносекунд. Среднее время выполнения этапа 2 составляет $\approx 38285.7$ наносекунд. Среднее время выполнения этапа 3 составляет $\approx 18571.4$ наносекунд. Таким образом, этап 1 сравним по среднему времени выполнения с этапом 2. Но после выполнения этапа 1 заметно, что последующие вызовы функции работают за константное время, равное 3000 наносекунд, что при наличии начальных "прогревочных" запусков вылилось бы в факт того, что этап 1 не был бы сопоставим по среднему времени выполнения с этапом 3. Этап 2 является самым долго выполняющимся.
+
 \begin{table}[h]
 	\begin{center}
-		\caption{\label{time1} Замеры времени для различных размеров массивов на 1 потоке.}
+		\caption{\label{time1} Замеры времени для выполнения выделенных этапов.}
 		\begin{tabular}{|c |c |c |c|} 
  			\hline
- 			&\multicolumn{3}{|c|}{Время работы, нс}\\
+ 			&\multicolumn{3}{|c|}{Время обработки, нс}\\
  			\hline
-			Размеры матрицы & КВ & Парал1КВ & Парал2КВ \\ [0.5ex] 
+			Номер отрезка & Этап 1 & Этап 2 & Этап 3\\ [0.5ex] 
  			\hline\hline
- 			100 & 4692982 & 6144734 & 6125329 \\
+ 			0 & 97000 & 74000 & 27000 \\
  			\hline
- 			200 & 49620266 & 56025172 & 58077386 \\
+ 			1 & 10000 & 38000 & 21000 \\
  			\hline
-			300 & 178730542 & 199925329 & 206518482 \\
+			2 & 3000 & 32000 & 16000 \\
 			\hline
-			400 & 429056319 & 456832433 & 561695647 \\
+			3 & 3000 & 35000 & 19000 \\
 			\hline
-			500 & 856058247 & 737473554 & 673711435 \\
+			4 & 3000 & 22000 & 12000 \\
+			\hline
+			5 & 3000 & 35000 & 16000 \\
+			\hline
+			6 & 3000 & 32000 & 19000 \\
 			\hline
 			\end{tabular}
 	\end{center}
 \end{table}
-
-\begin{table}[h]
-	\begin{center}
-		\caption{\label{time2} Замеры времени для различных размеров массивов на 2 потоках.}
-		\begin{tabular}{|c |c |c |c|} 
- 			\hline
- 			&\multicolumn{3}{|c|}{Время работы, нс}\\
- 			\hline
-			Размеры матрицы & КВ & Парал1КВ & Парал2КВ \\ [0.5ex] 
- 			\hline\hline
- 			100 & 4250527 & 4315274 & 2910312\\
- 			\hline
- 			200 & 50728798 & 34809356 & 18273241 \\
- 			\hline
-			300 & 186202130 & 120880876 & 61885504 \\
-			\hline
-			400 & 436860056 & 248104438 & 137340969 \\
-			\hline
-			500 & 870833440 & 576761740 & 267199177 \\
-			\hline
-			\end{tabular}
-	\end{center}
-\end{table}
-
-\begin{table}[h]
-	\begin{center}
-		\caption{\label{time3} Замеры времени для различных размеров массивов на 4 потоках.}
-		\begin{tabular}{|c |c |c |c|} 
- 			\hline
- 			&\multicolumn{3}{|c|}{Время работы, нс}\\
- 			\hline
-			Размеры матрицы & КВ & Парал1КВ & Парал2КВ \\ [0.5ex] 
- 			\hline\hline
- 			100 & 4485824 & 4239416 & 2969518 \\
- 			\hline
- 			200 & 51678241 & 28600648 & 10260636 \\
- 			\hline
-			300 & 176448578 & 80224609 & 31277241 \\
-			\hline
-			400 & 436787067 & 208705553 & 70302333 \\
-			\hline
-			500 & 850999256 & 485612161 & 151094601 \\
-			\hline
-			\end{tabular}
-	\end{center}
-\end{table}
-
-\begin{table}[h]
-	\begin{center}
-		\caption{\label{time4} Замеры времени для различных размеров массивов на 8 потоке.}
-		\begin{tabular}{|c |c |c |c|} 
- 			\hline
- 			&\multicolumn{3}{|c|}{Время работы, нс}\\
- 			\hline
-			Размеры матрицы & КВ & Парал1КВ & Парал2КВ \\ [0.5ex] 
- 			\hline\hline
- 			100 & 4403638 & 5304634 & 3712704 \\
- 			\hline
- 			200 & 52234883 & 26568390 & 11046163 \\
- 			\hline
-			300 & 177331754 & 107137650 & 31637714 \\
-			\hline
-			400 & 442171563 & 337629280 & 58383234 \\
-			\hline
-			500 & 877219464 & 883596315 & 117636357 \\
-			\hline
-			\end{tabular}
-	\end{center}
-\end{table}
-
-\begin{table}[h]
-	\begin{center}
-		\caption{\label{time5} Замеры времени для различных размеров массивов на 16 потоках.}
-		\begin{tabular}{|c |c |c |c|} 
- 			\hline
- 			&\multicolumn{3}{|c|}{Время работы, нс}\\
- 			\hline
-			Размеры матрицы & КВ & Парал1КВ & Парал2КВ \\ [0.5ex] 
- 			\hline\hline
- 			100 & 4463337 & 7381390 & 4981564 \\
- 			\hline
- 			200 & 50528949 & 32361454 &  17479130 \\
- 			\hline
-			300 & 175677695 & 110593792 & 44960321 \\
-			\hline
-			400 & 433177913 & 342768739 & 68839512 \\
-			\hline
-			500 & 831773652 & 887656714 & 100236284 \\
-			\hline
-			\end{tabular}
-	\end{center}
-\end{table}
-\newpage
-
-\begin{figure}[h]
-\begin{center}
-	\begin{tikzpicture}
-
-\begin{axis}[
-  		  	axis lines = left,
-  		  	xlabel = размерность,
-  		  	ylabel = {время, нс},
-			legend pos=north west,
-			ymajorgrids=true
-		] 
-		\addplot[color=orange] table[x index=0, y index=1] {KB11.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB21.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB31.dat};
-
-		\addlegendentry{КВ}
-		\addlegendentry{Paral1КВ}
-		\addlegendentry{Paral2КВ}
-		\end{axis}
-	\end{tikzpicture}
-	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размерности матриц (при 1 потоке).}
-	\label{timeRes1}
-	\end{center}
-\end{figure}
-
-\begin{figure}[h]
-\begin{center}
-	\begin{tikzpicture}
-\begin{axis}[
-  		  	axis lines = left,
-  		  	xlabel = размерность,
-  		  	ylabel = {время, нс},
-			legend pos=north west,
-			ymajorgrids=true
-		] 
-		\addplot[color=orange] table[x index=0, y index=1] {KB12.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB22.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB32.dat};
-
-		\addlegendentry{КВ}
-		\addlegendentry{Парал1КВ}
-		\addlegendentry{Парал2КВ}
-		\end{axis}
-	\end{tikzpicture}
-	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размерности матриц (при 2 потоках)}
-	\label{timeRes2}
-	\end{center}
-\end{figure}
-
-\begin{figure}[h]
-\begin{center}
-	\begin{tikzpicture}
-\begin{axis}[
-  		  	axis lines = left,
-  		  	xlabel = размерность,
-  		  	ylabel = {время, нс},
-			legend pos=north west,
-			ymajorgrids=true
-		] 
-		\addplot[color=orange] table[x index=0, y index=1] {KB14.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB24.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB34.dat};
-
-		\addlegendentry{КВ}
-		\addlegendentry{Парал1КВ}
-		\addlegendentry{Парал2КВ}
-		\end{axis}
-	\end{tikzpicture}
-	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размерности матриц (при 4 потоках)}
-	\label{timeRes3}
-	\end{center}
-\end{figure}
-
-\begin{figure}[h]
-\begin{center}
-	\begin{tikzpicture}
-\begin{axis}[
-  		  	axis lines = left,
-  		  	xlabel = размерность,
-  		  	ylabel = {время, нс},
-			legend pos=north west,
-			ymajorgrids=true
-		] 
-		\addplot[color=orange] table[x index=0, y index=1] {KB18.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB28.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB38.dat};
-
-		\addlegendentry{КВ}
-		\addlegendentry{Парал1КВ}
-		\addlegendentry{Парал2КВ}
-		\end{axis}
-	\end{tikzpicture}
-	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размерности матриц (при 8 потоках)}
-	\label{timeRes4}
-	\end{center}
-\end{figure}
-
-\begin{figure}[h]
-\begin{center}
-	\begin{tikzpicture}
-\begin{axis}[
-  		  	axis lines = left,
-  		  	xlabel = размерность,
-  		  	ylabel = {время, нс},
-			legend pos=north west,
-			ymajorgrids=true
-		] 
-		\addplot[color=orange] table[x index=0, y index=1] {KB116.dat};
-		\addplot[color=blue, mark=square] table[x index=0, y index=1] {KB216.dat};
-		\addplot[color=green, mark=square] table[x index=0, y index=1] {KB316.dat};
-
-		\addlegendentry{КВ}
-		\addlegendentry{Парал1КВ}
-		\addlegendentry{Парал2КВ}
-		\end{axis}
-	\end{tikzpicture}
-	\captionsetup{justification=centering}
-	\caption{Зависимость времени работы от размерности матриц (при 16 потоках)}
-	\label{timeRes5}
-	\end{center}
-\end{figure}
 
 \newpage
 
 \section*{Вывод}
-При сравнении результатов замеров по времени видно, что рассматривать скорость работы распараллеленных алгоритмов на одном потоке смысла нет, так как они работают медленнее на $\approx 16\%$. Связанно это с тем, что на создание потоков тратится время.
+При сравнении результатов замеров по времени стало известно, что самым быстрым этапом конвейера оказался этап 1. При этом, самым медленным из трех рассмотренных - этап 3.
 
-На 2-х потоках обе схемы себя показывают уже лучше. Схема распараллеливания с разделением показывает себя хуже, чем вторая схема, на $\approx 181\%$ (на размерности 300). При этом последовательная реализация будет работать медленнее схемы без разделения на $\approx 326\%$.
+В среднем этап 1 работает быстрее этапа 2 на $\approx 20857.1$ наносекунд. При этом, при четвертой обработке отрезка разница в скорости выполнения составила 32000 наносекунд.
 
-На 4-х потоках схемы вновь показывают себя лучше. При этом они работают быстрее, чем на 2-х потоках. Схема распараллеливания с разделением показывает себя хуже, чем вторая схема, на $\approx 297\%$.
+Этап 3 в среднем работает быстрее этапа 2 на $\approx 19714.3$ наносекунд. При этом, при шестой обработке отрезка разница в скорости выполнения составила 19000 наносекунд.
 
-На 8-и потоках первая схема показывает себя уже хуже, чем на 4-х потоках. Таким образом 4 потока - это оптимальный вариант решения задачи для первой схемы. Такое увеличение времени выполнения может связано со временем, затрачиваемым на создание потоков. Схема распараллеливания с разделением показывает себя хуже, чем вторая схема на $\approx 578\%$.
-
-На 16-ти потоках схемы работают с ещё меньшей эффективностью. Схема распараллеливания с разделением показывает себя хуже второй реализации на $\approx 500\%$.  Таким образом, вторая реализация параллельной схемы уже начинает несколько уменьшать своё преимущество, но при этом она всё ещё имеет свой потенциал.
-
-Таким образом, параллельная реализация действительно работает быстрее последовательной. Но важно отметить факт того, что требуется ответственно относиться к выделяемым ресурсам.
+Таким образом, среднее время выполнения алгоритма для каждого отрезка составило $\approx 74285.71$ наносекунд.
 
 \chapter*{Заключение}
 \addcontentsline{toc}{chapter}{Заключение}
