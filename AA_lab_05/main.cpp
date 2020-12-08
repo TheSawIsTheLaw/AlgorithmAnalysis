@@ -3,8 +3,6 @@
 
 #include "QDebug"
 
-#include "windows.h"
-
 #include "segmentrasterizator.hpp"
 #include "director.hpp"
 
