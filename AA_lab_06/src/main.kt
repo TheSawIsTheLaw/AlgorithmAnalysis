@@ -8,5 +8,8 @@ fun main()
 
     graph.print()
 
+    val list = graph.getLinkedVertices(0)
+    print(list)
+
     return
 }

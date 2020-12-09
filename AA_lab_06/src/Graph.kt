@@ -1,20 +1,20 @@
 import kotlin.random.Random
 import kotlin.Int as Int
 
-val randomStart = 0.1
-val randomEnd = 30.0
+val randomStart = 0
+val randomEnd = 5
 
 class Graph(size_ : Int)
 {
     private var size = size_
-    private var adjacencyMatrix = Array(size) { DoubleArray(size) }
+    private var adjacencyMatrix = Array(size) { IntArray(size) }
 
-    fun setWay(from : Int, to : Int, length : Double)
+    fun setWay(from : Int, to : Int, length : Int)
     {
         adjacencyMatrix[from][to] = length
     }
 
-    fun getWay(from : Int, to : Int) : Double
+    fun getWay(from : Int, to : Int) : Int
     {
         return adjacencyMatrix[from][to]
     }
@@ -28,7 +28,17 @@ class Graph(size_ : Int)
     {
         for (i in 0 until size)
             for (j in 0 until size)
-                this.setWay(i, j, Random.nextDouble(randomStart, randomEnd))
+                this.setWay(i, j, Random.nextInt(randomStart, randomEnd))
+    }
+
+    fun getLinkedVertices(vertexNum : Int) : MutableList<Int>
+    {
+        val retList = mutableListOf<Int>()
+        for (i in 0 until size)
+            if (adjacencyMatrix[vertexNum][i] > 0)
+                retList.add(i)
+
+        return retList
     }
 
     fun print()
@@ -36,7 +46,7 @@ class Graph(size_ : Int)
         for (i in 0 until size)
         {
             for (j in 0 until size)
-                print("%15f ".format(getWay(i, j)))
+                print("%3d ".format(getWay(i, j)))
             print('\n')
         }
     }
