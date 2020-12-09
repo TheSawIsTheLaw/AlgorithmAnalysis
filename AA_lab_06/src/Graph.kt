@@ -1,8 +1,8 @@
 import kotlin.random.Random
 import kotlin.Int as Int
 
-val randomStart = 0
-val randomEnd = 5
+const val randomStart = 0
+const val randomEnd = 5
 
 class Graph(size_ : Int)
 {

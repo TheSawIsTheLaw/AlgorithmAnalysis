@@ -1,9 +1,8 @@
 import Graph
-import kotlin.random.Random
 
 fun main()
 {
-    var graph = Graph(3)
+    val graph = Graph(5)
     graph.generate()
 
     graph.print()
