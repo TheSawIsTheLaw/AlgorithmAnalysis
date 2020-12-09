@@ -1,48 +1,55 @@
 import Graph
+import java.lang.Integer.MAX_VALUE
 import java.util.*
 
 class BruteForce
 {
-    private fun lenWay(graph: Graph, way : MutableList<Int>) : Int
+    fun bruteForceAlg(graph: Graph)
     {
-        var len = 0
-        for (i in 0 until way.size - 1)
-            len += graph.getWay(way[i], way[i + 1])
+        val permutations = getAllPermutations(graph.getVertecies())
 
-        return len
-    }
-
-    fun bruteForceAlg(graph: Graph) : Pair<IntArray, Int>
-    {
-        var bestWay = IntArray(graph.getSize())
-        var bestWayLen = -1
-        val queue : Queue<MutableList<Int>> = LinkedList<MutableList<Int>>()
-        queue.add(mutableListOf(1, 0))
-
-        while (!queue.isEmpty())
+        var minWayLength = MAX_VALUE
+        var minWay: MutableList<Int> = mutableListOf()
+        for (curWay in permutations.filter { it[0] == 0 })
         {
-            var currentWay = queue.peek()
-            queue.remove()
-            for (vertex in graph.getLinkedVertices(currentWay[currentWay.size - 1]))
+            curWay.add(0)
+            val curWayLength = graph.getWayLength(curWay)
+            if (curWayLength in 1 until minWayLength)
             {
-                if (currentWay.find { it == vertex } == currentWay.last())
-                {
-                    val newWay = currentWay
-                    newWay.add(vertex)
-                    if (newWay.size == graph.getSize())
-                    {
-                        val len = lenWay(graph, newWay)
-                        if (len < bestWayLen || bestWayLen > 0)
-                        {
-                            bestWayLen = len
-                            bestWay = newWay.toIntArray()
-                        }
-                    }
-                    else
-                        queue.add(newWay)
-                }
+                minWayLength = curWayLength
+                minWay = curWay
             }
         }
-        return Pair(bestWay, bestWayLen)
+
+        println("Min way length is: $minWayLength")
+        println("Min way is: $minWay")
+    }
+
+    private fun getAllPermutations(unusedDots: MutableList<Int>,
+                      result : MutableList<MutableList<Int>>? = null,
+                      curWay : MutableList<Int>? = null) : MutableList<MutableList<Int>>
+    {
+        var ret = result
+        if (ret == null)
+            ret = mutableListOf()
+
+        if (unusedDots.size == 0)
+        {
+            ret.add(curWay!!)
+            return ret
+        }
+
+        for (i in 0 until unusedDots.size)
+        {
+            val newUnusedDots = unusedDots.toMutableList()
+            newUnusedDots.removeAt(i)
+            var newWay : MutableList<Int> = mutableListOf()
+            if (curWay != null)
+                newWay = curWay.toMutableList()
+            newWay.add(unusedDots[i])
+
+            getAllPermutations(newUnusedDots, ret, newWay)
+        }
+        return ret
     }
 }

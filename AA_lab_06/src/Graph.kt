@@ -1,8 +1,8 @@
 import kotlin.random.Random
 import kotlin.Int as Int
 
-const val randomStart = 0
-const val randomEnd = 5
+const val randomStart = 1
+const val randomEnd = 10
 
 class Graph(size_ : Int)
 {
@@ -15,9 +15,26 @@ class Graph(size_ : Int)
         adjacencyMatrix[to][from] = length
     }
 
-    fun getWay(from : Int, to : Int) : Int
+    private fun getWay(from : Int, to : Int) : Int
     {
         return adjacencyMatrix[from][to]
+    }
+
+    fun getWayLength(way : MutableList<Int>) : Int
+    {
+        var length = 0
+        for (i in 0 until way.size - 1)
+        {
+            val curLength = getWay(way[i], way[i + 1])
+            if (curLength == 0)
+            {
+                length = -1
+                break
+            }
+            else
+                length += curLength
+        }
+        return length
     }
 
     fun getSize() : Int
@@ -44,6 +61,14 @@ class Graph(size_ : Int)
                 retList.add(i)
 
         return retList
+    }
+
+    fun getVertecies() : MutableList<Int>
+    {
+        val ret : MutableList<Int> = mutableListOf()
+        for (i in 0 until size)
+            ret.add(i)
+        return ret
     }
 
     fun print()

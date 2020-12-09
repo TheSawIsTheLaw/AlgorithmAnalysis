@@ -1,14 +1,14 @@
 import Graph
+import BruteForce
 
 fun main()
 {
-    val graph = Graph(5)
+    val graph = Graph(3)
     graph.generate()
 
     graph.print()
 
-    val list = graph.getLinkedVertices(0)
-    print(list)
+    val answer = BruteForce().bruteForceAlg(graph)
 
     return
 }
