@@ -12,6 +12,7 @@ class Graph(size_ : Int)
     fun setWay(from : Int, to : Int, length : Int)
     {
         adjacencyMatrix[from][to] = length
+        adjacencyMatrix[to][from] = length
     }
 
     fun getWay(from : Int, to : Int) : Int
@@ -27,8 +28,12 @@ class Graph(size_ : Int)
     fun generate()
     {
         for (i in 0 until size)
-            for (j in 0 until size)
-                this.setWay(i, j, Random.nextInt(randomStart, randomEnd))
+            for (j in 0 until i)
+            {
+                val curRand = Random.nextInt(randomStart, randomEnd)
+                this.setWay(i, j, curRand)
+                this.setWay(j, i, curRand)
+            }
     }
 
     fun getLinkedVertices(vertexNum : Int) : MutableList<Int>
