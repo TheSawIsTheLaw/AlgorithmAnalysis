@@ -3,7 +3,7 @@ import java.util.*
 
 class BruteForce
 {
-    fun lenWay(graph: Graph, way : MutableList<Int>) : Int
+    private fun lenWay(graph: Graph, way : MutableList<Int>) : Int
     {
         var len = 0
         for (i in 0 until way.size - 1)
