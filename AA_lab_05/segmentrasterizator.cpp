@@ -10,11 +10,11 @@ std::string now_str()
     const long hours = td.hours();
     const long minutes = td.minutes();
     const long seconds = td.seconds();
-    const long milliseconds =
-        td.total_milliseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000);
+    const long nanoseconds =
+        td.total_nanoseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000000000);
 
     char buf[40];
-    sprintf(buf, "%02ld:%02ld:%02ld.%03ld", hours, minutes, seconds, milliseconds);
+    sprintf(buf, "%02ld:%02ld:%02ld.%09ld", hours, minutes, seconds, nanoseconds);
 
     return buf;
 }
@@ -30,7 +30,8 @@ SegmentRasterizator::SegmentRasterizator(int xStart_, int yStart_, int xEnd_, in
     else if (yStart == yEnd)
         yEnd += 1;
 
-    image = NULL;
+    image = new QImage(WIDTH, HEIGHT, QImage::Format_RGB32);
+    image->fill(Qt::white);
 }
 
 int sign(float num)
@@ -40,7 +41,7 @@ int sign(float num)
 
 void SegmentRasterizator::prepareConstantsForRB(int index)
 {
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
 
     deltaX = xEnd - xStart;
     deltaY = yEnd - yStart;
@@ -62,12 +63,12 @@ void SegmentRasterizator::prepareConstantsForRB(int index)
     tngModule = deltaY / deltaX;
     mistake = tngModule - 0.5;
 
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
 }
 
 void SegmentRasterizator::rastSegment(int index)
 {
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
 
     float curX = xStart, curY = yStart;
     for (int i = 0; i <= deltaX; i++)
@@ -88,22 +89,17 @@ void SegmentRasterizator::rastSegment(int index)
         mistake += tngModule;
     }
 
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
 }
 
 void SegmentRasterizator::createImg(int index)
 {
-    std::printf(ANSI_CYAN_BRIGHT"From END worker: task %d BEGIN %s\n" ANSI_RESET, index, now_str().c_str());
-
-    if (image)
-        delete image;
-    image = new QImage(WIDTH, HEIGHT, QImage::Format_RGB32);
-    image->fill(Qt::white);
+    std::printf(ANSI_CYAN_BRIGHT"From END worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
 
     for (auto iter = dotsOfSegment.begin(); iter < dotsOfSegment.end(); iter++)
         image->setPixel(iter->first, iter->second, Qt::black);
 
-    std::printf(ANSI_CYAN_BRIGHT " From END worker: task %d ENDED %s\n" ANSI_RESET, index, now_str().c_str());
+    std::printf(ANSI_CYAN_BRIGHT "From END worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
 }
 
 std::vector<std::pair<int, int>> SegmentRasterizator::getDotsOfSegment()
