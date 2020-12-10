@@ -15,7 +15,7 @@ class Graph(size_ : Int)
         adjacencyMatrix[to][from] = length
     }
 
-    private fun getWay(from : Int, to : Int) : Int
+    fun getWay(from : Int, to : Int) : Int
     {
         return adjacencyMatrix[from][to]
     }
@@ -26,13 +26,7 @@ class Graph(size_ : Int)
         for (i in 0 until way.size - 1)
         {
             val curLength = getWay(way[i], way[i + 1])
-            if (curLength == 0)
-            {
-                length = -1
-                break
-            }
-            else
-                length += curLength
+            length += curLength
         }
         return length
     }
@@ -88,7 +82,7 @@ class PheromoneGraph(size_ : Int)
         adjacencyMatrix[i][j] = value
     }
 
-    private fun get(i : Int, j : Int) : Double
+    fun get(i : Int, j : Int) : Double
     {
         return adjacencyMatrix[i][j]
     }
