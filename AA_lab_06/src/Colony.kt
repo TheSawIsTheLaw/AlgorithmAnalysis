@@ -1,4 +1,3 @@
-import Graph
 import kotlin.math.pow
 import kotlin.random.Random
 
@@ -30,14 +29,13 @@ class Colony(graph_: Graph)
             way.add(vertex)
         }
 
-        fun getWayLength(way : MutableList<Int>): Int
+        fun getWayLength(): Int
         {
             return graph.getWayLength(way)
         }
     }
 
     val initValue = 0.1
-    val startCity = 0
 
     fun antsInitialization() : MutableList<Ant>
     {
@@ -87,7 +85,8 @@ class Colony(graph_: Graph)
                     {
                         if (!curAnt.visitedVerticies[curChoice])
                         {
-                            var chance = pheromoneGraph.get(curVertex, curChoice).pow(alpha) * (1.0 / graph.getWay(curVertex, curChoice).toDouble()).pow(beta) / sumChance
+                            var chance = pheromoneGraph.get(curVertex, curChoice).pow(alpha) *
+                                    (1.0 / graph.getWay(curVertex, curChoice).toDouble()).pow(beta) / sumChance
                             coin -= chance
                         }
                         curChoice++
@@ -95,7 +94,9 @@ class Colony(graph_: Graph)
                     curChoice--
 
                     ants[curAntNum].visitVertex(curChoice)
-                    tempPheromoneGraph.set(curVertex, curChoice, tempPheromoneGraph.get(curVertex, curChoice) + q / graph.getWay(curVertex, curChoice).toDouble())
+                    tempPheromoneGraph.set(curVertex, curChoice,
+                            tempPheromoneGraph.get(curVertex, curChoice) +
+                                    q / graph.getWay(curVertex, curChoice).toDouble())
                 }
 
                 for (k in 0 until graph.getSize())
@@ -109,7 +110,7 @@ class Colony(graph_: Graph)
                 val cur = ant.graph.getWayLength(ant.way)
                 if (cur < minWay)
                 {
-                    minWay = ant.graph.getWayLength(ant.way)
+                    minWay = ant.getWayLength()
                     min = ant.way
                 }
             }

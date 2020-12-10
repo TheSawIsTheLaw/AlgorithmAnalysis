@@ -43,16 +43,6 @@ class Graph(size_ : Int)
                 setWay(i, j, Random.nextInt(randomStart, randomEnd))
     }
 
-    fun getLinkedVertices(vertexNum : Int) : MutableList<Int>
-    {
-        val retList = mutableListOf<Int>()
-        for (i in 0 until size)
-            if (adjacencyMatrix[vertexNum][i] > 0)
-                retList.add(i)
-
-        return retList
-    }
-
     fun getVertecies() : MutableList<Int>
     {
         val ret : MutableList<Int> = mutableListOf()
