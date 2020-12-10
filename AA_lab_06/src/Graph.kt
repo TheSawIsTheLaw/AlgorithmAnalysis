@@ -46,11 +46,7 @@ class Graph(size_ : Int)
     {
         for (i in 0 until size)
             for (j in 0 until i)
-            {
-                val curRand = Random.nextInt(randomStart, randomEnd)
-                this.setWay(i, j, curRand)
-                this.setWay(j, i, curRand)
-            }
+                setWay(i, j, Random.nextInt(randomStart, randomEnd))
     }
 
     fun getLinkedVertices(vertexNum : Int) : MutableList<Int>
@@ -77,6 +73,37 @@ class Graph(size_ : Int)
         {
             for (j in 0 until size)
                 print("%3d ".format(getWay(i, j)))
+            print('\n')
+        }
+    }
+}
+
+class PheromoneGraph(size_ : Int)
+{
+    private var size = size_
+    private var adjacencyMatrix = Array(size) { DoubleArray(size) }
+
+    fun set(i : Int, j : Int, value : Double)
+    {
+        adjacencyMatrix[i][j] = value
+    }
+
+    private fun get(i : Int, j : Int) : Double
+    {
+        return adjacencyMatrix[i][j]
+    }
+
+    fun getSize() : Int
+    {
+        return size
+    }
+
+    fun print()
+    {
+        for (i in 0 until size)
+        {
+            for (j in 0 until size)
+                print("%5f ".format(get(i, j)))
             print('\n')
         }
     }
