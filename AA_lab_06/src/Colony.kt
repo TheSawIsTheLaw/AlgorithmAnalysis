@@ -37,13 +37,13 @@ class Colony(graph_: Graph)
     }
 
     val initValue = 0.1
-    val startCity = 1
+    val startCity = 0
 
     fun antsInitialization() : MutableList<Ant>
     {
         val ants = mutableListOf<Ant>()
         for (i in 0 until graph.getSize())
-            ants.add(Ant(graph, startCity))
+            ants.add(Ant(graph, Random.nextInt(0, graph.getSize())))
 
         return ants
     }
@@ -64,7 +64,7 @@ class Colony(graph_: Graph)
         {
             val ants = antsInitialization()
 
-            for (i in 0 until graph.getSize())
+            for (i in 0 until graph.getSize() - 1)
             {
                 val tempPheromoneGraph = PheromoneGraph(pheromoneGraph.getSize())
 
@@ -73,7 +73,6 @@ class Colony(graph_: Graph)
                     var curAnt = ants[curAntNum]
                     var sumChance = 0.0
                     var curVertex = curAnt.way.last()
-//                    println("For ant $curAntNum curVertex = $curVertex")
 
                     for (vertId in 0 until graph.getSize())
                     {
@@ -84,7 +83,7 @@ class Colony(graph_: Graph)
 
                     var coin = Random.nextDouble()
                     var curChoice = 0
-                    while (coin > 0 && curChoice < curAnt.visitedVerticies.size)
+                    while (coin > 0)
                     {
                         if (!curAnt.visitedVerticies[curChoice])
                         {
@@ -106,7 +105,7 @@ class Colony(graph_: Graph)
 
             for (ant in ants)
             {
-                ant.visitVertex(startCity)
+                ant.way.add(ant.way[0])
                 val cur = ant.graph.getWayLength(ant.way)
                 if (cur < minWay)
                 {
