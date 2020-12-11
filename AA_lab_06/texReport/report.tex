@@ -6,9 +6,26 @@
 \usepackage{amsmath}
 \usepackage[justification=centering]{caption}
 
+\lstdefinelanguage{Kotlin}{
+  comment=[l]{//},
+  commentstyle={\color{gray}\ttfamily},
+  emph={delegate, filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println, return@},
+  emphstyle={\color{orange}},
+  identifierstyle=\color{black},
+  keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, null, object, override, package, private, public, return, set, super, suspend, this, throw, true, try, typealias, val, var, vararg, when, where, while},
+  keywordstyle={\color{blue}\bfseries},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[s]{"""*}{*"""},
+  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String},
+  ndkeywordstyle={\color{orange}\bfseries},
+  sensitive=true,
+  stringstyle={\color{green}\ttfamily},
+}
+
 % Для листинга кода:
 \lstset{ %
-language=c,                 % выбор языка для подсветки (здесь это С)
+language=Kotlin,                 % выбор языка для подсветки (здесь это С)
 basicstyle=\footnotesize\sffamily, % размер и начертание шрифта для подсветки кода
 numbers=left,               % где поставить нумерацию строк (слева\справа)
 numberstyle=\tiny,           % размер шрифта для номеров строк
@@ -214,234 +231,337 @@ $L_{k}$ — длина пути k-ого муравья, $Q$ — настраи�
 \end{itemize}
 
 \section{Средства реализации программного обеспечения}
-При написании программного продукта был использован язык программирования C++ \cite{Cpp}.
+При написании программного продукта был использован язык программирования Kotlin \cite{Kotlin}.
 
 Данный выбор обусловлен следующими факторами:
 \begin{itemize}
-\item данный язык программирования преподавался в рамках курса объектно-ориентированного программирования;
-\item высокая вычислительная производительность;
-\item большое количество справочной и учебной литературы в сети Интернет;
-\item наличие реализации нативных потоков.
+\item Возможность портирования алгоритмов для работы с Android;
+\item Возможность часто употреблять выражение "Ко-ко-котлин" или "Котик";
+\item Большое количество справочной литературы, связанной с ЯП Java.
 \end{itemize}
 
-При написании программного продукта использовалась среда разработки QT Creator \cite{QT}.
+Для тестирования производительности реализаций алгоритмов использовалась утилита measureTimedValue.
 
-Данный выбор обусловлен следующими факторами:
-\begin{itemize}
-\item основы работы с данной средой разработки преподавался в рамках курса программирования на Си;
-\item QT Creator позволяет работать с расширением QtDesign, позволяющим создавать визуализируемый объект.
-\end{itemize}
+При написании программного продукта использовалась среда разработки IntelliJ IDEA.
 
-Для проведения замеров времени использовалась сторонняя библиотека Boost \cite{Boost}. Данная библиотека позволила фиксировать время прихода и ухода каждой заявки с точностью до наносекунд.
+Данный выбор обусловлен тем, что язык программирования Kotlin - это разработка компании JetBrains, поставляющей данную среду разработки.
 
 \section{Листинг кода}
-В листингах \ref{list:bresAlg} и \ref{list:director} предоставлены реализации рассматриваемых алгоритмов.
-\begin{lstlisting}[caption=Разбиение алгоритма Брезенхема,
-label={list:bresAlg}]
-std::string now_str()
+В листингах \ref{list:Graph} и \ref{list:Colony} предоставлены классы реализации рассматриваемых алгоритмов.
+\begin{lstlisting}[caption=Реализация класса графа и  класса графа феромонов,
+label={list:Graph}]
+import kotlin.random.Random
+import kotlin.Int as Int
+
+const val randomStart = 1
+const val randomEnd = 10
+
+class Graph(size_ : Int)
 {
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
+    private var size = size_
+    private var adjacencyMatrix = Array(size) { IntArray(size) }
 
-    const boost::posix_time::time_duration td = now.time_of_day();
-
-    const long hours = td.hours();
-    const long minutes = td.minutes();
-    const long seconds = td.seconds();
-    const long nanoseconds =
-        td.total_nanoseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000000000);
-
-    char buf[40];
-    sprintf(buf, "%02ld:%02ld:%02ld.%09ld", hours, minutes, seconds, nanoseconds);
-
-    return buf;
-}
-
-SegmentRasterizator::SegmentRasterizator(int xStart_, int yStart_, int xEnd_, int yEnd_)
-{
-    xStart = xStart_;
-    yStart = yStart_;
-    xEnd = xEnd_;
-    yEnd = yEnd_;
-    if (xStart == xEnd)
-        xEnd += 1;
-    else if (yStart == yEnd)
-        yEnd += 1;
-
-    image = new QImage(WIDTH, HEIGHT, QImage::Format_RGB32);
-    image->fill(Qt::white);
-}
-
-int sign(float num)
-{
-    return (num < -__FLT_EPSILON__) ? -1 : ((num > __FLT_EPSILON__) ? 1 : 0);
-}
-
-void SegmentRasterizator::prepareConstantsForRB(int index)
-{
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
-
-    deltaX = xEnd - xStart;
-    deltaY = yEnd - yStart;
-
-    stepX = sign(deltaX);
-    stepY = sign(deltaY);
-
-    deltaX = std::abs(deltaX);
-    deltaY = std::abs(deltaY);
-
-    if (deltaX < deltaY)
+    fun setWay(from : Int, to : Int, length : Int)
     {
-        std::swap(deltaX, deltaY);
-        stepFlag = true;
-    }
-    else
-        stepFlag = false;
-
-    tngModule = deltaY / deltaX;
-    mistake = tngModule - 0.5;
-
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
-}
-
-void SegmentRasterizator::rastSegment(int index)
-{
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
-
-    float curX = xStart, curY = yStart;
-    for (int i = 0; i <= deltaX; i++)
-    {
-        dotsOfSegment.push_back(std::pair<int, int>(curX, curY));
-        if (stepFlag)
-        {
-            if (mistake >= 0)
-                (curX += stepX, mistake--);
-            curY += stepY;
-        }
-        else
-        {
-            if (mistake >= 0)
-                (curY += stepY, mistake--);
-            curX += stepX;
-        }
-        mistake += tngModule;
+        adjacencyMatrix[from][to] = length
+        adjacencyMatrix[to][from] = length
     }
 
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
+    fun getWay(from : Int, to : Int) : Int
+    {
+        return adjacencyMatrix[from][to]
+    }
+
+    fun getWayLength(way : MutableList<Int>) : Int
+    {
+        var length = 0
+        for (i in 0 until way.size - 1)
+        {
+            val curLength = getWay(way[i], way[i + 1])
+            length += curLength
+        }
+        return length
+    }
+
+    fun getSize() : Int
+    {
+        return size
+    }
+
+    fun generate()
+    {
+        for (i in 0 until size)
+            for (j in 0 until i)
+                setWay(i, j, Random.nextInt(randomStart, randomEnd))
+    }
+
+    fun getVertecies() : MutableList<Int>
+    {
+        val ret : MutableList<Int> = mutableListOf()
+        for (i in 0 until size)
+            ret.add(i)
+        return ret
+    }
+
+    fun print()
+    {
+        for (i in 0 until size)
+        {
+            for (j in 0 until size)
+                print("%3d ".format(getWay(i, j)))
+            print('\n')
+        }
+    }
 }
 
-void SegmentRasterizator::createImg(int index)
+class PheromoneGraph(size_ : Int)
 {
-    std::printf(ANSI_CYAN_BRIGHT"From END worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
+    private var size = size_
+    private var adjacencyMatrix = Array(size) { DoubleArray(size) }
 
-    for (auto iter = dotsOfSegment.begin(); iter < dotsOfSegment.end(); iter++)
-        image->setPixel(iter->first, iter->second, Qt::black);
+    fun set(i : Int, j : Int, value : Double)
+    {
+        adjacencyMatrix[i][j] = value
+    }
 
-    std::printf(ANSI_CYAN_BRIGHT "From END worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
-}
+    fun get(i : Int, j : Int) : Double
+    {
+        return adjacencyMatrix[i][j]
+    }
 
-std::vector<std::pair<int, int>> SegmentRasterizator::getDotsOfSegment()
-{
-    return dotsOfSegment;
+    fun getSize() : Int
+    {
+        return size
+    }
+
+    fun print()
+    {
+        for (i in 0 until size)
+        {
+            for (j in 0 until size)
+                print("%5f ".format(get(i, j)))
+            print('\n')
+        }
+    }
 }
 \end{lstlisting}
 
-\begin{lstlisting}[caption=Менеджер потоков,
-label={list:director}]
-Director::Director(std::queue<SegmentRasterizator> &startQueue_)
+\begin{lstlisting}[caption=Класс реализации алгоритма полного перебора для решения задачи коммивояжера,
+label={list:BruteForce}]
+class BruteForce
 {
-    startQueue = startQueue_;
-}
-
-void Director::processPrepare()
-{
-    int i = 0;
-    for (SegmentRasterizator curSeg(startQueue.front()); startQueue.size();
-         startQueue.pop(), curSeg = startQueue.front())
+    fun bruteForceAlg(graph: Graph)
     {
+        val permutations = getAllPermutations(graph.getVertecies())
 
-        curSeg.prepareConstantsForRB(i++);
-        middleQueue.push(curSeg);
+        var minWayLength = MAX_VALUE
+        var minWay: MutableList<Int> = mutableListOf()
+        for (curWay in permutations.filter { it[0] == 0 })
+        {
+            curWay.add(0)
+            val curWayLength = graph.getWayLength(curWay)
+            if (curWayLength in 1 until minWayLength)
+            {
+                minWayLength = curWayLength
+                minWay = curWay
+            }
+        }
+
+        println("Min way length is: $minWayLength")
+        println("Min way is: $minWay")
+    }
+
+    private fun getAllPermutations(unusedDots: MutableList<Int>,
+                      result : MutableList<MutableList<Int>>? = null,
+                      curWay : MutableList<Int>? = null) : MutableList<MutableList<Int>>
+    {
+        var ret = result
+        if (ret == null)
+            ret = mutableListOf()
+
+        if (unusedDots.size == 0)
+        {
+            ret.add(curWay!!)
+            return ret
+        }
+
+        for (i in 0 until unusedDots.size)
+        {
+            val newUnusedDots = unusedDots.toMutableList()
+            newUnusedDots.removeAt(i)
+            var newWay : MutableList<Int> = mutableListOf()
+            if (curWay != null)
+                newWay = curWay.toMutableList()
+            newWay.add(unusedDots[i])
+
+            getAllPermutations(newUnusedDots, ret, newWay)
+        }
+        return ret
     }
 }
+\end{lstlisting}
 
-void Director::processRast()
+\begin{lstlisting}[caption=Класс реализации муравьиного алгоритма для решения задачи коммивояжера,
+label={list:Colony}]
+class Colony(graph_: Graph)
 {
-    int i = 0;
-    while (startQueue.size() || middleQueue.size())
+    var graph = graph_
+
+    class Ant
     {
-        if (middleQueue.empty())
-            continue;
-        SegmentRasterizator curSeg(middleQueue.front());
+        var way : MutableList<Int> = mutableListOf()
+        var startVertex : Int = 0
+        var visitedVerticies = BooleanArray(0)
 
-        curSeg.rastSegment(i++);
+        var graph = Graph(0)
 
-		endQueue.push(curSeg);
-        middleQueue.pop();
+        constructor(graph_: Graph, startVertex_ : Int)
+        {
+            way = mutableListOf(startVertex_)
+            visitedVerticies = BooleanArray(graph_.getSize())
+            startVertex = startVertex_
+            visitedVerticies[startVertex_] = true
+
+            graph = graph_
+        }
+
+        fun visitVertex(vertex : Int)
+        {
+            visitedVerticies[vertex] = true
+            way.add(vertex)
+        }
+
+        fun getWayLength(): Int
+        {
+            return graph.getWayLength(way)
+        }
+    }
+
+    val initValue = 0.1
+
+    fun antsInitialization() : MutableList<Ant>
+    {
+        val ants = mutableListOf<Ant>()
+        for (i in 0 until graph.getSize())
+            ants.add(Ant(graph, Random.nextInt(0, graph.getSize())))
+
+        return ants
+    }
+
+    fun antAlg(days : Int, alpha : Double, beta : Double, rho : Double, q : Double) : Pair<MutableList<Int>, Int>
+    {
+        var minWay = Int.MAX_VALUE
+        var min = mutableListOf<Int>()
+        var pheromoneGraph = PheromoneGraph(graph.getSize())
+
+        for (i in 0 until pheromoneGraph.getSize())
+        {
+            for (j in 0 until pheromoneGraph.getSize())
+                pheromoneGraph.set(i, j, initValue)
+        }
+
+        for (day in 0 until days)
+        {
+            val ants = antsInitialization()
+
+            for (i in 0 until graph.getSize() - 1)
+            {
+                val tempPheromoneGraph = PheromoneGraph(pheromoneGraph.getSize())
+
+                for (curAntNum in 0 until ants.size)
+                {
+                    var curAnt = ants[curAntNum]
+                    var sumChance = 0.0
+                    var curVertex = curAnt.way.last()
+
+                    for (vertId in 0 until graph.getSize())
+                    {
+                        if (!curAnt.visitedVerticies[vertId])
+                            sumChance += pheromoneGraph.get(curVertex, vertId).pow(alpha) *
+                                    (1.0 / graph.getWay(curVertex, vertId).toDouble()).pow(beta)
+                    }
+
+                    var coin = Random.nextDouble()
+                    var curChoice = 0
+                    while (coin > 0)
+                    {
+                        if (!curAnt.visitedVerticies[curChoice])
+                        {
+                            var chance = pheromoneGraph.get(curVertex, curChoice).pow(alpha) *
+                                    (1.0 / graph.getWay(curVertex, curChoice).toDouble()).pow(beta) / sumChance
+                            coin -= chance
+                        }
+                        curChoice++
+                    }
+                    curChoice--
+
+                    ants[curAntNum].visitVertex(curChoice)
+                    tempPheromoneGraph.set(curVertex, curChoice,
+                            tempPheromoneGraph.get(curVertex, curChoice) +
+                                    q / graph.getWay(curVertex, curChoice).toDouble())
+                }
+
+                for (k in 0 until graph.getSize())
+                    for (j in 0 until graph.getSize())
+                        pheromoneGraph.set(k, j, (1 - rho) * pheromoneGraph.get(k, j) + tempPheromoneGraph.get(k, j))
+            }
+
+            for (ant in ants)
+            {
+                ant.way.add(ant.way[0])
+                val cur = ant.graph.getWayLength(ant.way)
+                if (cur < minWay)
+                {
+                    minWay = ant.getWayLength()
+                    min = ant.way
+                }
+            }
+        }
+
+        return Pair(min, minWay)
     }
 }
-
-void Director::processCreate()
-{
-    int i = 0;
-    while (startQueue.size() || middleQueue.size() || endQueue.size())
-    {
-        if (endQueue.empty())
-            continue;
-        SegmentRasterizator curSeg(endQueue.front());
-
-        curSeg.createImg(i++);
-        endQueue.pop();
-        final.push_back(curSeg);
-    }
-}
-
-void Director::initWork()
-{
-    workers[0] = std::thread(&Director::processPrepare, this);
-    workers[1] = std::thread(&Director::processRast, this);
-    workers[2] = std::thread(&Director::processCreate, this);
-
-    workers[0].join();
-    workers[1].join();
-    workers[2].join();
-}
-
-std::vector<SegmentRasterizator> Director::getFinal() { return final; }
 \end{lstlisting}
 
 \section{Тестирование программного продукта}
-В таблице~\ref{tabular:test_rec} приведены тесты для функций, реализующих алгоритм Брезенхема. Тесты пройдены успешно.
+В таблице~\ref{tabular:test_rec} приведены тесты для функции, реализующей алгоритм для решения задачи коммивояжера. Тесты пройдены успешно.
 
 \begin{table}[h!]
 	\begin{center}
 	
 	\caption{\label{tabular:test_rec} Тестирование функций}
-		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}}
+		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}}
 			\hline
-			Точка начала отрезка (x, y) & Точка конца отрезка (x, y) & Ожидаемый результат \\ \hline
+			Матрица смежности & Ожидаемый наименьший путь \\ \hline
 			\vspace{4mm}
-			 (1, 1)&
-			 (3, 3)&
-			 (1, 1), (2, 2), (3, 3)\\
+			$\begin{pmatrix}
+			0 &  3 &  4 &  7\\
+			3 &  0 &  3 &  7\\
+			4 &  3 &  0 &  7\\
+			7 &  7 &  7 &  0
+			\end{pmatrix}$ &
+			20, [0, 1, 2, 3, 0]\\
 			\vspace{2mm}
 			\vspace{2mm}
-			 (1, 1)&
-			 (1, 3)&
-			 (1, 1), (1, 2), (1, 3)\\
+			$\begin{pmatrix}
+			0 &  7 &  4 &  3\\
+			7 &  0 &  4 &  5\\
+			4 &  4 &  0 &  5\\
+			3 &  5 &  5 &  0
+			\end{pmatrix}$ &
+			16, [0, 2, 1, 3, 0]\\
 			\vspace{2mm}
 			\vspace{2mm}
-			 (1, 1)&
-			 (2, 1)&
-			 (1, 1), (2, 1)\\
-			\vspace{2mm}
-			\vspace{2mm}
-			 (3, 3)&
-			 (1, 1)&
-			 (1, 1), (2, 2), (3, 3)\\
+			$\begin{pmatrix}
+			0 &  8 &  9 &  7\\
+			8 &  0 &  4 &  4\\
+			9 &  4 &  0 &  2\\
+			7 &  4 &  2 &  0
+			\end{pmatrix}$ &
+			21, [0, 1, 2, 3, 0]\\
 		\end{tabular}
 	\end{center}
 \end{table}
-\newpage
 
 \section*{Вывод}
 Спроектированные алгоритмы были реализованы и протестированы.
@@ -450,15 +570,15 @@ std::vector<SegmentRasterizator> Director::getFinal() { return final; }
 \section{Технические характеристики}
 Технические характеристики ЭВМ, на котором выполнялись исследования:
 \begin{itemize}
-\item ОС: Manjaro Linux 20.1.1 Mikah;
-\item Оперативная память: 16 Гб;
-\item Процессор: Intel Core i7-10510U.
+\item ОС: Manjaro Linux 20.1.1 Mikah
+\item Оперативная память: 16 Гб
+\item Процессор: Intel Core i7-10510U
 \end{itemize}
 
 При проведении замеров времени ноутбук был подключен к сети электропитания.
 
 \section{Пример работы программного обеспечения}
-На рисунке \ref{img:example} приведен пример работы программы для 7 визуализируемых отрезков.
+На рисунке \ref{img:example} приведен пример работы программы.
 
 \begin{figure}
 \begin{center}
@@ -470,50 +590,397 @@ std::vector<SegmentRasterizator> Director::getFinal() { return final; }
 \end{figure}
 
 \newpage
-\section{Время выполнения алгоритмов}
-Алгоритм тестировался на данных, сгенерированных случайным образом.
+\section{Постановка эксперимента}
+В муравьином алгоритме вычисления производятся на основе настраиваемых параметров.
+Рассмотрим два класса данных и подберем к ним параметры, при которых метод даст точный результат при минимальном количестве итераций.
 
-В таблице \ref{time1} предоставлено время работы над каждым отрезком в предоставленном примере каждого из выделенных этапов.
+Будем рассматривать матрицы размерности $10\times10$, так как иначе получение точного результата алгоритмом полного перебора слишком велико.
 
-Из таблицы видно, что среднее время выполнения этапа 1 составляет $\approx 17428.6$ наносекунд. Среднее время выполнения этапа 2 составляет $\approx 38285.7$ наносекунд. Среднее время выполнения этапа 3 составляет $\approx 18571.4$ наносекунд. Таким образом, этап 1 сравним по среднему времени выполнения с этапом 2. Но после выполнения этапа 1 заметно, что последующие вызовы функции работают за константное время, равное 3000 наносекунд, что при наличии начальных "прогревочных" запусков вылилось бы в факт того, что этап 1 не был бы сопоставим по среднему времени выполнения с этапом 3. Этап 2 является самым долго выполняющимся.
+В качестве первого класса данных выделим матрицу смежности, в которой все значения незначительно отличаются друг от друга, например, в диапазоне $[1, 25]$.
+Вторым классом будут матрицы, где значения могут значительно отличаться, например $[1, 15000]$.
 
-\begin{table}[h]
+Будем запускать муравьиный алгоритм для всех значений $\alpha, P\in[0, 1]$, с шагом $= 0.1$, пока не будет найдено точное значение для каждого набора.
+
+В результате тестирования будет выведена таблица со значениями $\alpha, \beta, P$, $days$, $ dist$, где $days$ — количество дней, данных для решения задачи, а $\alpha, \beta, p$ — настоечные параметры.
+
+\subsection{Класс данных 1}
+\begin{equation}
+\label{matrix}
+	M = \begin{pmatrix}
+		0 &  3 & 14 &  2 & 22 & 20 &  2 & 14 & 18 & 23\\
+		3 &  0 & 12 & 12 &  8 & 24 & 19 &  4 & 20 & 12\\
+		14 & 12 & 0 & 23 &  8 &  3 & 21 & 16 &  6 &  5\\
+		2 & 12 & 23 &  0 & 22 & 19 &  1 & 13 & 15  & 8\\
+		22 &  8 &  8 & 22 &  0 &  8 &  2  & 8 & 11 &  7\\
+		20 & 24 &  3 & 19 &  8  & 0 & 15 & 12 & 18  & 9\\
+		2 & 19 & 21  & 1 &  2 & 15  & 0 & 13 & 18 & 21\\
+		14 &  4 & 16 & 13 &  8 & 12 & 13 &  0 &  7 & 23\\
+		18 & 20 &  6 & 15 & 11 & 18 & 18 &  7 &  0 & 19\\
+		23 & 12 &  5  & 8 &  7 &  9 & 21 & 23 & 19 &  0
+	\end{pmatrix}
+\end{equation}
+
+В таблице ~\ref{T:log111} приведены результаты параметризации метода решения задачи коммивояжера на основании муравьиного алгоритма. Полный перебор определил оптимальную длину пути 44.
+
+\begin{table}
+	\caption{Таблица коэффициентов для класса данных №1}
+	\begin{minipage}[h!]{0.10\hsize}\centering
+		\begin{center}\resizebox{4\textwidth}{!}{%
+			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
+				\toprule
+				a        &b      &p      &days &длина пути \\
+				\midrule
+				0       &1      &0      &50    &47\\
+				0       &1      &0.1    &50    &44\\
+				0       &1      &0.2    &50    &49\\
+				0       &1      &0.3    &50    &44\\
+				0       &1      &0.4    &50    &52\\
+				0       &1      &0.5    &50    &51\\
+				0       &1      &0.6    &50    &44\\
+				0       &1      &0.7    &50    &44\\
+				0       &1      &0.8    &50    &44\\
+				0       &1      &0.9    &50    &51\\
+				0       &1      &1      &50    &44\\
+				\midrule
+				0.1     &0.9    &0      &50     &44\\
+				0.1     &0.9    &0.1    &50    &47\\
+				0.1     &0.9    &0.2    &50   &44\\
+				0.1     &0.9    &0.3    &50   &44\\
+				0.1     &0.9    &0.4    &50    &44\\
+				0.1     &0.9    &0.5    &50    &47\\
+				0.1     &0.9    &0.6    &50    &44\\
+				0.1     &0.9    &0.7    &50   &44\\
+				0.1     &0.9    &0.8    &50   &44\\
+				0.1     &0.9    &0.9    &50   &44\\
+				0.1     &0.9    &1      &50    &67\\
+				\midrule
+				0.2     &0.8    &0      &50    &44\\
+				0.2     &0.8    &0.1    &50    &44\\
+				0.2     &0.8    &0.2    &50    &44\\
+				0.2     &0.8    &0.3    &50    &44\\
+				0.2     &0.8    &0.4    &50   &44\\
+				0.2     &0.8    &0.5    &50   &44\\
+				0.2     &0.8    &0.6    &50    &44\\
+				0.2     &0.8    &0.7    &50    &44\\
+				0.2     &0.8    &0.8    &50    &44\\
+				0.2     &0.8    &0.9    &50    &44\\
+				0.2     &0.8    &1      &50     &93\\
+				\midrule
+				0.3     &0.7    &0      &50    &44\\
+				0.3     &0.7    &0.1    &50    &44\\
+				0.3     &0.7    &0.2    &50    &44\\
+				0.3     &0.7    &0.3    &50    &44\\
+				0.3     &0.7    &0.4    &50    &44\\
+				0.3     &0.7    &0.5    &50    &44\\
+				0.3     &0.7    &0.6    &50    &49\\
+				0.3     &0.7    &0.7    &50    &44\\
+				0.3     &0.7    &0.8    &50    &44\\
+				0.3     &0.7    &0.9    &50   &52\\
+				0.3     &0.7    &1      &50    &88\\
+				\bottomrule
+			\end{tabular}}
+			\label{T:log111}
+		\end{center}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[!h]{0.50\hsize}\centering
+		\begin{center}\resizebox{0.8\textwidth}{!}{%
+			%\caption{Лог работы программы.}
+			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
+				\toprule
+				a        &b      &p      &days &длина пути \\
+				\midrule
+				0.4     &0.6    &0      &50    &44\\
+				0.4     &0.6    &0.1    &50    &44\\
+				0.4     &0.6    &0.2    &50    &44\\
+				0.4     &0.6    &0.3    &50    &44\\
+				0.4     &0.6    &0.4    &50    &44\\
+				0.4     &0.6    &0.5    &50    &44\\
+				0.4     &0.6    &0.6    &50    &44\\
+				0.4     &0.6    &0.7    &50    &44\\
+				0.4     &0.6    &0.8    &50    &44\\
+				0.4     &0.6    &0.9    &50    &53\\
+				0.4     &0.6    &1      &50     &93\\
+				\midrule
+				0.5     &0.5    &0      &50    &44\\
+				0.5     &0.5    &0.1    &50    &44\\
+				0.5     &0.5    &0.2    &50    &44\\
+				0.5     &0.5    &0.3    &50    &44\\
+				0.5     &0.5    &0.4    &50    &44\\
+				0.5     &0.5    &0.5    &50    &47\\
+				0.5     &0.5    &0.6    &50    &53\\
+				0.5     &0.5    &0.7    &50    &59\\
+				0.5     &0.5    &0.8    &50    &44\\
+				0.5     &0.5    &0.9    &50   &62\\
+				0.5     &0.5    &1      &50    &77\\
+				\midrule
+				0.6     &0.4    &0      &50    &44\\
+				0.6     &0.4    &0.1    &50    &44\\
+				0.6     &0.4    &0.2    &50    &44\\
+				0.6     &0.4    &0.3    &50    &44\\
+				0.6     &0.4    &0.4    &50    &44\\
+				0.6     &0.4    &0.5    &50    &49\\
+				0.6     &0.4    &0.6    &50    &44\\
+				0.6     &0.4    &0.7    &50   &52\\
+				0.6     &0.4    &0.8    &50    &58\\
+				0.6     &0.4    &0.9    &50    &59\\
+				0.6     &0.4    &1      &50    &93\\
+				\midrule
+				0.7     &0.3    &0      &50    &44\\
+				0.7     &0.3    &0.1    &50    &44\\
+				0.7     &0.3    &0.2    &50    &49\\
+				0.7     &0.3    &0.3    &50    &49\\
+				0.7     &0.3    &0.4    &50    &44\\
+				0.7     &0.3    &0.5    &50    &47\\
+				0.7     &0.3    &0.6    &50    &52\\
+				0.7     &0.3    &0.7    &50    &57\\
+				0.7     &0.3    &0.8    &50    &51\\
+				0.7     &0.3    &0.9    &50    &54\\
+				0.7     &0.3    &1      &50     &90\\
+				\bottomrule
+			\end{tabular}}
+			%\label{T:log}
+		\end{center}
+	\end{minipage}
+\end{table}
+\begin{table}[!h]
 	\begin{center}
-		\caption{\label{time1} Замеры времени для выполнения выделенных этапов.}
-		\begin{tabular}{|c |c |c |c|} 
- 			\hline
- 			&\multicolumn{3}{|c|}{Время обработки, нс}\\
- 			\hline
-			Номер отрезка & Этап 1 & Этап 2 & Этап 3\\ [0.5ex] 
- 			\hline\hline
- 			0 & 97000 & 74000 & 27000 \\
- 			\hline
- 			1 & 10000 & 38000 & 21000 \\
- 			\hline
-			2 & 3000 & 32000 & 16000 \\
-			\hline
-			3 & 3000 & 35000 & 19000 \\
-			\hline
-			4 & 3000 & 22000 & 12000 \\
-			\hline
-			5 & 3000 & 35000 & 16000 \\
-			\hline
-			6 & 3000 & 32000 & 19000 \\
-			\hline
-			\end{tabular}
+		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c}
+			\toprule
+			a        &b      &p      &days &длина пути \\
+			\midrule
+			0.8     &0.2    &0      &50    &44\\
+			0.8     &0.2    &0.1    &50    &44\\
+			0.8     &0.2    &0.2    &50    &44\\
+			0.8     &0.2    &0.3    &50    &44\\
+			0.8     &0.2    &0.4    &50    &44\\
+			0.8     &0.2    &0.5    &50    &52\\
+			0.8     &0.2    &0.6    &50    &60\\
+			0.8     &0.2    &0.7    &50    &60\\
+			0.8     &0.2    &0.8    &50    &72\\
+			0.8     &0.2    &0.9    &50    &70\\
+			0.8     &0.2    &1      &50     &95\\
+			\midrule
+			0.9     &0.1    &0      &50    &44\\
+			0.9     &0.1    &0.1    &50    &44\\
+			0.9     &0.1    &0.2    &50    &44\\
+			0.9     &0.1    &0.3    &50    &52\\
+			0.9     &0.1    &0.4    &50    &80\\
+			0.9     &0.1    &0.5    &50    &44\\
+			0.9     &0.1    &0.6    &50    &55\\
+			0.9     &0.1    &0.7    &50    &44\\
+			0.9     &0.1    &0.8    &50    &64\\
+			0.9     &0.1    &0.9    &50   &62\\
+			0.9     &0.1    &1      &50    &93\\
+			\midrule
+			1.0     &0.0    &0      &50    &44\\
+			1.0     &0.0    &0.1    &50    &49\\
+			1.0     &0.0    &0.2    &50    &44\\
+			1.0     &0.0    &0.3    &50    &44\\
+			1.0     &0.0    &0.4    &50    &64\\
+			1.0     &0.0    &0.5    &50    &64\\
+			1.0     &0.0    &0.6    &50    &60\\
+			1.0     &0.0    &0.7    &50   &44\\
+			1.0     &0.0    &0.8    &50    &53\\
+			1.0     &0.0    &0.9    &50    &60\\
+			1.0     &0.0    &1      &50    &93\\
+			\bottomrule
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\newpage
+
+\subsection{Класс данных 2}
+\begin{equation}
+\label{matrix1}
+	M = \begin{pmatrix}
+		0& 242& 306& 590& 364& 379& 1202& 344& 505& 560\\
+		242&   0& 465& 1385& 853& 853& 878& 324& 173& 1006\\
+		306& 465&   0& 1418& 636& 1036& 553& 1463& 926& 551\\
+		590& 1385& 1418&   0& 1198& 828&  11& 1214&   5& 552\\
+		364& 853& 636& 1198&   0 &1152 &1282 &807 &1494 &821\\
+		379& 853& 1036 &828 &1152   &0 &753 &185 &1440 &1200\\
+		1202& 878& 553  &11 &1282 &753   &0 &1228 &967 &308\\
+		344& 324& 1463 &1214 &807 &185 &1228   &0 &1140 &1450\\
+		505& 173& 926   &5 &1494 &1440 &967 &1140   &0 &533\\
+		560& 1006& 551 &552 &821 &1200 &308 &1450 &533   &0
+	\end{pmatrix}
+\end{equation}
+
+В таблице ~\ref{T:log112} приведены результаты параметризации метода решения задачи коммивояжера на основании муравьиного алгоритма. Полный перебор определил оптимальную длину пути 2936.
+
+\begin{table}
+	\caption{Таблица коэффициентов для класса данных №2}
+	\begin{minipage}[h!]{0.10\hsize}\centering
+		\begin{center}\resizebox{4\textwidth}{!}{%
+			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
+				\toprule
+				a        &b      &p      &days &длина пути \\
+				\midrule
+				0       &1      &0      &50    &2936\\
+				0       &1      &0.1    &50    &2936\\
+				0       &1      &0.2    &50    &3148\\
+				0       &1      &0.3    &50    &2936\\
+				0       &1      &0.4    &50    &2936\\
+				0       &1      &0.5    &50    &2936\\
+				0       &1      &0.6    &50    &2936\\
+				0       &1      &0.7    &50    &2936\\
+				0       &1      &0.8    &50    &2936\\
+				0       &1      &0.9    &50    &2936\\
+				0       &1      &1      &50    &3148\\
+				\midrule
+				0.1     &0.9    &0      &50     &2936\\
+				0.1     &0.9    &0.1    &50    &3148\\
+				0.1     &0.9    &0.2    &50   &3148\\
+				0.1     &0.9    &0.3    &50   &2936\\
+				0.1     &0.9    &0.4    &50    &2936\\
+				0.1     &0.9    &0.5    &50    &2936\\
+				0.1     &0.9    &0.6    &50    &3148\\
+				0.1     &0.9    &0.7    &50   &3148\\
+				0.1     &0.9    &0.8    &50   &2936\\
+				0.1     &0.9    &0.9    &50   &2936\\
+				0.1     &0.9    &1      &50    &5262\\
+				\midrule
+				0.2     &0.8    &0      &50    &2936\\
+				0.2     &0.8    &0.1    &50    &2936\\
+				0.2     &0.8    &0.2    &50    &2936\\
+				0.2     &0.8    &0.3    &50    &2936\\
+				0.2     &0.8    &0.4    &50   &2936\\
+				0.2     &0.8    &0.5    &50   &2936\\
+				0.2     &0.8    &0.6    &50    &2936\\
+				0.2     &0.8    &0.7    &50    &2936\\
+				0.2     &0.8    &0.8    &50    &2936\\
+				0.2     &0.8    &0.9    &50    &3297\\
+				0.2     &0.8    &1      &50     &5262\\
+				\midrule
+				0.3     &0.7    &0      &50    &2936\\
+				0.3     &0.7    &0.1    &50    &2936\\
+				0.3     &0.7    &0.2    &50    &2936\\
+				0.3     &0.7    &0.3    &50    &2936\\
+				0.3     &0.7    &0.4    &50    &2936\\
+				0.3     &0.7    &0.5    &50    &2936\\
+				0.3     &0.7    &0.6    &50    &2936\\
+				0.3     &0.7    &0.7    &50    &3148\\
+				0.3     &0.7    &0.8    &50    &3148\\
+				0.3     &0.7    &0.9    &50   &2936\\
+				0.3     &0.7    &1      &50    &5262\\
+				\bottomrule
+			\end{tabular}}
+			\label{T:log112}
+		\end{center}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[!h]{0.50\hsize}\centering
+		\begin{center}\resizebox{0.8\textwidth}{!}{%
+			%\caption{Лог работы программы.}
+			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
+				\toprule
+				a        &b      &p      &days &длина пути \\
+				\midrule
+				0.4     &0.6    &0      &50    &3148\\
+				0.4     &0.6    &0.1    &50    &2936\\
+				0.4     &0.6    &0.2    &50    &2936\\
+				0.4     &0.6    &0.3    &50    &2936\\
+				0.4     &0.6    &0.4    &50    &2936\\
+				0.4     &0.6    &0.5    &50    &2936\\
+				0.4     &0.6    &0.6    &50    &2936\\
+				0.4     &0.6    &0.7    &50    &2936\\
+				0.4     &0.6    &0.8    &50    &2936\\
+				0.4     &0.6    &0.9    &50    &3529\\
+				0.4     &0.6    &1      &50     &5262\\
+				\midrule
+				0.5     &0.5    &0      &50    &2936\\
+				0.5     &0.5    &0.1    &50    &2936\\
+				0.5     &0.5    &0.2    &50    &2936\\
+				0.5     &0.5    &0.3    &50    &2936\\
+				0.5     &0.5    &0.4    &50    &2936\\
+				0.5     &0.5    &0.5    &50    &3602\\
+				0.5     &0.5    &0.6    &50    &2936\\
+				0.5     &0.5    &0.7    &50    &2936\\
+				0.5     &0.5    &0.8    &50    &2936\\
+				0.5     &0.5    &0.9    &50   &2936\\
+				0.5     &0.5    &1      &50    &5179\\
+				\midrule
+				0.6     &0.4    &0      &50    &2936\\
+				0.6     &0.4    &0.1    &50    &2936\\
+				0.6     &0.4    &0.2    &50    &2936\\
+				0.6     &0.4    &0.3    &50    &2936\\
+				0.6     &0.4    &0.4    &50    &2936\\
+				0.6     &0.4    &0.5    &50    &2936\\
+				0.6     &0.4    &0.6    &50    &3148\\
+				0.6     &0.4    &0.7    &50   &3563\\
+				0.6     &0.4    &0.8    &50    &3642\\
+				0.6     &0.4    &0.9    &50    &3379\\
+				0.6     &0.4    &1      &50    &5262\\
+				\midrule
+				0.7     &0.3    &0      &50    &3148\\
+				0.7     &0.3    &0.1    &50    &2936\\
+				0.7     &0.3    &0.2    &50    &2936\\
+				0.7     &0.3    &0.3    &50    &2936\\
+				0.7     &0.3    &0.4    &50    &3297\\
+				0.7     &0.3    &0.5    &50    &3379\\
+				0.7     &0.3    &0.6    &50    &2936\\
+				0.7     &0.3    &0.7    &50    &3529\\
+				0.7     &0.3    &0.8    &50    &3640\\
+				0.7     &0.3    &0.9    &50    &3639\\
+				0.7     &0.3    &1      &50     &5179\\
+				\bottomrule
+			\end{tabular}}
+			%\label{T:log}
+		\end{center}
+	\end{minipage}
+\end{table}
+\begin{table}[!h]
+	\begin{center}
+		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c}
+			\toprule
+			a        &b      &p      &days &длина пути \\
+			\midrule
+			0.8     &0.2    &0      &50    &3297\\
+			0.8     &0.2    &0.1    &50    &2936\\
+			0.8     &0.2    &0.2    &50    &3379\\
+			0.8     &0.2    &0.3    &50    &2936\\
+			0.8     &0.2    &0.4    &50    &3379\\
+			0.8     &0.2    &0.5    &50    &3148\\
+			0.8     &0.2    &0.6    &50    &4121\\
+			0.8     &0.2    &0.7    &50    &3727\\
+			0.8     &0.2    &0.8    &50    &3460\\
+			0.8     &0.2    &0.9    &50    &3604\\
+			0.8     &0.2    &1      &50     &5262\\
+			\midrule
+			0.9     &0.1    &0      &50    &2936\\
+			0.9     &0.1    &0.1    &50    &2936\\
+			0.9     &0.1    &0.2    &50    &3297\\
+			0.9     &0.1    &0.3    &50    &2936\\
+			0.9     &0.1    &0.4    &50    &2936\\
+			0.9     &0.1    &0.5    &50    &3430\\
+			0.9     &0.1    &0.6    &50    &3604\\
+			0.9     &0.1    &0.7    &50    &3604\\
+			0.9     &0.1    &0.8    &50    &3297\\
+			0.9     &0.1    &0.9    &50   &3148\\
+			0.9     &0.1    &1      &50    &5262\\
+			\midrule
+			1.0     &0.0    &0      &50    &2936\\
+			1.0     &0.0    &0.1    &50    &2936\\
+			1.0     &0.0    &0.2    &50    &3148\\
+			1.0     &0.0    &0.3    &50    &2936\\
+			1.0     &0.0    &0.4    &50    &3878\\
+			1.0     &0.0    &0.5    &50    &4073\\
+			1.0     &0.0    &0.6    &50    &3379\\
+			1.0     &0.0    &0.7    &50   &4581\\
+			1.0     &0.0    &0.8    &50    &5166\\
+			1.0     &0.0    &0.9    &50    &3710\\
+			1.0     &0.0    &1      &50    &5262\\
+			\bottomrule
+		\end{tabular}
 	\end{center}
 \end{table}
 
 \newpage
 
 \section*{Вывод}
-При сравнении результатов замеров по времени стало известно, что самым быстрым этапом конвейера оказался этап 1. При этом, самым медленным из трех рассмотренных - этап 2.
 
-В среднем этап 1 работает быстрее этапа 2 на $\approx 20857.1$ наносекунд. При этом, при четвертой обработке отрезка разница в скорости выполнения составила 32000 наносекунд.
-
-Этап 3 в среднем работает быстрее этапа 2 на $\approx 19714.3$ наносекунд. При этом, при шестой обработке отрезка разница в скорости выполнения составила 19000 наносекунд.
-
-Таким образом, среднее время выполнения алгоритма для каждого отрезка составило $\approx 74285.71$ наносекунд.
 
 \chapter*{Заключение}
 \addcontentsline{toc}{chapter}{Заключение}

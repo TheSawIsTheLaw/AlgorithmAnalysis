@@ -1,6 +1,7 @@
 import Graph
 import BruteForce
 import Colony
+import kotlin.random.Random
 
 fun main()
 {
@@ -9,12 +10,15 @@ fun main()
 
     graph.print()
 
-    println("By the Brute Force Algorithm:")
-    BruteForce().bruteForceAlg(graph)
+//    println("By the Brute Force Algorithm:")
+//    BruteForce().bruteForceAlg(graph)
 
-    val ans2 = Colony(graph).antAlg(300, 4.0, 6.0, 0.6, 5.0)
-    println("By the Ant Algorithm:")
-    println("Min way is: ${ans2}")
+    for (i in doubleArrayOf(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0))
+    {
+        val ans2 = Colony(graph).antAlg(50, 1.0, 0.0, i, 2.0)
+        println("By the Ant Algorithm:")
+        println("Min way is: ${i} ${ans2}")
+    }
 
     return
 }
