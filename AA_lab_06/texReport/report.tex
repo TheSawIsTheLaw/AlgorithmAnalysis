@@ -679,7 +679,7 @@ class Colony(graph_: Graph)
 
 Будем запускать муравьиный алгоритм для всех значений $\alpha, P\in[0, 1]$, с шагом $= 0.1$, пока не будет найдено точное значение для каждого набора.
 
-В результате тестирования будет выведена таблица со значениями $\alpha, \beta, P$, $days$, $ dist$, где $days$ — количество дней, данных для решения задачи, а $\alpha, \beta, p$ — настоечные параметры.
+В результате тестирования будет выведена таблица со значениями $\alpha, \beta, \rho$, $days$, $ dist$, где $days$ — количество дней, данных для решения задачи, а $\alpha, \beta, p$ — настоечные параметры.
 
 \subsection{Класс данных 1}
 \begin{equation}
@@ -894,7 +894,7 @@ class Colony(graph_: Graph)
 		\begin{center}\resizebox{4\textwidth}{!}{%
 			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
 				\toprule
-				a        &b      &p      &days &длина пути \\
+				\alpha        & \beta      & \rho      &days &длина пути \\
 				\midrule
 				0       &1      &0      &50    &2936\\
 				0       &1      &0.1    &50    &2936\\
@@ -954,7 +954,7 @@ class Colony(graph_: Graph)
 			%\caption{Лог работы программы.}
 			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
 				\toprule
-				a        &b      &p      &days &длина пути \\
+				\alpha        & \beta      & \rho      &days &длина пути \\
 				\midrule
 				0.4     &0.6    &0      &50    &3148\\
 				0.4     &0.6    &0.1    &50    &2936\\
@@ -1013,7 +1013,7 @@ class Colony(graph_: Graph)
 	\begin{center}
 		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c}
 			\toprule
-			a        &b      &p      &days &длина пути \\
+			\alpha        & \beta      & \rho      &days &длина пути \\
 			\midrule
 			0.8     &0.2    &0      &50    &3297\\
 			0.8     &0.2    &0.1    &50    &2936\\
