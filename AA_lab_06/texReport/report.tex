@@ -271,9 +271,6 @@ $L_{k}$ — длина пути k-ого муравья, $Q$ — настраи�
 В листингах \ref{list:Graph} и \ref{list:Colony} предоставлены классы реализации рассматриваемых алгоритмов.
 \begin{lstlisting}[caption=Реализация класса графа и  класса графа феромонов,
 label={list:Graph}]
-import kotlin.random.Random
-import kotlin.Int as Int
-
 const val randomStart = 1
 const val randomEnd = 10
 
@@ -709,7 +706,7 @@ class Colony(graph_: Graph)
 		\begin{center}\resizebox{4\textwidth}{!}{%
 			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
 				\toprule
-				a        &b      &p      &days &длина пути \\
+				\alpha        & \beta      & \rho      &days &длина пути \\
 				\midrule
 				0       &1      &0      &50    &47\\
 				0       &1      &0.1    &50    &44\\
@@ -739,8 +736,8 @@ class Colony(graph_: Graph)
 				0.2     &0.8    &0.1    &50    &44\\
 				0.2     &0.8    &0.2    &50    &44\\
 				0.2     &0.8    &0.3    &50    &44\\
-				0.2     &0.8    &0.4    &50   &44\\
-				0.2     &0.8    &0.5    &50   &44\\
+				0.2     &0.8    &0.4    &50    &44\\
+				0.2     &0.8    &0.5    &50    &44\\
 				0.2     &0.8    &0.6    &50    &44\\
 				0.2     &0.8    &0.7    &50    &44\\
 				0.2     &0.8    &0.8    &50    &44\\
@@ -769,7 +766,7 @@ class Colony(graph_: Graph)
 			%\caption{Лог работы программы.}
 			\begin{tabular}{c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c@{\hspace{5mm}}c}
 				\toprule
-				a        &b      &p      &days &длина пути \\
+				\alpha        & \beta      & \rho      &days &длина пути \\
 				\midrule
 				0.4     &0.6    &0      &50    &44\\
 				0.4     &0.6    &0.1    &50    &44\\
@@ -828,7 +825,7 @@ class Colony(graph_: Graph)
 	\begin{center}
 		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c}
 			\toprule
-			a        &b      &p      &days &длина пути \\
+			\alpha        & \beta      & \rho      &days &длина пути \\
 			\midrule
 			0.8     &0.2    &0      &50    &44\\
 			0.8     &0.2    &0.1    &50    &44\\
