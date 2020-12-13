@@ -6,9 +6,26 @@
 \usepackage{amsmath}
 \usepackage[justification=centering]{caption}
 
+\lstdefinelanguage{Kotlin}{
+  comment=[l]{//},
+  commentstyle={\color{gray}\ttfamily},
+  emph={delegate, filter, first, firstOrNull, forEach, lazy, map, mapNotNull, println, return@},
+  emphstyle={\color{orange}},
+  identifierstyle=\color{black},
+  keywords={abstract, actual, as, as?, break, by, class, companion, continue, data, do, dynamic, else, enum, expect, false, final, for, fun, get, if, import, in, interface, internal, is, null, object, override, package, private, public, return, set, super, suspend, this, throw, true, try, typealias, val, var, vararg, when, where, while},
+  keywordstyle={\color{blue}\bfseries},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  morestring=[s]{"""*}{*"""},
+  ndkeywords={@Deprecated, @JvmField, @JvmName, @JvmOverloads, @JvmStatic, @JvmSynthetic, Array, Byte, Double, Float, Int, Integer, Iterable, Long, Runnable, Short, String},
+  ndkeywordstyle={\color{orange}\bfseries},
+  sensitive=true,
+  stringstyle={\color{green}\ttfamily},
+}
+
 % Для листинга кода:
 \lstset{ %
-language=c,                 % выбор языка для подсветки (здесь это С)
+language=Kotlin,                 % выбор языка для подсветки (здесь это С)
 basicstyle=\footnotesize\sffamily, % размер и начертание шрифта для подсветки кода
 numbers=left,               % где поставить нумерацию строк (слева\справа)
 numberstyle=\tiny,           % размер шрифта для номеров строк
@@ -203,8 +220,6 @@ P_i = N \cdot p
 \end{center}
 \end{figure}
 
-\newpage
-
 \section{Схема алгоритма бинарного поиска по словарю}
 Схема алгоритма бинарного поиска по словарю предоставлена на рисунке \ref{img:binAlg}.
 
@@ -217,245 +232,182 @@ P_i = N \cdot p
 \end{center}
 \end{figure}
 
-\newpage
+\section{Схема алгоритма поиска по словарю с использованием разбиения на сегменты}
+Схема алгоритма бинарного поиска по словарю с использование разбиения на сегменты предоставлена на рисунке \ref{img:binAlgUpd}.
+
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.4]{inc/img/binAlgUpd.png}
+\captionsetup{justification=centering}
+	\caption{Схема алгоритма бинарного поиска по словарю с сегментированием.}
+	\label{img:brutAlgUpd}	
+\end{center}
+\end{figure}
 
 \section*{Вывод}
-Были представлены схемы алгоритма Брезенхема, а также реализации конвейерной обработки данных для данного алгоритма.
+Были представлены структура записей в словаре, а также схемы алгоритма поиска по словарю полным перебором, с использованием бинарного поиска, а также с использованием сегментирования и частотного анализа.
 
 \chapter{Технологическая часть}
 В данном разделе приведены требования к программному обеспечению, средства реализации программного обеспечения, а также листинг кода.
 
 \section{Требования к программному обеспечению}
 \begin{itemize}
-\item входные данные - количество выполняемых задач (количество растеризуемых отрезков);
-\item выходные данные - записи времени прихода и ухода обрабатываемых заявок для каждого реализованного конвейера.
+\item входные данные - словарь и искомый ключ;
+\item выходные данные - значение, соответствующее ключу в словаре, если он в нём присутствует, иначе - строка $"NOT\_FOUND"$.
 \end{itemize}
 
 \section{Средства реализации программного обеспечения}
-При написании программного продукта был использован язык программирования C++ \cite{Cpp}.
+При написании программного продукта был задействован язык программирования Kotlin \cite{Kotlin}.
 
 Данный выбор обусловлен следующими факторами:
 \begin{itemize}
-\item данный язык программирования преподавался в рамках курса объектно-ориентированного программирования;
-\item высокая вычислительная производительность;
-\item большое количество справочной и учебной литературы в сети Интернет;
-\item наличие реализации нативных потоков.
+\item Возможность портирования алгоритмов для работы с Android;
+\item Большое количество справочной литературы, связанной с ЯП Java.
 \end{itemize}
 
-При написании программного продукта использовалась среда разработки QT Creator \cite{QT}.
+Для тестирования производительности реализаций алгоритмов использовалась утилита measureTimedValue.
 
-Данный выбор обусловлен следующими факторами:
-\begin{itemize}
-\item основы работы с данной средой разработки преподавался в рамках курса программирования на Си;
-\item QT Creator позволяет работать с расширением QtDesign, позволяющим создавать визуализируемый объект.
-\end{itemize}
+При написании программного продукта использовалась среда разработки IntelliJ IDEA \cite{IntelliJ}.
 
-Для проведения замеров времени использовалась сторонняя библиотека Boost \cite{Boost}. Данная библиотека позволила фиксировать время прихода и ухода каждой заявки с точностью до наносекунд.
+Данный выбор обусловлен тем, что язык программирования Kotlin - это разработка компании JetBrains, поставляющей данную среду разработки.
+
+Для написания утилиты, генерирующей данные для словаря, использовался ЯП Python\cite{Python}. 
+Данный выбор обусловлен простотой языка.
+
+Для генерации значений в словаре использовалась библиотека Faker \cite{Faker} для ЯП Python.
 
 \section{Листинг кода}
-В листингах \ref{list:bresAlg} и \ref{list:director} предоставлены реализации рассматриваемых алгоритмов.
-\begin{lstlisting}[caption=Разбиение алгоритма Брезенхема,
-label={list:bresAlg}]
-std::string now_str()
+В листинге \ref{list:Dict} предоставлены реализации рассматриваемых алгоритмов.
+\begin{lstlisting}[caption=Реализации рассматриваемых алгоритмов поиска,
+label={list:Dict}]
+class Dictionary
 {
-    const boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
+    private val NOT_FOUND = "NOT_FOUND"
 
-    const boost::posix_time::time_duration td = now.time_of_day();
+    private val dictionary: MutableList<Pair<Int, String>> = mutableListOf()
+    private val segmentedDictionary: MutableList<Pair<Int, MutableList<Pair<Int, String>>>> = mutableListOf()
 
-    const long hours = td.hours();
-    const long minutes = td.minutes();
-    const long seconds = td.seconds();
-    const long nanoseconds =
-        td.total_nanoseconds() - ((hours * 3600 + minutes * 60 + seconds) * 1000000000);
+    private val secretFunc: (Int) -> (Int) = { it % 100 }
 
-    char buf[40];
-    sprintf(buf, "%02ld:%02ld:%02ld.%09ld", hours, minutes, seconds, nanoseconds);
-
-    return buf;
-}
-
-SegmentRasterizator::SegmentRasterizator(int xStart_, int yStart_, int xEnd_, int yEnd_)
-{
-    xStart = xStart_;
-    yStart = yStart_;
-    xEnd = xEnd_;
-    yEnd = yEnd_;
-    if (xStart == xEnd)
-        xEnd += 1;
-    else if (yStart == yEnd)
-        yEnd += 1;
-
-    image = new QImage(WIDTH, HEIGHT, QImage::Format_RGB32);
-    image->fill(Qt::white);
-}
-
-int sign(float num)
-{
-    return (num < -__FLT_EPSILON__) ? -1 : ((num > __FLT_EPSILON__) ? 1 : 0);
-}
-
-void SegmentRasterizator::prepareConstantsForRB(int index)
-{
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
-
-    deltaX = xEnd - xStart;
-    deltaY = yEnd - yStart;
-
-    stepX = sign(deltaX);
-    stepY = sign(deltaY);
-
-    deltaX = std::abs(deltaX);
-    deltaY = std::abs(deltaY);
-
-    if (deltaX < deltaY)
+    fun isEmpty() : Boolean
     {
-        std::swap(deltaX, deltaY);
-        stepFlag = true;
+        return dictionary.isEmpty()
     }
-    else
-        stepFlag = false;
 
-    tngModule = deltaY / deltaX;
-    mistake = tngModule - 0.5;
-
-    std::printf(ANSI_BLUE_BRIGHT "From START worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
-}
-
-void SegmentRasterizator::rastSegment(int index)
-{
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
-
-    float curX = xStart, curY = yStart;
-    for (int i = 0; i <= deltaX; i++)
+    fun fullByFile(filePath: String)
     {
-        dotsOfSegment.push_back(std::pair<int, int>(curX, curY));
-        if (stepFlag)
+        val reader = Files.newBufferedReader(Paths.get(filePath))
+        val parser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';'))
+
+        for (curRecord in parser)
+            dictionary.add(Pair(curRecord[0].toInt(), curRecord[1]))
+
+        if (!parser.isClosed)
+            parser.close()
+
+        dictionary.shuffle()
+    }
+
+    fun getValueByBrutForce(key: Int) : String
+    {
+        for (curIndex in 0 until dictionary.size)
         {
-            if (mistake >= 0)
-                (curX += stepX, mistake--);
-            curY += stepY;
+            if (dictionary[curIndex].first == key)
+                return "{ %d : %s }".format(key, dictionary[curIndex].second)
         }
-        else
+        return NOT_FOUND
+    }
+
+    fun sortForBinarySearch(dictionary_: MutableList<Pair<Int, String>> = this.dictionary)
+    {
+        dictionary_.sortBy { it.first }
+    }
+
+    fun getValueByBinarySearch(key: Int, dictionary_: MutableList<Pair<Int, String>> = this.dictionary) : String
+    {
+        var firstNode = 0
+        var secondNode = dictionary_.size - 1
+        while (firstNode <= secondNode)
         {
-            if (mistake >= 0)
-                (curY += stepY, mistake--);
-            curX += stepX;
+            val middle = (firstNode + secondNode) / 2
+            val curRecordID = dictionary_[middle]
+
+            when
+            {
+                curRecordID.first > key -> secondNode--
+                curRecordID.first < key -> firstNode++
+                else -> return "{ %d : %s }".format(key, curRecordID.second)
+            }
         }
-        mistake += tngModule;
+
+        return NOT_FOUND
     }
 
-    std::printf(ANSI_MAGENTA_BRIGHT "From MIDDLE worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
-}
-
-void SegmentRasterizator::createImg(int index)
-{
-    std::printf(ANSI_CYAN_BRIGHT"From END worker: task %d BEGIN %s" ANSI_RESET "\n", index, now_str().c_str());
-
-    for (auto iter = dotsOfSegment.begin(); iter < dotsOfSegment.end(); iter++)
-        image->setPixel(iter->first, iter->second, Qt::black);
-
-    std::printf(ANSI_CYAN_BRIGHT "From END worker: task %d ENDED %s" ANSI_RESET "\n", index, now_str().c_str());
-}
-
-std::vector<std::pair<int, int>> SegmentRasterizator::getDotsOfSegment()
-{
-    return dotsOfSegment;
-}
-\end{lstlisting}
-
-\begin{lstlisting}[caption=Менеджер потоков,
-label={list:director}]
-Director::Director(std::queue<SegmentRasterizator> &startQueue_)
-{
-    startQueue = startQueue_;
-}
-
-void Director::processPrepare()
-{
-    int i = 0;
-    for (SegmentRasterizator curSeg(startQueue.front()); startQueue.size();
-         startQueue.pop(), curSeg = startQueue.front())
+    fun createSegmentedDictionary()
     {
+        for (i in 0 until 100)
+            segmentedDictionary.add(Pair(i, dictionary.filter { secretFunc(it.first) == i }.toMutableList()))
 
-        curSeg.prepareConstantsForRB(i++);
-        middleQueue.push(curSeg);
+        segmentedDictionary.forEach { segment -> segment.second.sortBy { it.first } }
+        segmentedDictionary.sortBy { it.second.size }
     }
-}
 
-void Director::processRast()
-{
-    int i = 0;
-    while (startQueue.size() || middleQueue.size())
+    fun getValueBySegmentedAndBinaryModified(key: Int) : String
     {
-        if (middleQueue.empty())
-            continue;
-        SegmentRasterizator curSeg(middleQueue.front());
+        if (segmentedDictionary.isEmpty())
+            return "No segmented array."
 
-        curSeg.rastSegment(i++);
+        var firstNode = 0
+        var secondNode = segmentedDictionary.size - 1
+        while (firstNode <= secondNode)
+        {
+            val middle = (firstNode + secondNode) / 2
+            val curSegment = segmentedDictionary[middle]
 
-		endQueue.push(curSeg);
-        middleQueue.pop();
+            when
+            {
+                curSegment.first > secretFunc(key) -> secondNode--
+                curSegment.first < secretFunc(key) -> firstNode++
+                else -> return getValueByBinarySearch(key, curSegment.second)
+            }
+        }
+
+        return NOT_FOUND
     }
-}
 
-void Director::processCreate()
-{
-    int i = 0;
-    while (startQueue.size() || middleQueue.size() || endQueue.size())
+    fun print()
     {
-        if (endQueue.empty())
-            continue;
-        SegmentRasterizator curSeg(endQueue.front());
-
-        curSeg.createImg(i++);
-        endQueue.pop();
-        final.push_back(curSeg);
+        for (i in dictionary)
+            println(i)
     }
 }
-
-void Director::initWork()
-{
-    workers[0] = std::thread(&Director::processPrepare, this);
-    workers[1] = std::thread(&Director::processRast, this);
-    workers[2] = std::thread(&Director::processCreate, this);
-
-    workers[0].join();
-    workers[1].join();
-    workers[2].join();
-}
-
-std::vector<SegmentRasterizator> Director::getFinal() { return final; }
 \end{lstlisting}
 
 \section{Тестирование программного продукта}
-В таблице~\ref{tabular:test_rec} приведены тесты для функций, реализующих алгоритм Брезенхема. Тесты пройдены успешно.
+В таблице~\ref{tabular:test_rec} приведены тесты для функций поиска значений в словаре по ключу. Тесты пройдены успешно.
 
 \begin{table}[h!]
 	\begin{center}
 	
 	\caption{\label{tabular:test_rec} Тестирование функций}
-		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}c@{\hspace{7mm}}}
+		\begin{tabular}{c@{\hspace{7mm}}c@{\hspace{7mm}}}
 			\hline
-			Точка начала отрезка (x, y) & Точка конца отрезка (x, y) & Ожидаемый результат \\ \hline
+			Ключ & Ожидаемый результат \\ \hline
 			\vspace{4mm}
-			 (1, 1)&
-			 (3, 3)&
-			 (1, 1), (2, 2), (3, 3)\\
+			 666&
+			 Эксплуатация богатых парадигм\\
 			\vspace{2mm}
 			\vspace{2mm}
-			 (1, 1)&
-			 (1, 3)&
-			 (1, 1), (1, 2), (1, 3)\\
+			 22&
+			 Ускорение сетевых схем\\
 			\vspace{2mm}
 			\vspace{2mm}
-			 (1, 1)&
-			 (2, 1)&
-			 (1, 1), (2, 1)\\
+			 1001&
+			 $NOT\_FOUND$\\
 			\vspace{2mm}
 			\vspace{2mm}
-			 (3, 3)&
-			 (1, 1)&
-			 (1, 1), (2, 2), (3, 3)\\
+			 -1&
+			 $NOT\_FOUND$\\
 		\end{tabular}
 	\end{center}
 \end{table}

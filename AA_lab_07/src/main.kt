@@ -25,5 +25,5 @@ fun main()
     println(dict.getValueBySegmentedAndBinaryModified(4))
     println(dict.getValueBySegmentedAndBinaryModified(460))
     println(dict.getValueBySegmentedAndBinaryModified(800))
-    println(dict.getValueBySegmentedAndBinaryModified(1200))
+    println(dict.getValueBySegmentedAndBinaryModified(-1))
 }
