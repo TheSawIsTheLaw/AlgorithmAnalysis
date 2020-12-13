@@ -5,19 +5,19 @@ fun main()
     val dict = Dictionary()
 
     dict.fullByFile(directoryToCopySCV)
-    if (dict.dictionary.isEmpty())
+    if (dict.isEmpty())
         return
     dict.print()
 
     println("For brutForce")
-    println(dict.getValueByBrutForce(2))
+    println(dict.getValueByBrutForce(460))
     println(dict.getValueByBrutForce(6666))
 
     println("For binarySearch")
     dict.sortForBinarySearch()
     dict.getValueByBinarySearch(2)
 
-    println(dict.getValueByBinarySearch(555))
+    println(dict.getValueByBinarySearch(800))
     println(dict.getValueByBinarySearch(6666))
 
     println("For modified segmented dictionary")

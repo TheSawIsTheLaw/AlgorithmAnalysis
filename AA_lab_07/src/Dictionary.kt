@@ -5,14 +5,17 @@ import java.nio.file.Paths
 
 class Dictionary
 {
-    val NOT_FOUND = "NOT_FOUND"
+    private val NOT_FOUND = "NOT_FOUND"
 
-    val firstSegmentCondition : (Int) -> (Boolean) = { key -> key <= dictionary.size / 4 }
-    val secondSegmentCondition : (Int) -> (Boolean) = { key -> !firstSegmentCondition(key) && key < dictionary.size / 2 }
-    val thirdSegmentCond : (Int) -> (Boolean) = { key -> key >= dictionary.size / 2 }
+    private val dictionary: MutableList<Pair<Int, String>> = mutableListOf()
+    private val segmentedDictionary: MutableList<Pair<Int, MutableList<Pair<Int, String>>>> = mutableListOf()
 
-    val dictionary: MutableList<Pair<Int, String>> = mutableListOf()
-    val segmentedDictionary: MutableList<MutableList<Pair<Int, String>>> = mutableListOf()
+    private val secretFunc: (Int) -> (Int) = { it % 100 }
+
+    fun isEmpty() : Boolean
+    {
+        return dictionary.isEmpty()
+    }
 
     fun fullByFile(filePath: String)
     {
@@ -65,11 +68,11 @@ class Dictionary
 
     fun createSegmentedDictionary()
     {
-        segmentedDictionary.add(dictionary.filter { firstSegmentCondition(it.first) }.toMutableList())
-        segmentedDictionary.add(dictionary.filter { secondSegmentCondition(it.first) }.toMutableList())
-        segmentedDictionary.add(dictionary.filter { thirdSegmentCond(it.first) }.toMutableList())
+        for (i in 0 until 100)
+            segmentedDictionary.add(Pair(i, dictionary.filter { secretFunc(it.first) == i }.toMutableList()))
 
-        segmentedDictionary.forEach { segment -> segment.sortBy { it.first } }
+        segmentedDictionary.forEach { segment -> segment.second.sortBy { it.first } }
+        segmentedDictionary.sortBy { it.second.size }
     }
 
     fun getValueBySegmentedAndBinaryModified(key: Int) : String
@@ -77,12 +80,22 @@ class Dictionary
         if (segmentedDictionary.isEmpty())
             return "No segmented array."
 
-        return when
+        var firstNode = 0
+        var secondNode = segmentedDictionary.size - 1
+        while (firstNode <= secondNode)
         {
-            firstSegmentCondition(key) -> getValueByBinarySearch(key, segmentedDictionary[0])
-            secondSegmentCondition(key) -> getValueByBinarySearch(key, segmentedDictionary[1])
-            else -> getValueByBinarySearch(key, segmentedDictionary[2])
+            val middle = (firstNode + secondNode) / 2
+            val curSegment = segmentedDictionary[middle]
+
+            when
+            {
+                curSegment.first > secretFunc(key) -> secondNode--
+                curSegment.first < secretFunc(key) -> firstNode++
+                else -> return getValueByBinarySearch(key, curSegment.second)
+            }
         }
+
+        return NOT_FOUND
     }
 
     fun print()
