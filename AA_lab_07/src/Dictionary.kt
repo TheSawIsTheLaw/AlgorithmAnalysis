@@ -37,7 +37,7 @@ class Dictionary
 
     fun getValueByBinarySearch(key: Int) : String
     {
-        val sortedDictionary = dictionary.sortBy { it.first }
+        dictionary.sortBy { it.first }
         var firstNode = 0
         var secondNode = dictionary.size - 1
         while (firstNode <= secondNode)
