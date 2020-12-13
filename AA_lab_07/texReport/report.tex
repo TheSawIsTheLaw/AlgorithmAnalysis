@@ -187,52 +187,33 @@ P_i = N \cdot p
 В данной работе стоит задача реализации трёх рассмотренных алгоритмов поиска.
 
 \chapter{Конструкторская часть}
-В данном разделе представлены схемы алгоритма Брезенхема и реализации конвейерной обработки данных для алгоритма Брезенхема.
-\section{Схема алгоритма Брезенхема}
-Схема алгоритма Брезенхема предоставлена на рисунках \ref{img:bresAlg}, \ref{img:bresAlgPart}.
+В данном разделе представлены структура записей в словаре, а также схемы алгоритма поиска по словарю полным перебором, с использованием бинарного поиска, а также с использованием сегментирования и частотного анализа.
+\section{Структура записи в словаре}
+Каждая запись в словаре описана парой вида $(ID_{\textit{студента}} : \textit{Название курсового проекта})$.
+
+\section{Схема алгоритма поиска по словарю полным перебором}
+Схема алгоритма поиска полным перебором предоставлена на рисунке \ref{img:brutAlg}.
 
 \begin{figure}
 \begin{center}
-\includegraphics[scale=0.4]{inc/img/bresAlg.png}
+\includegraphics[scale=0.4]{inc/img/brutAlg.png}
 \captionsetup{justification=centering}
-	\caption{Схема алгоритма Брезенхема.}
-	\label{img:bresAlg}	
-\end{center}
-\end{figure}
-
-\begin{figure}
-\begin{center}
-\includegraphics[scale=0.4]{inc/img/bresAlgPart.png}
-\captionsetup{justification=centering}
-	\caption{Схема алгоритма Брезенхема.}
-	\label{img:bresAlgPart}	
+	\caption{Схема алгоритма поиска полным перебором.}
+	\label{img:brutAlg}	
 \end{center}
 \end{figure}
 
 \newpage
 
-\section{Схема реализации конвейерной обработки данных для алгоритма Брезенхема}
-На рисунках \ref{img:conveyor}, \ref{img:conveyor:2} предоставлена IDEF0 схема реализации конвейерной обработки данных для алгоритма Брезенхема.
+\section{Схема алгоритма бинарного поиска по словарю}
+Схема алгоритма бинарного поиска по словарю предоставлена на рисунке \ref{img:binAlg}.
 
-Как видно из схемы уровня декомпозиции 1 (\ref{img:conveyor:2}) задействуется 3 потока. Поток №1 решает задачу подготовки данных для растрирования отрезка. Поток №2, задействуя входные данные и данные, полученные от потока №1, заполняет массив точек, наилучшим образом аппроксимирующих отрезок целочисленными координатами экрана пользователя. Поток №3, опираясь на данные, полученные от потока №2, непосредственно создает объект, который и будет в дальнейшем визуализирован.
-
-\begin{figure}[ht]
+\begin{figure}
 \begin{center}
-\includegraphics[scale=0.25]{inc/img/ramus/01_A0.png}
+\includegraphics[scale=0.4]{inc/img/binAlg.png}
 \captionsetup{justification=centering}
-	\caption{Схема реализации конвейерной обработки данных для алгоритма Брезенхема.}
-	\label{img:conveyor}	
-\end{center}
-\end{figure}
-
-\newpage
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[scale=0.25]{inc/img/ramus/03_A1.png}
-\captionsetup{justification=centering}
-	\caption{Схема реализации конвейерной обработки данных для алгоритма Брезенхема.}
-	\label{img:conveyor:2}	
+	\caption{Схема алгоритма бинарного поиска по словарю.}
+	\label{img:brutAlg}	
 \end{center}
 \end{figure}
 
