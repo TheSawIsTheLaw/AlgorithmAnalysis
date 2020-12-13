@@ -8,4 +8,12 @@ fun main()
     if (dict.dictionary.isEmpty())
         return
     dict.print()
+
+    println(dict.getValueByBrutForce(2))
+    println(dict.getValueByBrutForce(6666))
+
+    dict.getValueByBinarySearch(2)
+
+    println(dict.getValueByBinarySearch(555))
+    println(dict.getValueByBinarySearch(6666))
 }
