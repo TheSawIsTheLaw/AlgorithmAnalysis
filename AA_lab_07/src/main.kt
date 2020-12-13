@@ -1,3 +1,6 @@
+import kotlin.system.measureNanoTime
+import kotlin.time.measureTimedValue
+
 const val directoryToCopySCV = "src/dataGenerator/dictionary.csv"
 
 fun main()
@@ -12,15 +15,59 @@ fun main()
     dict.sortForBinarySearch()
     dict.createSegmentedDictionary()
 
-    println("Введите ключ для поиска:")
-    val key = readLine()!!.toInt()
+//    println("Введите ключ для поиска:")
+//    val key = readLine()!!.toInt()
+//
+//    println()
+//    println("Результат поиска полным перебором: ${dict.getValueByBrutForce(key)}")
+//
+//    println("Результат бинарного поиска: ${dict.getValueByBinarySearch(key)}")
+//
+//    println("Результат поиска с испоьзованием сегментирования: ${dict.getValueBySegmentedAndBinaryModified(key)}")
 
+    var time : Long = 0
+
+    var timeList : MutableList<Long> = mutableListOf()
+    dict.getValueByBrutForce(0)
+    for (i in 0 until 1000) {
+        time = measureNanoTime {
+            dict.getValueByBrutForce(i)
+        }
+        timeList.add(time)
+    }
     println()
-    println("Результат поиска полным перебором: ${dict.getValueByBrutForce(key)}")
+    println("Brut")
+    println("Max: ${timeList.maxByOrNull { it }}")
+    println("Min: ${timeList.minByOrNull { it }}")
+    println("Average: ${timeList.average()}")
 
-    println("Результат бинарного поиска: ${dict.getValueByBinarySearch(key)}")
+    timeList = mutableListOf()
+    dict.getValueByBinarySearch(0)
+    for (i in 0 until 1000) {
+        time = measureNanoTime {
+            dict.getValueByBinarySearch(i)
+        }
+        timeList.add(time)
+    }
+    println()
+    println("Binary")
+    println("Max: ${timeList.maxByOrNull { it }}")
+    println("Min: ${timeList.minByOrNull { it }}")
+    println("Average: ${timeList.average()}")
 
-    println("Результат поиска с испоьзованием сегментирования: ${dict.getValueBySegmentedAndBinaryModified(key)}")
+    timeList = mutableListOf()
+    dict.getValueBySegmentedAndBinaryModified(0)
+    for (i in 0 until 1000) {
+        time = measureNanoTime {
+            dict.getValueBySegmentedAndBinaryModified(i)
+        }
+        timeList.add(time)
+    }
+    println()
+    println("Segmented")
+    println("Max: ${timeList.maxByOrNull { it }}")
+    println("Min: ${timeList.minByOrNull { it }}")
+    println("Average: ${timeList.average()}")
 
 //    println("For brutForce")
 //    println(dict.getValueByBrutForce(460))
