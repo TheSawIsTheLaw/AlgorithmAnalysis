@@ -7,14 +7,17 @@ class Dictionary
 {
     val NOT_FOUND = "NOT_FOUND"
 
+    val firstSegmentCondition : (Int) -> (Boolean) = { key -> key <= dictionary.size / 4 }
+    val secondSegmentCondition : (Int) -> (Boolean) = { key -> !firstSegmentCondition(key) && key < dictionary.size / 2 }
+    val thirdSegmentCond : (Int) -> (Boolean) = { key -> key >= dictionary.size / 2 }
+
     val dictionary: MutableList<Pair<Int, String>> = mutableListOf()
+    val segmentedDictionary: MutableList<MutableList<Pair<Int, String>>> = mutableListOf()
 
     fun fullByFile(filePath: String)
     {
         val reader = Files.newBufferedReader(Paths.get(filePath))
         val parser = CSVParser(reader, CSVFormat.DEFAULT.withDelimiter(';'))
-
-        val shuffleList : MutableList<Pair<Int, String>> = mutableListOf()
 
         for (curRecord in parser)
             dictionary.add(Pair(curRecord[0].toInt(), curRecord[1]))
@@ -35,15 +38,19 @@ class Dictionary
         return NOT_FOUND
     }
 
-    fun getValueByBinarySearch(key: Int) : String
+    fun sortForBinarySearch(dictionary_: MutableList<Pair<Int, String>> = this.dictionary)
     {
-        dictionary.sortBy { it.first }
+        dictionary_.sortBy { it.first }
+    }
+
+    fun getValueByBinarySearch(key: Int, dictionary_: MutableList<Pair<Int, String>> = this.dictionary) : String
+    {
         var firstNode = 0
-        var secondNode = dictionary.size - 1
+        var secondNode = dictionary_.size - 1
         while (firstNode <= secondNode)
         {
             val middle = (firstNode + secondNode) / 2
-            val curRecordID = dictionary[middle]
+            val curRecordID = dictionary_[middle]
 
             when
             {
@@ -54,6 +61,28 @@ class Dictionary
         }
 
         return NOT_FOUND
+    }
+
+    fun createSegmentedDictionary()
+    {
+        segmentedDictionary.add(dictionary.filter { firstSegmentCondition(it.first) }.toMutableList())
+        segmentedDictionary.add(dictionary.filter { secondSegmentCondition(it.first) }.toMutableList())
+        segmentedDictionary.add(dictionary.filter { thirdSegmentCond(it.first) }.toMutableList())
+
+        segmentedDictionary.forEach { segment -> segment.sortBy { it.first } }
+    }
+
+    fun getValueBySegmentedAndBinaryModified(key: Int) : String
+    {
+        if (segmentedDictionary.isEmpty())
+            return "No segmented array."
+
+        return when
+        {
+            firstSegmentCondition(key) -> getValueByBinarySearch(key, segmentedDictionary[0])
+            secondSegmentCondition(key) -> getValueByBinarySearch(key, segmentedDictionary[1])
+            else -> getValueByBinarySearch(key, segmentedDictionary[2])
+        }
     }
 
     fun print()
