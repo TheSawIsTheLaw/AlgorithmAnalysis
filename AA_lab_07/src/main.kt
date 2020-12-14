@@ -1,7 +1,8 @@
+import kotlin.jvm.functions.FunctionN
 import kotlin.system.measureNanoTime
 import kotlin.time.measureTimedValue
 
-const val directoryToCopySCV = "src/dataGenerator/dictionary.csv"
+const val directoryToCopySCV = "src/dataGenerator/dictionary2000.csv"
 
 fun main()
 {
@@ -11,9 +12,6 @@ fun main()
     if (dict.isEmpty())
         return
 //    dict.print()
-
-    dict.sortForBinarySearch()
-    dict.createSegmentedDictionary()
 
 //    println("Введите ключ для поиска:")
 //    val key = readLine()!!.toInt()
@@ -25,49 +23,82 @@ fun main()
 //
 //    println("Результат поиска с испоьзованием сегментирования: ${dict.getValueBySegmentedAndBinaryModified(key)}")
 
-    var time : Long = 0
+    var time : Long
 
-    var timeList : MutableList<Long> = mutableListOf()
-    dict.getValueByBrutForce(0)
-    for (i in 0 until 1000) {
-        time = measureNanoTime {
-            dict.getValueByBrutForce(i)
+    var averList: MutableList<Double> = mutableListOf()
+    var maxList: MutableList<Long> = mutableListOf()
+    var minList: MutableList<Long> = mutableListOf()
+
+    var timeList : MutableList<Long>
+
+    for (z in 0 until 10)
+    {
+        timeList = mutableListOf()
+        for (i in 0..dict.size()) {
+            time = measureNanoTime {
+                dict.getValueByBrutForce(i)
+            }
+            timeList.add(time)
         }
-        timeList.add(time)
+        averList.add(timeList.average())
+        maxList.add(timeList.maxByOrNull { it }!!)
+        minList.add(timeList.minByOrNull { it }!!)
     }
     println()
     println("Brut")
-    println("Max: ${timeList.maxByOrNull { it }}")
-    println("Min: ${timeList.minByOrNull { it }}")
-    println("Average: ${timeList.average()}")
+    println("Average: ${averList.average()}")
+    println("Max: ${maxList.maxByOrNull { it }}")
+    println("Min: ${minList.minByOrNull { it }}")
 
-    timeList = mutableListOf()
-    dict.getValueByBinarySearch(0)
-    for (i in 0 until 1000) {
-        time = measureNanoTime {
-            dict.getValueByBinarySearch(i)
+    dict.sortForBinarySearch()
+
+    averList = mutableListOf()
+    maxList = mutableListOf()
+    minList = mutableListOf()
+
+    for (z in 0 until 10)
+    {
+        timeList = mutableListOf()
+        for (i in 0..dict.size()) {
+            time = measureNanoTime {
+                dict.getValueByBinarySearch(i)
+            }
+            timeList.add(time)
         }
-        timeList.add(time)
+        averList.add(timeList.average())
+        maxList.add(timeList.maxByOrNull { it }!!)
+        minList.add(timeList.minByOrNull { it }!!)
     }
     println()
     println("Binary")
-    println("Max: ${timeList.maxByOrNull { it }}")
-    println("Min: ${timeList.minByOrNull { it }}")
-    println("Average: ${timeList.average()}")
+    println("Average: ${averList.average()}")
+    println("Max: ${maxList.maxByOrNull { it }}")
+    println("Min: ${minList.minByOrNull { it }}")
 
-    timeList = mutableListOf()
-    dict.getValueBySegmentedAndBinaryModified(0)
-    for (i in 0 until 1000) {
-        time = measureNanoTime {
-            dict.getValueBySegmentedAndBinaryModified(i)
+    dict.createSegmentedDictionary()
+
+    averList = mutableListOf()
+    maxList = mutableListOf()
+    minList = mutableListOf()
+
+    for (z in 0 until 10)
+    {
+        timeList = mutableListOf()
+        for (i in 0..dict.size()) {
+            time = measureNanoTime {
+                dict.getValueByBinarySearch(i)
+            }
+            timeList.add(time)
         }
-        timeList.add(time)
+        averList.add(timeList.average())
+        maxList.add(timeList.maxByOrNull { it }!!)
+        minList.add(timeList.minByOrNull { it }!!)
     }
     println()
-    println("Segmented")
-    println("Max: ${timeList.maxByOrNull { it }}")
-    println("Min: ${timeList.minByOrNull { it }}")
-    println("Average: ${timeList.average()}")
+    println("Modified")
+    println("Average: ${averList.average()}")
+    println("Max: ${maxList.maxByOrNull { it }}")
+    println("Min: ${minList.minByOrNull { it }}")
 
 //    println("For brutForce")
 //    println(dict.getValueByBrutForce(460))

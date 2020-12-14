@@ -1,12 +1,12 @@
 from faker import *
 from random import randint
 
-ZZZAP = 1000
+ZZZAP = 4000
 
 
 def generateDictionary():
     faker = Faker("ru_RU")
-    f = open("dictionary.csv", 'w')
+    f = open("dictionary4000.csv", 'w')
     for id in range(ZZZAP):
         death = faker.bs()
         line = "{};{}\n".format(id, death)

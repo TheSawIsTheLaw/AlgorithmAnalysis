@@ -17,6 +17,11 @@ class Dictionary
         return dictionary.isEmpty()
     }
 
+    fun size() : Int
+    {
+        return dictionary.size
+    }
+
     fun fullByFile(filePath: String)
     {
         val reader = Files.newBufferedReader(Paths.get(filePath))
@@ -55,12 +60,19 @@ class Dictionary
             val middle = (firstNode + secondNode) / 2
             val curRecordID = dictionary_[middle]
 
-            when
-            {
-                curRecordID.first > key -> secondNode--
-                curRecordID.first < key -> firstNode++
-                else -> return "{ %d : %s }".format(key, curRecordID.second)
-            }
+            if (curRecordID.first > key)
+                secondNode--
+            else if (curRecordID.first < key)
+                firstNode++
+            else
+                return "{ %d : %s }".format(key, curRecordID.second)
+
+//            when
+//            {
+//                curRecordID.first > key -> secondNode--
+//                curRecordID.first < key -> firstNode++
+//                else -> return "{ %d : %s }".format(key, curRecordID.second)
+//            }
         }
 
         return NOT_FOUND
